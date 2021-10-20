@@ -17,14 +17,14 @@ Our Android component library provides chat features like direct and group messa
 
 ## Available components
 
-* [ChannelList](/docs/chat/components/android/ui-components-android#channellist)
-* [MemberList](/docs/chat/components/android/ui-components-android#memberlist)
-* [MessageList](/docs/chat/components/android/ui-components-android#messagelist)
-* [MessageInput](/docs/chat/components/android/ui-components-android#messageinput)
+* [ChannelList](https://www.pubnub.com/docs/chat/components/android/ui-components-android#channellist)
+* [MemberList](https://www.pubnub.com/docs/chat/components/android/ui-components-android#memberlist)
+* [MessageList](https://www.pubnub.com/docs/chat/components/android/ui-components-android#messagelist)
+* [MessageInput](https://www.pubnub.com/docs/chat/components/android/ui-components-android#messageinput)
 
 ## Related documentation
 
-* [Kotlin SDK Documentation](/docs/sdks/kotlin)
+* [Kotlin SDK Documentation](https://www.pubnub.com/docs/sdks/kotlin)
 * [Jetpack Compose Tutorial](https://developer.android.com/jetpack/compose/tutorial)
 * [Android Room Tutorial](https://developer.android.com/training/data-storage/room)
 * [Paging Library](https://developer.android.com/topic/libraries/architecture/paging/v3-overview)
