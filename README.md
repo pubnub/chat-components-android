@@ -45,9 +45,8 @@ Our Android component library provides chat features like direct and group messa
 
 1. When you create a new app, the first set of keys is generated automatically, but a single app can have as many keysets as you like. We recommend that you create separate keysets for production and test environments.
 
-    :::info Additional features
+   :bulb: Additional features 
       Depending on your use case, you may want your application to have some PubNub features, such as Presence, Storage and Playback (including correct Retention), or Objects. To use them, you must first enable them on your Admin Portal keysets. If you decide to use Objects, be sure to select a geographic region corresponding to most users of your application.
-    :::
 
 ## Create a new project for your app
 
