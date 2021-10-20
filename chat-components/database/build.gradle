@@ -1,0 +1,96 @@
+import com.pubnub.components.buildsrc.Libs
+
+plugins {
+    id("com.android.library")
+    id("kotlin-android")
+    id("kotlin-kapt")
+}
+
+android {
+    compileSdk = 31
+    buildToolsVersion = "30.0.3"
+
+    defaultConfig {
+        minSdk = 21
+        targetSdk = 31
+        versionCode = 1
+        versionName = "1.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [
+                        "room.incremental"     : "true",
+                        "room.expandProjection": "true"
+                ]
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+        }
+    }
+    compileOptions {
+        // Flag to enable support for the new language APIs
+        coreLibraryDesugaringEnabled true
+
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion Libs.AndroidX.Compose.version
+    }
+    packagingOptions {
+        // for JNA and JNA-platform
+        exclude "META-INF/AL2.0"
+        exclude "META-INF/LGPL2.1"
+        // for byte-buddy
+        exclude "META-INF/licenses/ASM"
+        pickFirst "win32-x86-64/attach_hotspot_windows.dll"
+        pickFirst "win32-x86/attach_hotspot_windows.dll"
+    }
+}
+
+dependencies {
+    api project(':chat-components:framework')
+    implementation project(path: ":chat-components:ui")
+
+    implementation Libs.Kotlin.stdlib
+    implementation Libs.Kotlin.Coroutines.android
+    implementation Libs.AndroidX.Activity.activityCompose
+    api Libs.AndroidX.Room.runtime
+    api Libs.AndroidX.Room.ktx
+    api Libs.AndroidX.Paging.runtime
+    api Libs.AndroidX.Paging.extension
+    implementation Libs.AndroidX.datetime
+    implementation Libs.Google.gson
+
+    androidTestImplementation Libs.JUnit.junit
+    androidTestImplementation Libs.AndroidX.Test.runner
+    androidTestImplementation Libs.AndroidX.Test.espressoCore
+    androidTestImplementation Libs.AndroidX.Test.rules
+    androidTestImplementation Libs.AndroidX.Test.Ext.junit
+    androidTestImplementation Libs.Kotlin.Coroutines.test
+    androidTestImplementation Libs.AndroidX.Compose.uiTest
+    androidTestImplementation Libs.MockK.instrumented
+
+    // FIXME: only needed for Compose alpha12
+    androidTestImplementation Libs.AndroidX.Activity.activityCompose
+
+    testImplementation Libs.AndroidX.Room.Test.testing
+
+    kapt Libs.AndroidX.Room.compiler
+
+    coreLibraryDesugaring Libs.jdkDesugar
+}

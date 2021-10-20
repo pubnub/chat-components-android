@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">PubNub Chat Components</string>
+    <plurals name="members">
+        <item quantity="one">%d member</item>
+        <item quantity="other">%d members</item>
+    </plurals>
+</resources>

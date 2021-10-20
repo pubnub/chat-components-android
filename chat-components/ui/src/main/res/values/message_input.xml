@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="type_message">Type Message</string>
+    <string name="send">Send</string>
+
+    <string name="emoji_description">Emoji</string>
+
+    <!-- SEMANTICS -->
+    <string name="message_input_text">message_input_text</string>
+    <string name="message_input_button">message_input_button</string>
+
+
+    <string name="type_link">Provide Link</string>
+    <string name="type_image">Provide Image Url</string>
+</resources>

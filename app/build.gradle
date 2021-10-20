@@ -1,0 +1,105 @@
+import com.pubnub.components.buildsrc.Libs
+
+plugins {
+    id("com.android.application")
+    id("kotlin-android")
+    id "com.github.ben-manes.versions" version "0.39.0"
+}
+
+android {
+    compileSdk = 31
+    buildToolsVersion = "30.0.3"
+
+    defaultConfig {
+        applicationId = "com.pubnub.components.chat"
+        minSdk = 21
+        targetSdk = 31
+        versionCode = 1
+        versionName = "1.0"
+        vectorDrawables.useSupportLibrary = true
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments["dagger.hilt.disableModulesHaveInstallInCheck"] = "true"
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion Libs.AndroidX.Compose.version
+    }
+
+    packagingOptions {
+        // Multiple dependency bring these files in. Exclude them to enable
+        // our test APK to build (has no effect on our AARs)
+        excludes += "/META-INF/AL2.0"
+        excludes += "/META-INF/LGPL2.1"
+    }
+}
+
+dependencies {
+    implementation project(":chat-components")
+    implementation Libs.Kotlin.stdlib
+    implementation Libs.Kotlin.Coroutines.android
+
+    implementation Libs.Coil.coil
+//    implementation Libs.Accompanist.imageLoading
+    implementation Libs.Coil.coilGif
+    implementation Libs.Coil.coilSvg
+    implementation Libs.Coil.coilVideo
+    implementation Libs.AndroidX.Activity.activityCompose
+    implementation Libs.AndroidX.appcompat
+    implementation Libs.AndroidX.Compose.runtime
+    implementation Libs.AndroidX.Compose.runtimeLivedata
+    implementation Libs.AndroidX.Compose.foundation
+    implementation Libs.AndroidX.Compose.material
+    implementation Libs.AndroidX.Compose.layout
+    implementation Libs.AndroidX.Compose.animation
+    implementation Libs.AndroidX.Compose.tooling
+    implementation Libs.AndroidX.Compose.iconsCore
+    implementation Libs.AndroidX.Compose.iconsExtended
+    implementation Libs.AndroidX.Lifecycle.viewModelCompose
+
+    implementation Libs.AndroidX.Lifecycle.viewModelKtx
+//    implementation Libs.AndroidX.navigation
+    implementation Libs.Accompanist.navigation
+
+//    implementation Libs.Hilt.android
+//    kapt Libs.Hilt.compiler
+
+    implementation Libs.JakeWharton.timber
+    implementation Libs.PubNub.pubnub
+
+    androidTestImplementation Libs.JUnit.junit
+    androidTestImplementation Libs.AndroidX.Test.runner
+    androidTestImplementation Libs.AndroidX.Test.espressoCore
+    androidTestImplementation Libs.AndroidX.Test.rules
+    androidTestImplementation Libs.AndroidX.Test.Ext.junit
+    androidTestImplementation Libs.Kotlin.Coroutines.test
+    androidTestImplementation Libs.AndroidX.Compose.uiTest
+
+    // FIXME: only needed for Compose alpha12
+    androidTestImplementation Libs.AndroidX.Activity.activityCompose
+
+//    androidTestImplementation Libs.Hilt.android
+//    androidTestImplementation Libs.Hilt.testing
+//    kaptAndroidTest Libs.Hilt.compiler
+}
