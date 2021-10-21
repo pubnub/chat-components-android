@@ -9,6 +9,7 @@ import com.pubnub.components.chat.ui.component.member.MemberList
 import com.pubnub.components.chat.ui.component.member.MemberUi
 import com.pubnub.components.chat.ui.component.presence.Presence
 import com.pubnub.components.chat.ui.component.provider.MissingPubNubException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
 import org.awaitility.Awaitility
@@ -19,6 +20,8 @@ import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicReference
 
+
+@OptIn(ExperimentalCoroutinesApi::class)
 class MemberListTest : BaseTest() {
 
     @get:Rule
@@ -74,6 +77,7 @@ class MemberListTest : BaseTest() {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     @Test
     fun whenMemberPagingDataWillBePassed_thenItWillBeShown() = runBlockingTest {
         // Given
@@ -147,7 +151,7 @@ class MemberListTest : BaseTest() {
 
         // Then
         composeTestRule.onNodeWithContentDescription(memberList, useUnmergedTree = true).apply {
-            members.forEachIndexed { index, item ->
+            members.forEachIndexed { index, _ ->
                 onChildAt(index).apply {
                     onChildren().apply {
                         assert(!hasContentDescription(online))
@@ -164,8 +168,6 @@ class MemberListTest : BaseTest() {
         val members = FAKE_MEMBERS
         val memberList =
             InstrumentationRegistry.getInstrumentation().context.getString(R.string.member_list)
-        val profileImage =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.profile_image)
         val online =
             InstrumentationRegistry.getInstrumentation().context.getString(R.string.online_presence_indicator_member_list)
         val offline =

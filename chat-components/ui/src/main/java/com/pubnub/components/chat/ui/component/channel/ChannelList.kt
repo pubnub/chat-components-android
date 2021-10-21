@@ -94,7 +94,7 @@ fun ChannelList(
     onAdd: (() -> Unit)? = null,
     onLeave: ((ChannelUi.Data) -> Unit)? = null,
     header: @Composable (LazyItemScope) -> Unit = {},
-    footer: @Composable (LazyItemScope) -> Unit = { scope: LazyItemScope -> },
+    footer: @Composable (LazyItemScope) -> Unit = { _: LazyItemScope -> },
     renderer: ChannelRenderer = DefaultChannelRenderer,
 ) {
     checkNotNull(LocalPubNub.current)

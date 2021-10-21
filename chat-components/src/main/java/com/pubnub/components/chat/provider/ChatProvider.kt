@@ -66,6 +66,7 @@ fun ChatProvider(
     content: @Composable() () -> Unit,
 ) {
     // Set PNSDK suffix
+    @Suppress("DEPRECATION")
     pubNub.configuration.addPnsdkSuffix(getComponentsSuffix())
 
     // region Member part

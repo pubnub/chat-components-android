@@ -50,7 +50,6 @@ dependencies {
     implementation Libs.Kotlin.Coroutines.android
 
     implementation Libs.Coil.coil
-//    implementation Libs.Accompanist.imageLoading
     implementation Libs.AndroidX.Activity.activityCompose
     implementation Libs.AndroidX.appcompat
     implementation Libs.AndroidX.Compose.runtime
@@ -65,8 +64,6 @@ dependencies {
     implementation Libs.AndroidX.Lifecycle.viewModelCompose
 
     implementation Libs.AndroidX.Lifecycle.viewModelKtx
-//    implementation Libs.Hilt.android
-//    kapt Libs.Hilt.compiler
 
     implementation Libs.JakeWharton.timber
 
@@ -79,7 +76,4 @@ dependencies {
     androidTestImplementation Libs.AndroidX.Test.Ext.junit
     androidTestImplementation Libs.Kotlin.Coroutines.test
     androidTestImplementation Libs.AndroidX.Compose.uiTest
-
-    // FIXME: only needed for Compose alpha12
-    androidTestImplementation Libs.AndroidX.Activity.activityCompose
 }

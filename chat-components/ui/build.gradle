@@ -72,7 +72,6 @@ dependencies {
     implementation Libs.AndroidX.datetime
 
     implementation Libs.Coil.coil
-//    implementation Libs.Accompanist.imageLoading
     implementation Libs.Accompanist.placeholder
 
     implementation Libs.JakeWharton.timber
@@ -87,10 +86,6 @@ dependencies {
     androidTestImplementation Libs.AndroidX.Test.Ext.junit
     androidTestImplementation Libs.Kotlin.Coroutines.test
     androidTestImplementation Libs.AndroidX.Compose.uiTest
-    //androidTestImplementation Libs.Mockito.mockito
     androidTestImplementation Libs.MockK.instrumented
     androidTestImplementation Libs.Awaitility.kotlin, { exclude group: "org.hamcrest" }
-
-    // FIXME: only needed for Compose alpha12
-    androidTestImplementation Libs.AndroidX.Activity.activityCompose
 }

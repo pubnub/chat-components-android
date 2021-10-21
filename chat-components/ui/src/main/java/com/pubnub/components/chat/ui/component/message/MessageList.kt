@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.Flow
 fun MessageList(
     messages: Flow<PagingData<MessageUi>>,
     modifier: Modifier = Modifier,
-    onMemberSelected: (UserId) -> Unit = { userId -> },
+    onMemberSelected: (UserId) -> Unit = { _: UserId -> },
     presence: Presence? = null,
     renderer: MessageRenderer = GroupMessageRenderer,
 ) {

@@ -90,8 +90,8 @@ class MessageInputViewModel(
         message: String,
         @NetworkMessageType type: String = NetworkMessage.Type.DEFAULT,
         attachments: List<NetworkMessage.Attachment>? = null,
-        onSuccess: (String, Timetoken) -> Unit = { message, result -> },
-        onError: (Exception) -> Unit = { exception -> }
+        onSuccess: (String, Timetoken) -> Unit = { _: String, _: Timetoken -> },
+        onError: (Exception) -> Unit = { _: Exception -> }
     ) {
         Timber.i("Sending message '$message' to channel '$channelId'")
         val data = create(channelId, type, message, attachments)

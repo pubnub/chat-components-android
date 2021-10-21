@@ -13,11 +13,13 @@ import com.pubnub.components.data.member.DBMember
 import com.pubnub.framework.data.UserId
 
 import io.mockk.*
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.Before
 
+@OptIn(DelicateCoroutinesApi::class)
 open class BaseTest {
 
     protected var pubNub: PubNub? = null

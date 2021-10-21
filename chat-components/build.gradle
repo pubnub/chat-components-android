@@ -70,20 +70,18 @@ dependencies {
     implementation Libs.AndroidX.Compose.layout
     implementation Libs.AndroidX.Compose.animation
     implementation Libs.AndroidX.Compose.tooling
-    implementation Libs.AndroidX.Lifecycle.viewModelCompose
 
+    implementation Libs.AndroidX.Lifecycle.viewModelCompose
     implementation Libs.AndroidX.Lifecycle.viewModelKtx
+
     implementation Libs.AndroidX.Paging.runtime
     implementation Libs.AndroidX.Paging.extension
     implementation Libs.AndroidX.datetime
 
     implementation Libs.Coil.coil
-//    implementation Libs.Accompanist.imageLoading
     implementation Libs.Accompanist.placeholder
 
     implementation Libs.JakeWharton.timber
-//    implementation Libs.Hilt.android
-//    kapt Libs.Hilt.compiler
 
     implementation Libs.PubNub.pubnub
 
@@ -95,18 +93,12 @@ dependencies {
     androidTestImplementation Libs.AndroidX.Test.Ext.junit
     androidTestImplementation Libs.Kotlin.Coroutines.test
     androidTestImplementation Libs.AndroidX.Compose.uiTest
-    //androidTestImplementation Libs.Mockito.mockito
     androidTestImplementation Libs.MockK.instrumented
     androidTestImplementation Libs.Awaitility.kotlin, { exclude group: "org.hamcrest" }
     androidTestImplementation Libs.Retrofit.retrofit
-
-    // FIXME: only needed for Compose alpha12
-    androidTestImplementation Libs.AndroidX.Activity.activityCompose
-
 
     testImplementation Libs.MockK.unit
     testImplementation Libs.Kotlin.test
     testImplementation Libs.Kotlin.Coroutines.core
     testImplementation Libs.Kotlin.Coroutines.test
-
 }

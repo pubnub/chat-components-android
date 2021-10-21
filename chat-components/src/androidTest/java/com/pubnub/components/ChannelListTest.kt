@@ -8,6 +8,7 @@ import com.pubnub.components.chat.provider.ChatProvider
 import com.pubnub.components.chat.ui.component.channel.ChannelList
 import com.pubnub.components.chat.ui.component.channel.ChannelUi
 import com.pubnub.components.chat.ui.component.provider.MissingPubNubException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
@@ -19,6 +20,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicReference
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ChannelListTest : BaseTest() {
 
     @get:Rule
@@ -74,6 +76,7 @@ class ChannelListTest : BaseTest() {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     @Test
     fun whenChannelPagingDataWillBePassed_thenItWillBeShown() = runBlockingTest {
         // Given

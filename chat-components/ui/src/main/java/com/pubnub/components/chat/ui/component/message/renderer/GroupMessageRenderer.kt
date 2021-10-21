@@ -103,9 +103,10 @@ object GroupMessageRenderer : MessageRenderer {
     private fun Timetoken.formatDate() =
         dateFormat.format(this.seconds).uppercase()
 
+
     @Composable
     fun GroupChatMessage(
-        currentUserId: UserId,
+        @Suppress("UNUSED_PARAMETER") currentUserId: UserId,
         userId: UserId,
         profileUrl: String?,
         online: Boolean?,

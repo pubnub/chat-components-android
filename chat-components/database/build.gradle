@@ -85,9 +85,6 @@ dependencies {
     androidTestImplementation Libs.AndroidX.Compose.uiTest
     androidTestImplementation Libs.MockK.instrumented
 
-    // FIXME: only needed for Compose alpha12
-    androidTestImplementation Libs.AndroidX.Activity.activityCompose
-
     testImplementation Libs.AndroidX.Room.Test.testing
 
     kapt Libs.AndroidX.Room.compiler
