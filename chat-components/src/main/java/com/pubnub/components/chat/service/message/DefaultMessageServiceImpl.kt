@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import timber.log.Timber
 
 @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
 class DefaultMessageServiceImpl(
@@ -37,17 +36,12 @@ class DefaultMessageServiceImpl(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : MessageService<DBMessage> {
 
-    init {
-        Timber.e("MessageService init")
-    }
-
     private lateinit var messageJob: Job
 
     /**
      * Start listening for messages
      */
     override fun bind() {
-        Timber.d("Bind")
         listenForMessages()
     }
 
@@ -55,7 +49,6 @@ class DefaultMessageServiceImpl(
      * Stop listening for messages
      */
     override fun unbind() {
-        Timber.d("Unbind")
         if (::messageJob.isInitialized)
             stopListenForMessages()
     }
@@ -76,7 +69,6 @@ class DefaultMessageServiceImpl(
         onSuccess: (String, Timetoken) -> Unit,
         onError: (Exception) -> Unit,
     ) {
-        Timber.e("Send message $message")
         // Just override status
         val newMessage = message.copy(isSent = false, exception = null)
 
@@ -150,7 +142,6 @@ class DefaultMessageServiceImpl(
         withUUID: Boolean,
     ) {
 
-        Timber.e("Pull history")
         pubNub
             .fetchMessages(
                 channels = listOf(channel),
@@ -218,7 +209,6 @@ class DefaultMessageServiceImpl(
      * @see [handleIncomingMessage]
      */
     private fun PNMessageResult.processMessage() {
-        Timber.e("Process $this")
         coroutineScope.launch(dispatcher) {
             try {
                 handleIncomingMessage(this@processMessage)

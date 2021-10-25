@@ -7,7 +7,6 @@ import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.util.Timetoken
 import timber.log.Timber
 
-// TODO: 5/6/21 move to framework
 interface MessageService<Data : Message> {
     fun bind()
     fun unbind()

@@ -27,8 +27,6 @@ import kotlinx.coroutines.*
 fun LinkInput(
     placeholder: String = stringResource(id = R.string.type_link),
     initialText: String = "",
-//    senderInfo: Boolean = false,
-//    typingIndicator: Boolean = false,
     onChange: (String) -> Unit = {},
     onSuccess: (String, Timetoken) -> Unit = { _, _ -> },
     onError: (Exception) -> Unit = {},
@@ -77,8 +75,6 @@ fun LinkInput(
 fun ImageInput(
     placeholder: String = stringResource(id = R.string.type_image),
     initialText: String = "",
-//    senderInfo: Boolean = false,
-//    typingIndicator: Boolean = false,
     onChange: (String) -> Unit = {},
     onSuccess: (String, Timetoken) -> Unit = { _, _ -> },
     onError: (Exception) -> Unit = {},

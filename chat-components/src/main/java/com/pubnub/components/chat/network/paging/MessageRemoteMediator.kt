@@ -9,7 +9,6 @@ import com.pubnub.components.data.message.DBMessage
 import com.pubnub.components.repository.message.MessageRepository
 import com.pubnub.framework.data.ChannelId
 import kotlinx.coroutines.*
-import timber.log.Timber
 import java.io.IOException
 
 @OptIn(ExperimentalPagingApi::class, DelicateCoroutinesApi::class)
@@ -38,21 +37,17 @@ class MessageRemoteMediator constructor(
         lastState = state
         val page = when (loadType) {
             LoadType.REFRESH -> {
-                Timber.e("Refresh")
                 getTimeWindowForInitMessage()
             }
             LoadType.PREPEND -> {
-                Timber.e("Prepend")
                 getTimeWindowForLastMessage(state)
             }
             LoadType.APPEND -> {
-                Timber.e("Append")
                 getTimeWindowForFirstMessage(state)
             }
         }
 
         try {
-            Timber.e("Page $page")
             if (page == null)
                 return MediatorResult.Success(endOfPaginationReached = false)
 
@@ -126,8 +121,6 @@ class MessageRemoteMediator constructor(
 
     private suspend fun loadNewMessages(channelId: ChannelId, start: Long?, end: Long?) {
         // Get the history
-//        delay(5_000L)
-        Timber.e("Load new messages $channelId, [$start:$end]")
         service.pullHistory(
             channel = channelId,
             start = start,

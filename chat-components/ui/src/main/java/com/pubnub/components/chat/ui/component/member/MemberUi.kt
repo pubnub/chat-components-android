@@ -8,7 +8,6 @@ sealed class MemberUi {
         val name: String,
         val profileUrl: String?,
         val description: String,
-//        val channels: List<ChannelUi.Data>
     ) : MemberUi()
 
     data class Separator(val text: String) : MemberUi()

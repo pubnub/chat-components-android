@@ -177,7 +177,7 @@ object GroupMessageRenderer : MessageRenderer {
                                 )
                             }),
                     imageUrl = profileUrl,
-                    isOnline = online,//!isOwn && isOnline,
+                    isOnline = online,
                 )
             }
 
@@ -267,7 +267,7 @@ object GroupMessageRenderer : MessageRenderer {
             color = theme.color,
             overflow = theme.overflow,
             maxLines = theme.maxLines,
-            modifier = modifier,//.border(1.dp, Color.random),
+            modifier = modifier,
         )
     }
 
@@ -278,16 +278,9 @@ object GroupMessageRenderer : MessageRenderer {
     fun ChatText(
         message: AnnotatedString,
         theme: TextTheme,
-//        navigateToProfile: (UserId) -> Unit = { Timber.w("Navigate to profile $it not implemented") },
         placeholder: Modifier = Modifier,
         modifier: Modifier = Modifier,
     ) {
-
-//        BasicText(
-//            text = message,
-//            modifier = modifier.then(placeholder),
-//            style = theme.asStyle(),
-//        )
 
         val uriHandler = LocalUriHandler.current
         ClickableText(
@@ -304,7 +297,6 @@ object GroupMessageRenderer : MessageRenderer {
                             SymbolAnnotationType.LINK.name -> {
                                 uriHandler.openUri(annotation.item)
                             }
-//                            SymbolAnnotationType.PERSON.name -> navigateToProfile(annotation.item)
                             else -> Unit
                         }
                     }
@@ -333,7 +325,6 @@ object GroupMessageRenderer : MessageRenderer {
         }
 
         if (content != null) {
-            Timber.e("Content: ${content}")
             LinkPreview(
                 url = link,
                 imageUrl = content!!.imageUrl,
@@ -365,11 +356,6 @@ object GroupMessageRenderer : MessageRenderer {
                 .fillMaxWidth(0.8f)
                 .padding(1.dp)
                 .combinedClickable(onClick = { uriHandler.openUri(url) })
-//                        .pointerInput(Unit) {
-//                            detectTapGestures(
-//                                onTap = { uriHandler.openUri(url) },
-//                            )
-//                        }
         ) {
             if (!imageUrl.isNullOrBlank())
                 ChatImage(

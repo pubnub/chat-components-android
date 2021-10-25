@@ -9,10 +9,6 @@ interface MemberDao<DB : Member, Data : Member> {
     @Transaction
     @Query("SELECT * FROM `member` WHERE memberId LIKE :memberId LIMIT 1")
     suspend fun get(memberId: String): Data?
-//
-//    @Transaction
-//    @Query("SELECT * FROM `member` ORDER BY name")
-//    fun getAll(): PagingSource<Int, Data>
 
     @Transaction
     @RawQuery

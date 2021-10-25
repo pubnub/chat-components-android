@@ -10,7 +10,6 @@ object LinkPreview {
     @WorkerThread
     suspend fun getContent(url: String): Content? = runBlocking {
         try {
-            Timber.e("Get content of $url")
             val document = Jsoup.connect(url).get()
 
             val link = document.getMetaContent("og:url") ?: url
@@ -19,7 +18,6 @@ object LinkPreview {
             val description = document.getMetaContent("og:description")
 
             val content = Content(link, image, title, description)
-            Timber.e("-> Got content: $content")
             return@runBlocking content
 
         } catch (e: Exception) {

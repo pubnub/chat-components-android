@@ -17,7 +17,6 @@ import com.pubnub.components.repository.member.MemberRepository
 import com.pubnub.framework.data.UserId
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import timber.log.Timber
 
 @OptIn(DelicateCoroutinesApi::class)
 class DefaultMemberServiceImpl(
@@ -109,7 +108,6 @@ class DefaultMemberServiceImpl(
     override fun remove(id: UserId?) {
         coroutineScope.launch(dispatcher) {
             id?.let { memberId ->
-                Timber.e("Remove member $memberId")
                 try {
                     pubNub.removeUUIDMetadata(memberId).sync()!!
                 } catch (e: PubNubException) {
@@ -124,12 +122,10 @@ class DefaultMemberServiceImpl(
             when (event.extractedMessage) {
                 is PNSetUUIDMetadataEventMessage -> {
                     val member = (event.extractedMessage as PNSetUUIDMetadataEventMessage).data
-                    Timber.e("Add $member")
                     memberRepository.add(networkMapper.map(member))
                 }
                 is PNDeleteUUIDMetadataEventMessage -> {
                     val member = (event.extractedMessage as PNDeleteUUIDMetadataEventMessage).uuid
-                    Timber.e("Delete $member")
                     memberRepository.remove(member)
                 }
                 else -> {

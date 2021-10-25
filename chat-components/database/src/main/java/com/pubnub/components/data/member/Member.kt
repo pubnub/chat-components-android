@@ -12,7 +12,4 @@ interface Member {
     val custom: Any?            // can store additional data
     val eTag: String?            // not used in Chat Components
     val updated: String?         // not used in Chat Components
-//    {
-//        title: String             // displays user title / description / status on the member list
-//    };
 }

@@ -26,8 +26,6 @@ import com.pubnub.components.chat.ui.R
 fun MessageInput(
     placeholder: String = stringResource(id = R.string.type_message),
     initialText: String = "",
-//    senderInfo: Boolean = false,
-//    typingIndicator: Boolean = false,
     onSent: (String) -> Unit,
     onChange: (String) -> Unit,
 ) {

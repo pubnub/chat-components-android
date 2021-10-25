@@ -90,7 +90,7 @@ class TypingService constructor(
     }
     // endregion
 
-    // Binding
+    // region Binding
     /**
      * Bind for signals and launch timeout timer
      */

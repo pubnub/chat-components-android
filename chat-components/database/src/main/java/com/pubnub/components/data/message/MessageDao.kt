@@ -43,9 +43,6 @@ interface MessageDao<DB : Message, Data : Message> {
     @Query("SELECT * FROM message WHERE channel LIKE :channelId ORDER BY timetoken DESC")
     fun getByChannel(channelId: String): Flow<List<Data>>
 
-    //    @Transaction
-//    @Query("SELECT * FROM message WHERE channel LIKE :channelId ORDER BY timetoken DESC")
-//    fun getPageByChannel(channelId: String): PagingSource<Int, Data>
     @Transaction
     @RawQuery
     fun getAll(query: SupportSQLiteQuery): PagingSource<Int, Data>

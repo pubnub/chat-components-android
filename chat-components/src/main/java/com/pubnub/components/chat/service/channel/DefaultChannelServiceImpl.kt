@@ -17,7 +17,6 @@ import com.pubnub.components.repository.channel.ChannelRepository
 import com.pubnub.framework.data.ChannelId
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import timber.log.Timber
 
 @OptIn(DelicateCoroutinesApi::class)
 class DefaultChannelServiceImpl(
@@ -106,37 +105,8 @@ class DefaultChannelServiceImpl(
         }
     }
 
-//    override fun add() {
-//        val randomNumber = Random.nextInt()
-//        val channel = DBChannel(
-//            "channel.$randomNumber",
-//            "Channel $randomNumber",
-//            "Description $randomNumber",
-//            DBChannel.CustomData(
-//                type = "default",
-//                profileUrl = getRandomProfileUrl("channel.$randomNumber")
-//            ),
-//        )
-//
-//        Timber.e("Add channel $channel")
-//        coroutineScope.launch(dispatcher) {
-//            try {
-//                pubNub.setChannelMetadata(
-//                    channel = channel.id,
-//                    name = channel.name,
-//                    description = channel.description,
-//                    custom = channel.custom,
-//                    includeCustom = true,
-//                ).sync()!!
-//            } catch (e: PubNubException) {
-//                errorHandler.onError(e)
-//            }
-//        }
-//    }
-
     override fun remove(id: ChannelId) {
         coroutineScope.launch(dispatcher) {
-            Timber.e("Remove channel $id")
             try {
                 pubNub.removeChannelMetadata(id).sync()!!
             } catch (e: PubNubException) {
@@ -150,13 +120,11 @@ class DefaultChannelServiceImpl(
             when (event.extractedMessage) {
                 is PNSetChannelMetadataEventMessage -> {
                     val channel = (event.extractedMessage as PNSetChannelMetadataEventMessage).data
-                    Timber.e("Add $channel")
                     channelRepository.add(networkMapper.map(channel))
                 }
                 is PNDeleteChannelMetadataEventMessage -> {
                     val channel =
                         (event.extractedMessage as PNDeleteChannelMetadataEventMessage).channel
-                    Timber.e("Delete $channel")
                     channelRepository.remove(channel)
                 }
                 else -> {

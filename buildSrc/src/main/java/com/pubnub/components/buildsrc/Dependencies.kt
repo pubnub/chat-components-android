@@ -29,7 +29,6 @@ object Libs {
     object Kotlin {
         private const val version = "1.5.30"
 
-        //        private const val version = "1.4.32"
         const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$version"
         const val reflect = "org.jetbrains.kotlin:kotlin-reflect:$version"
         const val gradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
@@ -62,8 +61,6 @@ object Libs {
         const val datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.2.1"
 
         object Compose {
-            //            const val snapshot = "7393783"
-//            private const val version = "1.0.0-SNAPSHOT"
             const val snapshot = ""
             private const val version = "1.1.0-alpha03"
 

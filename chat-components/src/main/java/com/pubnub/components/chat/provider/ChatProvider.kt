@@ -46,6 +46,7 @@ import com.pubnub.components.repository.channel.DefaultChannelRepository
 import com.pubnub.components.repository.member.DefaultMemberRepository
 import com.pubnub.components.repository.membership.DefaultMembershipRepository
 import com.pubnub.components.repository.message.DefaultMessageRepository
+import com.pubnub.framework.data.ChannelId
 
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.service.LocalTypingService
@@ -55,13 +56,11 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
-const val DEFAULT_CHANNEL = "channel.lobby"
-
 @Composable
 fun ChatProvider(
     pubNub: PubNub,
     database: PubNubDatabase<MessageDao<DBMessage, DBMessage>, ChannelDao<DBChannel, DBChannelWithMembers>, MemberDao<DBMember, DBMemberWithChannels>, MembershipDao<DBMembership>> = Database.INSTANCE,
-    channel: String = DEFAULT_CHANNEL,
+    channel: ChannelId = "channel.lobby",
     synchronize: Boolean = true,
     content: @Composable() () -> Unit,
 ) {
