@@ -1,0 +1,5 @@
+rootProject.name = "PubNub Chat Components"
+include(":chat-components")
+include(":chat-components:database")
+include(":chat-components:ui")
+include(":chat-components:framework")

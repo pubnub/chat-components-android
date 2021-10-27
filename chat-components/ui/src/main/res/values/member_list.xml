@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- SEMANTICS -->
+    <string name="member_list">member_list</string>
+
+    <string name="online_presence_indicator_member_list">online_presence_indicator_member_list</string>
+    <string name="offline_presence_indicator_member_list">offline_presence_indicator_member_list</string>
+
+    <string name="member_unknown_title">Unknown</string>
+    <string name="member_unknown_description">Guest</string>
+</resources>
