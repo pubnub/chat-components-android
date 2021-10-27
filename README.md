@@ -74,8 +74,8 @@ Check warning on line 45 in docs/components/android/get-started-android.md
 1. Inside your Android Studio project, open the module's `build.gradle` and add both Kotlin SDK and PubNub Chat Components for Android implementations:
 
     ```kotlin
-    implementation “com.pubnub:pubnub-kotlin:6.2.0”
-    implementation “com.pubnub:pubnub-android-chat-components:0.1.0”
+    implementation "com.pubnub:pubnub-kotlin:6.2.0"
+    implementation "com.pubnub:pubnub-android-chat-components:0.1.0"
     ```
 
 1. Click **Sync Now** to build dependencies for your Android project.
