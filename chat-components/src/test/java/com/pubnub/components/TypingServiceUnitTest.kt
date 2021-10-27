@@ -7,6 +7,7 @@ import com.pubnub.framework.data.UserId
 import com.pubnub.framework.service.TypingService
 import com.pubnub.framework.util.TypingIndicator
 import io.mockk.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -17,6 +18,7 @@ import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.*
 import timber.log.Timber
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class TypingServiceUnitTest {
     companion object {
         @BeforeClass

@@ -8,6 +8,7 @@ object Libs {
     const val androidGradlePlugin = "com.android.tools.build:gradle:7.1.0-beta01"
     const val ktLint = "com.pinterest:ktlint:${Versions.ktLint}"
     const val jdkDesugar = "com.android.tools:desugar_jdk_libs:1.0.9"
+    const val gradleMavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.18.0"
 
     object Accompanist {
         private const val version = "0.17.0"

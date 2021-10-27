@@ -89,3 +89,5 @@ dependencies {
     androidTestImplementation Libs.MockK.instrumented
     androidTestImplementation Libs.Awaitility.kotlin, { exclude group: "org.hamcrest" }
 }
+
+apply plugin: "com.vanniktech.maven.publish"

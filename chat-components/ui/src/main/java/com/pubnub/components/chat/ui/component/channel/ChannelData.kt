@@ -5,6 +5,7 @@ import com.pubnub.components.chat.ui.component.member.MemberUi
 import com.pubnub.framework.data.ChannelId
 import kotlinx.datetime.Instant
 
+
 sealed class ChannelUi {
 
     data class Data(
@@ -23,6 +24,15 @@ sealed class ChannelUi {
             const val DEFAULT = "default"
             const val DIRECT = "direct"
             const val GROUP = "group"
+
+
+            @TypeDef
+            fun typeFromString(value: String?): String =
+                when (value) {
+                    GROUP -> GROUP
+                    DIRECT -> DIRECT
+                    else -> DEFAULT
+                }
         }
     }
 

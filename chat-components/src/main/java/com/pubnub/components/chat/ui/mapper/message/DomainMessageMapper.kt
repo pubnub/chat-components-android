@@ -30,6 +30,6 @@ class DomainMessageMapper : Mapper<MessageUi.Data, DBMessage> {
         when (this) {
             is Attachment.Image -> DBAttachment.Image(imageUrl = imageUrl, custom = custom)
             is Attachment.Link -> DBAttachment.Link(link = link, custom = custom)
-            else -> DBAttachment.Custom(custom = custom)
+//            else -> DBAttachment.Custom(custom = custom)
         }
 }

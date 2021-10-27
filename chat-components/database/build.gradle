@@ -64,7 +64,7 @@ android {
 
 dependencies {
     api project(':chat-components:framework')
-    implementation project(path: ":chat-components:ui")
+    api project(':chat-components:ui')
 
     implementation Libs.Kotlin.stdlib
     implementation Libs.Kotlin.Coroutines.android
@@ -91,3 +91,5 @@ dependencies {
 
     coreLibraryDesugaring Libs.jdkDesugar
 }
+
+apply plugin: "com.vanniktech.maven.publish"

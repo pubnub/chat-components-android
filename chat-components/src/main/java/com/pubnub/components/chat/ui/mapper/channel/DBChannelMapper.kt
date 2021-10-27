@@ -13,7 +13,7 @@ class DBChannelMapper : Mapper<DBChannelWithMembers, ChannelUi.Data> {
             id = input.id,
             name = input.name,
             description = input.description,
-            type = input.channel.type,
+            type = ChannelUi.Data.typeFromString(input.channel.type),
             profileUrl = input.channel.avatarURL,
             updated = input.updated?.toInstant(),
             members = input.members.toUi()

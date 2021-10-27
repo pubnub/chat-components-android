@@ -1,8 +1,8 @@
 import com.pubnub.components.buildsrc.Libs
 
 plugins {
-    id("com.android.library")
-    id("kotlin-android")
+    id "com.android.library"
+    id "kotlin-android"
 }
 
 android {
@@ -102,3 +102,5 @@ dependencies {
     testImplementation Libs.Kotlin.Coroutines.core
     testImplementation Libs.Kotlin.Coroutines.test
 }
+
+apply plugin: "com.vanniktech.maven.publish"

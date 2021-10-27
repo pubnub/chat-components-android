@@ -77,3 +77,5 @@ dependencies {
     androidTestImplementation Libs.Kotlin.Coroutines.test
     androidTestImplementation Libs.AndroidX.Compose.uiTest
 }
+
+apply plugin: "com.vanniktech.maven.publish"

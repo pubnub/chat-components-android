@@ -82,9 +82,9 @@ object AnimatedTypingIndicatorRenderer : TypingIndicatorRenderer {
         val alpha3 = remember { Animatable(initialAlpha) }
 
         // Set animation depends on start delay
-        alpha1.setAnimation(startDelay = 0)
-        alpha2.setAnimation(startDelay = duration.toLong())
-        alpha3.setAnimation(startDelay = 2 * duration.toLong())
+        alpha1.SetAnimation(startDelay = 0)
+        alpha2.SetAnimation(startDelay = duration.toLong())
+        alpha3.SetAnimation(startDelay = 2 * duration.toLong())
 
         // Draw animated dots
         Row(modifier = modifier, horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -104,10 +104,10 @@ object AnimatedTypingIndicatorRenderer : TypingIndicatorRenderer {
     }
 
     @Composable
-    private fun <V : AnimationVector> Animatable<Float, V>.setAnimation(startDelay: Long) {
+    private fun <V : AnimationVector> Animatable<Float, V>.SetAnimation(startDelay: Long) {
         LaunchedEffect(this) {
             delay(startDelay)
-            this@setAnimation.animateTo(
+            this@SetAnimation.animateTo(
                 targetValue = targetAlpha,
                 animationSpec = infiniteRepeatable(
                     animation = tween(

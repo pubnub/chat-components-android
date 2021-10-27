@@ -14,7 +14,7 @@ class Presence {
     }
 
     fun add(id: UserId, state: Boolean) {
-        presence.putIfAbsent(id, mutableStateOf(state))
+        if(!presence.containsKey(id)) presence[id] = mutableStateOf(state)
     }
 
     fun set(id: UserId, state: Boolean) {
