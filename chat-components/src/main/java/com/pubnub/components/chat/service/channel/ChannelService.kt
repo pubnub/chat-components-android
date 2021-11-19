@@ -17,7 +17,7 @@ interface ChannelService<Data : Channel> {
         sort: Collection<PNSortKey> = listOf(),
         includeCustom: Boolean = true,
     )
-
+    fun add(channel: Data, includeCustom: Boolean)
     fun remove(id: ChannelId)
 }
 

@@ -41,7 +41,7 @@ class DefaultMessageRepository(
      * @param timestamp Timestamp to get Messages before or after
      * @return List of DBMessage
      */
-    override suspend fun get(
+    override suspend fun getList(
         channelId: String,
         count: Int,
         before: Boolean,
@@ -185,29 +185,6 @@ class DefaultMessageRepository(
     }
 
     /**
-     * Sets status of Message
-     *
-     * @param messageId Id of Message to set status to
-     * @param isSent True if Message is sent, False otherwise
-     * @param exception Exception of sending Message, or null
-     * @param timestamp Timestamp of update, or null
-     */
-    override suspend fun setStatus(
-        messageId: String,
-        isSent: Boolean,
-        exception: String?,
-        timestamp: Timetoken?,
-    ) {
-        val message = get(messageId) ?: throw Exception("Message not found exception")
-        val updatedMessage = message.copy(
-            isSent = isSent,
-            exception = exception,
-            timetoken = timestamp ?: message.timetoken,
-        )
-        messageDao.update(updatedMessage)
-    }
-
-    /**
      * Sets SENT status to Message
      *
      * @param messageId Id of Message to set status to
@@ -250,4 +227,27 @@ class DefaultMessageRepository(
      */
     override suspend fun getLastTimestamp(channelId: String): Long =
         messageDao.getLast(channelId).firstOrNull()?.timetoken ?: 1L
+
+    /**
+     * Sets status of Message
+     *
+     * @param messageId Id of Message to set status to
+     * @param isSent True if Message is sent, False otherwise
+     * @param exception Exception of sending Message, or null
+     * @param timestamp Timestamp of update, or null
+     */
+    private suspend fun setStatus(
+        messageId: String,
+        isSent: Boolean,
+        exception: String?,
+        timestamp: Timetoken?,
+    ) {
+        val message = get(messageId) ?: throw Exception("Message not found exception")
+        val updatedMessage = message.copy(
+            isSent = isSent,
+            exception = exception,
+            timetoken = timestamp ?: message.timetoken,
+        )
+        messageDao.update(updatedMessage)
+    }
 }

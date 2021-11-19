@@ -10,9 +10,9 @@ import com.pubnub.framework.util.Timetoken
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalPagingApi::class)
-interface MessageRepository<DB1 : Message, Data : Message> {
+interface MessageRepository<DB : Message, Data : Message> {
     suspend fun get(messageId: String): Data?
-    suspend fun get(
+    suspend fun getList(
         channelId: String,
         count: Int,
         before: Boolean,
@@ -32,17 +32,11 @@ interface MessageRepository<DB1 : Message, Data : Message> {
     suspend fun hasMoreAfter(channelId: String, timestamp: Timetoken): Boolean
 
 
-    suspend fun add(message: DB1)
-    suspend fun remove(message: DB1)
+    suspend fun add(message: DB)
+    suspend fun remove(message: DB)
     suspend fun removeAll(channel: ChannelId)
-    suspend fun update(message: DB1)
+    suspend fun update(message: DB)
     suspend fun has(messageId: String): Boolean
-    suspend fun setStatus(
-        messageId: String,
-        isSent: Boolean = true,
-        exception: String? = null,
-        timestamp: Timetoken? = null,
-    )
 
     suspend fun setSent(
         messageId: String,

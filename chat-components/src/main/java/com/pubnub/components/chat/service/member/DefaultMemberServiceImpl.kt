@@ -105,6 +105,24 @@ class DefaultMemberServiceImpl(
         }
     }
 
+    override fun add(member: DBMember, includeCustom: Boolean) {
+        coroutineScope.launch(dispatcher) {
+            try {
+                pubNub.setUUIDMetadata(
+                    uuid = member.id,
+                    name = member.name,
+                    externalId = member.externalId,
+                    profileUrl = member.profileUrl,
+                    email = member.email,
+                    custom = member.custom,
+                    includeCustom = includeCustom,
+                ).sync()!!
+            } catch (e: PubNubException) {
+                errorHandler.onError(e)
+            }
+        }
+    }
+
     override fun remove(id: UserId?) {
         coroutineScope.launch(dispatcher) {
             id?.let { memberId ->
