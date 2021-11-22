@@ -1,0 +1,38 @@
+{
+  "chat-components/build.gradle": [
+    {
+      "pattern": "^\\s{2,}versionName\\s=\\s\"(v?(\\d+\\.?){2,}([a-zA-Z0-9-]+(\\.?\\d+)?)?)\"$",
+      "clearedSuffix": false
+    }
+  ],
+  "chat-components/database/build.gradle": [
+    {
+      "pattern": "^\\s{2,}versionName\\s=\\s\"(v?(\\d+\\.?){2,}([a-zA-Z0-9-]+(\\.?\\d+)?)?)\"$",
+      "clearedSuffix": false
+    }
+  ],
+  "chat-components/ui/build.gradle": [
+    {
+      "pattern": "^\\s{2,}versionName\\s=\\s\"(v?(\\d+\\.?){2,}([a-zA-Z0-9-]+(\\.?\\d+)?)?)\"$",
+      "clearedSuffix": false
+    }
+  ],
+  "chat-components/framework/build.gradle": [
+    {
+      "pattern": "^\\s{2,}versionName\\s=\\s\"(v?(\\d+\\.?){2,}([a-zA-Z0-9-]+(\\.?\\d+)?)?)\"$",
+      "clearedSuffix": false
+    }
+  ],
+  "gradle.properties": [
+    {
+      "pattern": "^VERSION_NAME=(v?(\\d+\\.?){2,}([a-zA-Z0-9-]+(\\.?\\d+)?)?)$",
+      "clearedSuffix": false
+    }
+  ],
+  "README.md": [
+    {
+      "pattern": "^\\s{2,}implementation \"com\\.pubnub:pubnub-android-chat-components:(v?(\\d+\\.?){2,}([a-zA-Z0-9-]+(\\.?\\d+)?)?)\"$",
+      "clearedSuffix": false
+    }
+  ]
+}
