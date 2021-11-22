@@ -4,6 +4,10 @@
 *.ap_
 *.aab
 
+# OS generated files
+.DS_Store
+.DS_Store?
+
 # Files for the ART/Dalvik VM
 *.dex
 
@@ -83,3 +87,8 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 # lint/reports/
+
+
+# GitHub Actions #
+##################
+.github/.release
