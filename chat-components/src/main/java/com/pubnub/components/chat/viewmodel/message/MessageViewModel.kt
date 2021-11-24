@@ -115,7 +115,7 @@ class MessageViewModel constructor(
             config = config,
             pagingSourceFactory = {
                 messageRepository.getAll(
-                    channelId = channelId,
+                    id = channelId,
                     sorted = arrayOf(Sorted("timetoken", Sorted.Direction.DESC)),
                 )
             },

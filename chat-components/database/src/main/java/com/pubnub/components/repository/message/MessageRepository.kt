@@ -6,48 +6,41 @@ import com.pubnub.components.data.message.Message
 import com.pubnub.components.repository.util.Query
 import com.pubnub.components.repository.util.Sorted
 import com.pubnub.framework.data.ChannelId
+import com.pubnub.framework.data.MessageId
 import com.pubnub.framework.util.Timetoken
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalPagingApi::class)
 interface MessageRepository<DB : Message, Data : Message> {
-    suspend fun get(messageId: String): Data?
+    suspend fun get(id: MessageId): Data?
     suspend fun getList(
-        channelId: String,
+        id: ChannelId,
         count: Int,
         before: Boolean,
-        timestamp: Long,
+        timestamp: Timetoken,
     ): List<Data>
-
     fun getAll(
-        channelId: String? = null,
+        id: ChannelId? = null,
         filter: Query? = null,
         vararg sorted: Sorted = emptyArray(),
     ): PagingSource<Int, Data>
-
-    suspend fun getLast(channelId: String): Data?
-    fun getLastByChannel(channelId: String, count: Long): Flow<List<Data>>
-
-    suspend fun hasMoreBefore(channelId: String, timestamp: Timetoken): Boolean
-    suspend fun hasMoreAfter(channelId: String, timestamp: Timetoken): Boolean
-
-
-    suspend fun add(message: DB)
+    suspend fun getLast(id: ChannelId): Data?
+    fun getLastByChannel(id: ChannelId, count: Long): Flow<List<Data>>
+    suspend fun has(id: MessageId): Boolean
+    suspend fun hasMoreBefore(id: ChannelId, timestamp: Timetoken): Boolean
+    suspend fun hasMoreAfter(id: ChannelId, timestamp: Timetoken): Boolean
+    suspend fun add(vararg message: DB)
     suspend fun remove(message: DB)
-    suspend fun removeAll(channel: ChannelId)
+    suspend fun removeAll(id: ChannelId)
     suspend fun update(message: DB)
-    suspend fun has(messageId: String): Boolean
-
     suspend fun setSent(
-        messageId: String,
+        id: MessageId,
         timestamp: Timetoken? = null,
     )
-
     suspend fun setSendingError(
-        messageId: String,
+        id: MessageId,
         exception: String? = null,
         timestamp: Timetoken? = null,
     )
-
-    suspend fun getLastTimestamp(channelId: String): Long
+    suspend fun getLastTimestamp(id: ChannelId): Timetoken
 }

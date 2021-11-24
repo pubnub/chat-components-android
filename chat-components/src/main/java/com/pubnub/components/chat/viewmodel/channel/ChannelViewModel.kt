@@ -86,7 +86,7 @@ class ChannelViewModel constructor(
             config = PagingConfig(pageSize = 10, enablePlaceholders = true),
             pagingSourceFactory = {
                 repository.getAll(
-                    userId = userId,
+                    id = userId,
                     filter = filter,
                     sorted = sorted,
                 )

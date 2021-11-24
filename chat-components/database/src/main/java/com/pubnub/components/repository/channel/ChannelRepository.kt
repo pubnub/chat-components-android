@@ -8,15 +8,14 @@ import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
 
 interface ChannelRepository<DB : Channel, Data : Channel> {
-    suspend fun get(channelId: ChannelId): Data?
+    suspend fun get(id: ChannelId): Data?
     fun getAll(
-        userId: UserId? = null,
+        id: UserId? = null,
         filter: Query? = null,
         vararg sorted: Sorted = emptyArray(),
     ): PagingSource<Int, Data>
-
     suspend fun getList(): List<Data>
     suspend fun add(vararg channel: DB)
-    suspend fun remove(channelId: ChannelId)
+    suspend fun remove(id: ChannelId)
     suspend fun size(): Long
 }
