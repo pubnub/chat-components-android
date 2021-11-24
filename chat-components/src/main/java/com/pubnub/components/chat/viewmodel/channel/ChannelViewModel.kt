@@ -29,7 +29,7 @@ import kotlinx.coroutines.withContext
  */
 @OptIn(ExperimentalPagingApi::class)
 class ChannelViewModel constructor(
-    private val userId: UserId,
+    private val id: UserId,
     private val repository: DefaultChannelRepository,
     private val dbMapper: Mapper<DBChannelWithMembers, ChannelUi.Data> = DBChannelMapper(),
 ) : ViewModel() {
@@ -38,7 +38,7 @@ class ChannelViewModel constructor(
         /**
          * Returns default implementation of ChannelViewModel
          *
-         * @param userId Current User Id
+         * @param id Current User Id
          * @param repository Channel Repository implementation
          * @param dbMapper Database object to UI object mapper
          *
@@ -46,11 +46,11 @@ class ChannelViewModel constructor(
          */
         @Composable
         fun default(
-            userId: UserId = LocalPubNub.current.configuration.uuid,
+            id: UserId = LocalPubNub.current.configuration.uuid,
             repository: DefaultChannelRepository = LocalChannelRepository.current,
             dbMapper: Mapper<DBChannelWithMembers, ChannelUi.Data> = DBChannelMapper(),
         ): ChannelViewModel {
-            val channelFactory = ChannelViewModelFactory(userId, repository, dbMapper)
+            val channelFactory = ChannelViewModelFactory(id, repository, dbMapper)
             return viewModel(factory = channelFactory)
         }
     }
@@ -58,13 +58,13 @@ class ChannelViewModel constructor(
     /**
      * Get channel by ID
      *
-     * @param channelId ID of the channel
+     * @param id ID of the channel
      * @return ChannelUi.Data representation if channel exists, null otherwise
      */
-    fun get(channelId: ChannelId): ChannelUi.Data? =
+    fun get(id: ChannelId): ChannelUi.Data? =
         runBlocking {
             withContext(viewModelScope.coroutineContext + Dispatchers.IO) {
-                repository.get(channelId)?.let { dbMapper.map(it) }
+                repository.get(id)?.let { dbMapper.map(it) }
             }
         }
 
@@ -86,7 +86,7 @@ class ChannelViewModel constructor(
             config = PagingConfig(pageSize = 10, enablePlaceholders = true),
             pagingSourceFactory = {
                 repository.getAll(
-                    id = userId,
+                    id = id,
                     filter = filter,
                     sorted = sorted,
                 )

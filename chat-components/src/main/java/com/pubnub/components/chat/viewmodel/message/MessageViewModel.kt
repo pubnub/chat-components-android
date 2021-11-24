@@ -57,19 +57,19 @@ class MessageViewModel constructor(
          * This implementation allows to load a data from database only. For loading the historical
          * messages from network, @see [defaultWithMediator()]
          *
-         * @param channelId ID of the Channel
+         * @param id ID of the Channel
          * @param mediator Remote Mediator implementation, null by default
          *
          * @return ViewModel instance
          */
         @Composable
         fun default(
-            channelId: ChannelId = LocalChannel.current,
+            id: ChannelId = LocalChannel.current,
             mediator: MessageRemoteMediator? = null,
         ): MessageViewModel {
             val messageFactory = MessageViewModelFactory(
                 currentUserId = LocalPubNub.current.configuration.uuid,
-                channelId = channelId,
+                channelId = id,
                 messageRepository = LocalMessageRepository.current,
                 remoteMediator = mediator,
                 presenceService = LocalOccupancyService.current,
@@ -83,21 +83,21 @@ class MessageViewModel constructor(
          * Returns default implementation of MessageViewModel
          * This implementation allows to load a data from both database and network.
          *
-         * @param channelId ID of the Channel
+         * @param id ID of the Channel
          *
          * @return ViewModel instance
          */
         @Composable
-        fun defaultWithMediator(channelId: ChannelId = LocalChannel.current): MessageViewModel {
+        fun defaultWithMediator(id: ChannelId = LocalChannel.current): MessageViewModel {
             val repository = LocalMessageRepository.current
 
             // region Message View Model
             val mediator = MessageRemoteMediator(
-                channelId = channelId,
+                channelId = id,
                 service = LocalMessageService.current,
                 messageRepository = repository,
             )
-            return default(channelId = channelId, mediator = mediator)
+            return default(id = id, mediator = mediator)
         }
     }
 
