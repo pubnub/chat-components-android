@@ -14,6 +14,7 @@ interface MemberRepository<DB : Member, Data : Member> {
         filter: Query? = null,
         vararg sorted: Sorted = emptyArray(),
     ): PagingSource<Int, Data>
+
     suspend fun getList(id: ChannelId? = null): List<Data>
     suspend fun add(vararg member: DB)
     suspend fun remove(id: UserId)

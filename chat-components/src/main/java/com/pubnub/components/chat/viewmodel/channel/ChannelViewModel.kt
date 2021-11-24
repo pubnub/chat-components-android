@@ -1,10 +1,12 @@
 package com.pubnub.components.chat.viewmodel.channel
 
+import android.content.res.Resources
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.*
+import com.pubnub.components.R
 import com.pubnub.components.chat.provider.LocalChannelRepository
 import com.pubnub.components.chat.ui.component.channel.ChannelUi
 import com.pubnub.components.chat.ui.component.provider.LocalPubNub
@@ -31,6 +33,7 @@ import kotlinx.coroutines.withContext
 class ChannelViewModel constructor(
     private val id: UserId,
     private val repository: DefaultChannelRepository,
+    private val resources: Resources,
     private val dbMapper: Mapper<DBChannelWithMembers, ChannelUi.Data> = DBChannelMapper(),
 ) : ViewModel() {
 
@@ -38,6 +41,7 @@ class ChannelViewModel constructor(
         /**
          * Returns default implementation of ChannelViewModel
          *
+         * @param resources Context resources
          * @param id Current User Id
          * @param repository Channel Repository implementation
          * @param dbMapper Database object to UI object mapper
@@ -46,11 +50,12 @@ class ChannelViewModel constructor(
          */
         @Composable
         fun default(
+            resources: Resources,
             id: UserId = LocalPubNub.current.configuration.uuid,
             repository: DefaultChannelRepository = LocalChannelRepository.current,
             dbMapper: Mapper<DBChannelWithMembers, ChannelUi.Data> = DBChannelMapper(),
         ): ChannelViewModel {
-            val channelFactory = ChannelViewModelFactory(id, repository, dbMapper)
+            val channelFactory = ChannelViewModelFactory(id, repository, resources, dbMapper)
             return viewModel(factory = channelFactory)
         }
     }
@@ -103,9 +108,9 @@ class ChannelViewModel constructor(
                         (before != null && after != null && (before as ChannelUi.Data).type != (after as ChannelUi.Data).type)
                     if (firstOne || typeChanged) {
                         val title = when ((after as ChannelUi.Data).type) {
-                            ChannelUi.Data.GROUP -> "Channels"
-                            ChannelUi.Data.DIRECT -> "Direct Chats"
-                            else -> "Channels"
+                            ChannelUi.Data.GROUP -> resources.getString(R.string.channels)
+                            ChannelUi.Data.DIRECT -> resources.getString(R.string.direct_chats)
+                            else -> resources.getString(R.string.channels)
                         }
 
                         ChannelUi.Header(title)
@@ -128,9 +133,9 @@ class ChannelViewModel constructor(
                 }
             }
         return mapOf(
-            "Group" to channels.filter { it.type == ChannelUi.Data.GROUP },
-            "Default" to channels.filter { it.type == ChannelUi.Data.DEFAULT },
-            "Direct" to channels.filter { it.type == ChannelUi.Data.DIRECT },
+            resources.getString(R.string.group_title) to channels.filter { it.type == ChannelUi.Data.GROUP },
+            resources.getString(R.string.default_title) to channels.filter { it.type == ChannelUi.Data.DEFAULT },
+            resources.getString(R.string.direct_title) to channels.filter { it.type == ChannelUi.Data.DIRECT },
         )
     }
 

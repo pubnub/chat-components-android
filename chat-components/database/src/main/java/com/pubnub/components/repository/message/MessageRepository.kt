@@ -19,11 +19,13 @@ interface MessageRepository<DB : Message, Data : Message> {
         before: Boolean,
         timestamp: Timetoken,
     ): List<Data>
+
     fun getAll(
         id: ChannelId? = null,
         filter: Query? = null,
         vararg sorted: Sorted = emptyArray(),
     ): PagingSource<Int, Data>
+
     suspend fun getLast(id: ChannelId): Data?
     fun getLastByChannel(id: ChannelId, count: Long): Flow<List<Data>>
     suspend fun has(id: MessageId): Boolean
@@ -37,10 +39,12 @@ interface MessageRepository<DB : Message, Data : Message> {
         id: MessageId,
         timestamp: Timetoken? = null,
     )
+
     suspend fun setSendingError(
         id: MessageId,
         exception: String? = null,
         timestamp: Timetoken? = null,
     )
+
     suspend fun getLastTimestamp(id: ChannelId): Timetoken
 }

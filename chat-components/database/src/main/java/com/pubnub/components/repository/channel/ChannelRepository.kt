@@ -14,6 +14,7 @@ interface ChannelRepository<DB : Channel, Data : Channel> {
         filter: Query? = null,
         vararg sorted: Sorted = emptyArray(),
     ): PagingSource<Int, Data>
+
     suspend fun getList(): List<Data>
     suspend fun add(vararg channel: DB)
     suspend fun remove(id: ChannelId)

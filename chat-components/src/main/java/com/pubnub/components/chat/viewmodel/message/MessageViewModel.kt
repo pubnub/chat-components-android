@@ -116,7 +116,7 @@ class MessageViewModel constructor(
             pagingSourceFactory = {
                 messageRepository.getAll(
                     id = channelId,
-                    sorted = arrayOf(Sorted("timetoken", Sorted.Direction.DESC)),
+                    sorted = arrayOf(Sorted(MessageUi.Data::timetoken.name, Sorted.Direction.DESC)),
                 )
             },
             remoteMediator = remoteMediator,

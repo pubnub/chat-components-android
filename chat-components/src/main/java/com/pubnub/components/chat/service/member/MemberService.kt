@@ -17,6 +17,7 @@ interface MemberService<Data : Member> {
         sort: Collection<PNSortKey> = listOf(),
         includeCustom: Boolean = true,
     )
+
     fun add(member: Data, includeCustom: Boolean)
     fun remove(id: UserId? = null)
 }

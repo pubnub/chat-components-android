@@ -34,7 +34,7 @@ object DefaultTypingIndicatorRenderer : TypingIndicatorRenderer {
                 theme.icon.icon?.let { icon ->
                     Icon(
                         imageVector = icon,
-                        contentDescription = "Typing",
+                        contentDescription = LocalContext.current.resources.getString(R.string.typing_description),
                         modifier = Modifier
                             .clip(theme.icon.shape)
                             .then(theme.icon.modifier),
