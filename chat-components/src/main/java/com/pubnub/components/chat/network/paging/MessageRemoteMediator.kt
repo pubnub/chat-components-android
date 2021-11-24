@@ -122,7 +122,7 @@ class MessageRemoteMediator constructor(
     private suspend fun loadNewMessages(channelId: ChannelId, start: Long?, end: Long?) {
         // Get the history
         service.pullHistory(
-            channel = channelId,
+            id = channelId,
             start = start,
             end = end,
             count = messageCount,

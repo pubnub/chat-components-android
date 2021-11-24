@@ -97,7 +97,7 @@ class MessageInputViewModel(
         val data = create(id, type, message, attachments)
         viewModelScope.launch(Dispatchers.IO) {
             messageService.send(
-                channel = id,
+                id = id,
                 message = data,
                 meta = hashMapOf("uuid" to this@MessageInputViewModel.id),
                 onSuccess = onSuccess,

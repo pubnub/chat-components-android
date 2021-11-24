@@ -56,13 +56,13 @@ class DefaultMessageServiceImpl(
     /**
      * Send a message to all subscribers of a channel.
      *
-     * @param channel to send a message
+     * @param id ID of channel to send a message to
      * @param message object to send
      * @param meta additional metadata to send
      * @param store flag to keep the message in history
      */
     override suspend fun send(
-        channel: ChannelId,
+        id: ChannelId,
         message: DBMessage,
         meta: Any?,
         store: Boolean,
@@ -87,7 +87,7 @@ class DefaultMessageServiceImpl(
             // Publish a message
             pubNub
                 .publish(
-                    channel = channel,
+                    channel = id,
                     message = networkMessage,
                     shouldStore = store,
                     meta = meta,
@@ -128,13 +128,13 @@ class DefaultMessageServiceImpl(
     /**
      * Get historical messages between passed start - end dates and store it in database
      *
-     * @param channel Channel Id
+     * @param id ID of channel to return history messages from
      * @param start of time window, newest date (in microseconds)
      * @param end of time window, last known message timestamp + 1 (in microseconds)
      * @param count of messages, default and maximum is 100
      */
     override suspend fun pullHistory(
-        channel: ChannelId,
+        id: ChannelId,
         start: Long?,
         end: Long?,
         count: Int,
@@ -144,7 +144,7 @@ class DefaultMessageServiceImpl(
 
         pubNub
             .fetchMessages(
-                channels = listOf(channel),
+                channels = listOf(id),
                 page = PNBoundedPage(start = start, end = end, limit = count),
                 includeMessageActions = withActions,
                 includeUUID = withUUID,
