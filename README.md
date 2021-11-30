@@ -75,7 +75,7 @@ Check warning on line 45 in docs/components/android/get-started-android.md
 
     ```kotlin
     implementation "com.pubnub:pubnub-kotlin:6.2.0"
-    implementation "com.pubnub.components:chat-android:0.1.0"
+    implementation "com.pubnub.components:chat-android:0.1.1"
     ```
 
 1. Click **Sync Now** to build dependencies for your Android project.
