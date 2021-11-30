@@ -18,6 +18,7 @@ interface ChannelService<Data : Channel> {
         includeCustom: Boolean = true,
     )
 
+    fun add(channel: Data, includeCustom: Boolean)
     fun remove(id: ChannelId)
 }
 

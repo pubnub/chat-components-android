@@ -2,7 +2,7 @@
 <resources>
     <!-- SEMANTICS -->
     <string name="typing_indicator">typing_indicator</string>
-
+    <string name="typing_description">Typing</string>
     <string name="is_typing">%s is typing…</string>
     <string name="is_typing_animated">%s is typing</string>
 </resources>

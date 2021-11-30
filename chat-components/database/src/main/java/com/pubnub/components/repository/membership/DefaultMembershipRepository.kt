@@ -2,6 +2,7 @@ package com.pubnub.components.repository.membership
 
 import com.pubnub.components.data.membership.DBMembership
 import com.pubnub.components.data.membership.MembershipDao
+import com.pubnub.framework.data.MembershipId
 import com.pubnub.framework.data.UserId
 import kotlinx.coroutines.flow.Flow
 
@@ -16,22 +17,22 @@ class DefaultMembershipRepository(
 ) : MembershipRepository<DBMembership> {
 
     /**
-     * Returns Membership matches passed userId
+     * Returns Membership matches passed membership ID
      *
-     * @param userId User ID to match
+     * @param id Membership ID to match
      * @return DBMembership if exists, null otherwise
      */
-    override suspend fun get(userId: UserId): DBMembership? =
-        membershipDao.get(userId)
+    override suspend fun get(id: MembershipId): DBMembership? =
+        membershipDao.get(id)
 
     /**
      * Returns Flowable list of memberships
      *
-     * @param userId ID of User to get Membership from
+     * @param id ID of User to get Membership from
      * @return Flow from List of DBMembership
      */
-    override fun getAll(userId: UserId): Flow<List<DBMembership>> =
-        membershipDao.getAll(userId)
+    override fun getAll(id: UserId): Flow<List<DBMembership>> =
+        membershipDao.getAll(id)
 
     /**
      * Returns List of memberships from all Users
@@ -55,10 +56,9 @@ class DefaultMembershipRepository(
      *
      * @param id ID of Membership to remove
      */
-    override suspend fun remove(id: String) {
+    override suspend fun remove(id: MembershipId) {
         membershipDao.delete(id)
     }
-
 
     /**
      * Returns count of all Memberships

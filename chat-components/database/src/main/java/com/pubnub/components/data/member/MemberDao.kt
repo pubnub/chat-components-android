@@ -4,11 +4,12 @@ import androidx.paging.PagingSource
 import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.pubnub.framework.data.ChannelId
+import com.pubnub.framework.data.UserId
 
 interface MemberDao<DB : Member, Data : Member> {
     @Transaction
-    @Query("SELECT * FROM `member` WHERE memberId LIKE :memberId LIMIT 1")
-    suspend fun get(memberId: String): Data?
+    @Query("SELECT * FROM `member` WHERE memberId LIKE :id LIMIT 1")
+    suspend fun get(id: UserId): Data?
 
     @Transaction
     @RawQuery
@@ -19,8 +20,8 @@ interface MemberDao<DB : Member, Data : Member> {
     fun getList(): List<Data>
 
     @Transaction
-    @Query("SELECT * FROM `member` WHERE memberId IN (SELECT memberId FROM `membership` WHERE channelId LIKE :channelId) ORDER BY name")
-    fun getList(channelId: ChannelId): List<Data>
+    @Query("SELECT * FROM `member` WHERE memberId IN (SELECT memberId FROM `membership` WHERE channelId LIKE :id) ORDER BY name")
+    fun getList(id: ChannelId): List<Data>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(vararg data: DB)
@@ -32,8 +33,8 @@ interface MemberDao<DB : Member, Data : Member> {
     suspend fun delete(data: DB)
 
     @Transaction
-    @Query("DELETE FROM `member` WHERE memberId LIKE :memberId")
-    suspend fun delete(memberId: String)
+    @Query("DELETE FROM `member` WHERE memberId LIKE :id")
+    suspend fun delete(id: UserId)
 
     @Transaction
     @Query("SELECT COUNT(*) FROM `member`")

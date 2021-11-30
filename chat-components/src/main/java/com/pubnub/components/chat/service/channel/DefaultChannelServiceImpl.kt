@@ -105,6 +105,22 @@ class DefaultChannelServiceImpl(
         }
     }
 
+    override fun add(channel: DBChannel, includeCustom: Boolean) {
+        coroutineScope.launch(dispatcher) {
+            try {
+                pubNub.setChannelMetadata(
+                    channel = channel.id,
+                    name = channel.name,
+                    description = channel.description,
+                    custom = channel.custom,
+                    includeCustom = includeCustom,
+                ).sync()!!
+            } catch (e: PubNubException) {
+                errorHandler.onError(e)
+            }
+        }
+    }
+
     override fun remove(id: ChannelId) {
         coroutineScope.launch(dispatcher) {
             try {

@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
@@ -96,7 +97,7 @@ object DefaultChannelRenderer : ChannelRenderer {
                         transformations(CircleCropTransformation())
                     }
                 ),
-                contentDescription = "Thumbnail",
+                contentDescription = LocalContext.current.resources.getString(R.string.thumbnail),
                 contentScale = CenterInside,
                 modifier = theme.image.placeholder(visible = placeholder, color = Color.Gray),
             )
@@ -135,7 +136,7 @@ object DefaultChannelRenderer : ChannelRenderer {
             if (leaveAction != null && theme.icon.icon != null)
                 Icon(
                     imageVector = theme.icon.icon!!,
-                    contentDescription = "Leave",
+                    contentDescription = LocalContext.current.resources.getString(R.string.leave),
                     modifier = Modifier
                         .clip(theme.icon.shape)
                         .clickable { leaveAction() }
@@ -171,7 +172,7 @@ object DefaultChannelRenderer : ChannelRenderer {
             onClick?.let { action ->
                 Icon(
                     imageVector = Icons.Rounded.AddCircleOutline,
-                    contentDescription = "Add",
+                    contentDescription = LocalContext.current.resources.getString(R.string.add),
                     modifier = Modifier
                         .size(24.dp)
                         .clip(CircleShape)

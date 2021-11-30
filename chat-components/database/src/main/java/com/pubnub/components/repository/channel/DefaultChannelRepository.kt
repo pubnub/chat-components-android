@@ -23,23 +23,23 @@ class DefaultChannelRepository(
     /**
      * Returns Channel with Member list
      *
-     * @param channelId Channel ID to match
+     * @param id Channel ID to match
      * @return DBChannelWithMembers if exists, null otherwise
      */
-    override suspend fun get(channelId: ChannelId): DBChannelWithMembers? =
-        channelDao.get(channelId)
+    override suspend fun get(id: ChannelId): DBChannelWithMembers? =
+        channelDao.get(id)
 
     /**
      * Returns Paginated Source of Channels with Member list
      *
-     * @param userId When not null, returned list contains only joined channels by user.
+     * @param id When not null, returned list contains only joined channels by user.
      *              Otherwise all the Channels are returned.
      * @param filter Room filter query
      * @param sorted Array of Sorted objects, result will be sorted by it.
      * @return PagingSource of DBChannelWithMembers
      */
     override fun getAll(
-        userId: UserId?,
+        id: UserId?,
         filter: Query?,
         vararg sorted: Sorted
     ): PagingSource<Int, DBChannelWithMembers> {
@@ -47,13 +47,13 @@ class DefaultChannelRepository(
         val arguments: MutableList<Any> = mutableListOf()
 
         // Where clause
-        if (filter != null || userId != null)
+        if (filter != null || id != null)
             stringQuery += "WHERE"
 
         // Filter by userId
-        if (userId != null) {
+        if (id != null) {
             stringQuery += "channelId IN (SELECT `channelId` FROM `membership` WHERE memberId LIKE ?)"
-            arguments.add(userId)
+            arguments.add(id)
         }
 
         // Filtering
@@ -93,10 +93,10 @@ class DefaultChannelRepository(
     /**
      * Removes Channel with passed channel id
      *
-     * @param channelId ID of Channel to remove
+     * @param id ID of Channel to remove
      */
-    override suspend fun remove(channelId: ChannelId) {
-        channelDao.delete(channelId)
+    override suspend fun remove(id: ChannelId) {
+        channelDao.delete(id)
     }
 
     /**

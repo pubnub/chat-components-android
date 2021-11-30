@@ -3,12 +3,13 @@ package com.pubnub.components.data.channel
 import androidx.paging.PagingSource
 import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteQuery
+import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
 
 interface ChannelDao<DB : Channel, Data : Channel> {
     @Transaction
-    @Query("SELECT * FROM `channel` WHERE channelId LIKE :channelId LIMIT 1")
-    suspend fun get(channelId: String): Data?
+    @Query("SELECT * FROM `channel` WHERE channelId LIKE :id LIMIT 1")
+    suspend fun get(id: ChannelId): Data?
 
     @Transaction
     @RawQuery
@@ -19,8 +20,8 @@ interface ChannelDao<DB : Channel, Data : Channel> {
     suspend fun getList(): List<Data>
 
     @Transaction
-    @Query("SELECT * FROM `channel` WHERE channelId IN (SELECT channelId FROM `membership` WHERE memberId LIKE :userId)")
-    fun getList(userId: UserId): List<Data>
+    @Query("SELECT * FROM `channel` WHERE channelId IN (SELECT channelId FROM `membership` WHERE memberId LIKE :id)")
+    fun getList(id: UserId): List<Data>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(vararg data: DB)
@@ -32,8 +33,8 @@ interface ChannelDao<DB : Channel, Data : Channel> {
     suspend fun delete(data: DB)
 
     @Transaction
-    @Query("DELETE FROM `channel` WHERE channelId LIKE :channelId")
-    suspend fun delete(channelId: String)
+    @Query("DELETE FROM `channel` WHERE channelId LIKE :id")
+    suspend fun delete(id: ChannelId)
 
     @Transaction
     @Query("SELECT COUNT(*) FROM `channel`")

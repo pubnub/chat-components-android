@@ -25,7 +25,7 @@ import kotlin.time.Duration
 @OptIn(ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class, FlowPreview::class)
 @Framework
 class TypingService constructor(
-    private val userId: UserId,
+    private val id: UserId,
     private val usernameResolver: (UserId) -> String,
     private val typingIndicator: TypingIndicator,
     private val coroutineScope: CoroutineScope = GlobalScope,
@@ -38,7 +38,7 @@ class TypingService constructor(
     }
 
     init {
-        Timber.e("Typing Service: $userId")
+        Timber.e("Typing Service: $id")
     }
 
     private val _typing: MutableSharedFlow<TypingMap> =
@@ -57,11 +57,11 @@ class TypingService constructor(
     /**
      * Listen for typing on provided channel
      */
-    fun getTyping(channelId: ChannelId, filterOwn: Boolean = true): Flow<List<Typing>> =
+    fun getTyping(id: ChannelId, filterOwn: Boolean = true): Flow<List<Typing>> =
         typing.map { list ->
             list.filter { data ->
-                data.channelId == channelId // is current channel
-                        && (!filterOwn || data.userId != userId) // user is not own
+                data.channelId == id // is current channel
+                        && (!filterOwn || data.userId != this.id) // user is not own
             }.map {
                 val userName = usernameResolver(it.userId)
                 it.copy(userId = userName)
@@ -94,8 +94,8 @@ class TypingService constructor(
     /**
      * Bind for signals and launch timeout timer
      */
-    fun bind(channelId: ChannelId) {
-        Timber.i("-> Bind for typing signal: $channelId ($this)")
+    fun bind(id: ChannelId) {
+        Timber.i("-> Bind for typing signal: $id ($this)")
         listenForSignal()
         startTimeoutTimer()
     }
