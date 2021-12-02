@@ -4,8 +4,6 @@ Chat components provide easy-to-use building blocks to create Android chat appli
 
 Our Android component library provides chat features like direct and group messaging, typing indicators, presence, and reactions. You don't need to implement a data source by yourself and go through the complexity of designing the architecture of a realtime network. Instead, use our components, predefined repositories, and view models to create custom apps for a wide range of use cases.
 
-> **TIP:** For detailed information on Android Chat Components, refer to the [PubNub documentation](https://www.pubnub.com/docs/chat/components/android/overview-android). 
-
 ## Features
 
 * **User and Channel Metadata**: add additional information about the users, channels, and their memberships (and store it locally for offline use)
@@ -26,6 +24,7 @@ Our Android component library provides chat features like direct and group messa
 
 ## Related documentation
 
+* [PubNub documentation for Android Chat Components](https://www.pubnub.com/docs/chat/components/android/overview-android)
 * [Kotlin SDK Documentation](https://www.pubnub.com/docs/sdks/kotlin)
 * [Jetpack Compose Tutorial](https://developer.android.com/jetpack/compose/tutorial)
 * [Android Room Tutorial](https://developer.android.com/training/data-storage/room)
