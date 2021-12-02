@@ -35,7 +35,7 @@ For detailed information on Android Chat Components, refer to the [PubNub docume
 
 | Name | Requirement |
 | :--- | :------ |
-| [Android Studio](https://developer.android.com/studio/) | >= Arctic Fox 2021.1.1 |
+| [Android Studio](https://developer.android.com/studio/preview) | >= Bumblebee 2021.1.1 |
 | Platform | Android |
 | Language | Kotlin |
 | UI Toolkit | Jetpack Compose |
