@@ -33,7 +33,7 @@ Our Android component library provides chat features like direct and group messa
 
 | Name | Requirement |
 | :--- | :------ |
-| [Android Studio](https://developer.android.com/studio/) | >= Arctic Fox 2020.3.1 |
+| [Android Studio](https://developer.android.com/studio/) | >= Arctic Fox 2021.1.1 |
 | Platform | Android |
 | Language | Kotlin |
 | UI Toolkit | Jetpack Compose |
