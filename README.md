@@ -1,4 +1,4 @@
-# Android Chat Components
+# PubNub Chat Components for Android
 
 Chat components provide easy-to-use building blocks to create Android chat applications, for use cases like live event messaging, telemedicine, and service desk support.
 
@@ -24,7 +24,7 @@ Our Android component library provides chat features like direct and group messa
 
 ## Related documentation
 
-* [PubNub documentation for Android Chat Components](https://www.pubnub.com/docs/chat/components/android/overview-android)
+* [PubNub Chat Components for Android Documentation](https://www.pubnub.com/docs/chat/components/android/overview-android)
 * [Kotlin SDK Documentation](https://www.pubnub.com/docs/sdks/kotlin)
 * [Jetpack Compose Tutorial](https://developer.android.com/jetpack/compose/tutorial)
 * [Android Room Tutorial](https://developer.android.com/training/data-storage/room)
