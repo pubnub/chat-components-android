@@ -70,6 +70,7 @@ dependencies {
     implementation Libs.Kotlin.Coroutines.android
     implementation Libs.AndroidX.Activity.activityCompose
     api Libs.AndroidX.Room.runtime
+    api Libs.AndroidX.Room.paging
     api Libs.AndroidX.Room.ktx
     api Libs.AndroidX.Paging.runtime
     api Libs.AndroidX.Paging.extension

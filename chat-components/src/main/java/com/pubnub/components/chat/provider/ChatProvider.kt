@@ -189,7 +189,7 @@ fun PubNubPreview(
     val context = LocalContext.current
     val pubNub = PubNub(PNConfiguration().apply { publishKey = ""; subscribeKey = "" })
     Database.initialize(context)
-    ChatProvider(pubNub) {
+    ChatProvider(pubNub, synchronize = false) {
         content()
     }
 }

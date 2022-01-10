@@ -11,12 +11,12 @@ import com.pubnub.framework.data.ChannelId
 data class DBChannel(
     @PrimaryKey @ColumnInfo(name = "channelId") override val id: ChannelId,
     override val name: String,
-    override val description: String?,
+    override val description: String? = null,
     override val type: String = "default",
-    override val updated: String?,
-    override val eTag: String?,
-    override val avatarURL: String,
-    override val custom: ChannelCustomData,
+    override val updated: String? = null,
+    override val eTag: String? = null,
+    override val avatarURL: String?  = null,
+    override val custom: ChannelCustomData?  = null,
 ) : Channel
 
 typealias ChannelCustomData = HashMap<String, Any>

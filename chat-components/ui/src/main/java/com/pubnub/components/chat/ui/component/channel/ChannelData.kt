@@ -11,11 +11,11 @@ sealed class ChannelUi {
     data class Data(
         val id: ChannelId,
         val name: String,
-        val description: String?,
         @TypeDef val type: String,
-        val profileUrl: String,
-        val updated: Instant?,
         val members: List<MemberUi.Data>,
+        val description: String? = null,
+        val profileUrl: String? = null,
+        val updated: Instant? = null,
     ) : ChannelUi() {
         @Retention(AnnotationRetention.SOURCE)
         @StringDef(DEFAULT, DIRECT, GROUP)

@@ -8,7 +8,7 @@ interface MemberRenderer {
     @Composable
     fun Member(
         name: String,
-        description: String,
+        description: String?,
         profileUrl: String,
         online: Boolean?,
         onClick: () -> Unit,
