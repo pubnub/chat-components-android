@@ -12,7 +12,7 @@ object Libs {
     const val gradleVersionsPlugin = "com.github.ben-manes:gradle-versions-plugin:0.39.0"
 
     object Accompanist {
-        private const val version = "0.21.4-beta"
+        private const val version = "0.22.0-rc"
 
         const val swipeRefresh = "com.google.accompanist:accompanist-swiperefresh:$version"
         const val placeholder = "com.google.accompanist:accompanist-placeholder:$version"
