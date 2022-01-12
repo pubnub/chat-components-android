@@ -45,3 +45,7 @@ Follow the steps in the [Getting Started guide](https://www.pubnub.com/docs/chat
 * [Jetpack Compose Tutorial](https://developer.android.com/jetpack/compose/tutorial)
 * [Android Room Tutorial](https://developer.android.com/training/data-storage/room)
 * [Paging Library](https://developer.android.com/topic/libraries/architecture/paging/v3-overview)
+
+## Support
+
+If you need help or have a general question, [contact support](mailto:support@pubnub.com).
