@@ -36,7 +36,7 @@ Our Android component library provides chat features like direct and group messa
 
 Start by exploring our [sample apps](https://github.com/pubnub/chat-components-android-examples/blob/master/README.md) that are built using chat components.
 
-Follow the steps in the [Getting Started guide](https://www.pubnub.com/docs/chat/components/android/get-started-android) to set up one of the sample chat apps and send your first message.
+Follow the steps in the [Getting Started guide](https://www.pubnub.com/docs/chat/components/android/get-started-android) to set up a sample chat app and send your first message.
 
 ## Related documentation
 
