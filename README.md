@@ -6,14 +6,14 @@ Our Android component library provides chat features like direct and group messa
 
 ## Features
 
-* **User and Channel Metadata**: add additional information about the users, channels, and their memberships (and store it locally for offline use)
-* **Subscriptions**: subscribe to user channels automatically
-* **Messages**: publish and display new and historical text messages
-* **Presence**: get currently active users, observe their state, and notify about changes
-* **Typing Indicators**: display notifications that users are typing
-* **Persistent Data Storage**: store messages, channels, and users locally
-* **Paging**: pull new data only when you need it
-* **Jetpack Compose**: build native UI with a modern toolkit
+* **User and Channel Metadata**: Add additional information about the users, channels, and their memberships (and store it locally for offline use)
+* **Subscriptions**: Subscribe to user channels automatically
+* **Messages**: Publish and display new and historical text messages
+* **Presence**: Get currently active users, observe their state, and notify about changes
+* **Typing Indicators**: Display notifications that users are typing
+* **Persistent Data Storage**: Store messages, channels, and users locally
+* **Paging**: Pull new data only when you need it
+* **Jetpack Compose**: Build native UI with a modern toolkit
 
 ## Available components
 
