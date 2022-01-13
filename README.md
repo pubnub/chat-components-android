@@ -40,7 +40,7 @@ Follow the steps in the [Getting Started guide](https://www.pubnub.com/docs/chat
 
 ## Related documentation
 
-* [PubNub Chat Components for Android Documentation](https://www.pubnub.com/docs/chat/components/android/overview-android)
+* [PubNub Chat Components for Android Documentation](https://www.pubnub.com/docs/chat/components/android/get-started-android)
 * [Kotlin SDK Documentation](https://www.pubnub.com/docs/sdks/kotlin)
 * [Jetpack Compose Tutorial](https://developer.android.com/jetpack/compose/tutorial)
 * [Android Room Tutorial](https://developer.android.com/training/data-storage/room)
