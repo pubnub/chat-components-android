@@ -36,6 +36,7 @@ open class BaseTest {
     @CallSuper
     open fun tearDown() {
         clearAllMocks()
+        unmockkAll()
     }
 
     fun mockPubNub() {

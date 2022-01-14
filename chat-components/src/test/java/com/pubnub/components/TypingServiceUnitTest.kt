@@ -13,8 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.*
 import org.junit.*
 import timber.log.Timber
 
@@ -34,9 +33,9 @@ class TypingServiceUnitTest {
         }
     }
 
-    private val testCoroutineDispatcher = TestCoroutineDispatcher()
+    private val testCoroutineDispatcher = UnconfinedTestDispatcher()
 
-    private val testCoroutineScope = TestCoroutineScope(testCoroutineDispatcher)
+    private val testCoroutineScope = TestScope(testCoroutineDispatcher)
 
 
     private val userId: UserId = "currentUserId"

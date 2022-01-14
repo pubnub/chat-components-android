@@ -95,7 +95,7 @@ dependencies {
     androidTestImplementation Libs.AndroidX.Compose.uiTest
     androidTestImplementation Libs.MockK.instrumented
     androidTestImplementation Libs.Awaitility.kotlin, { exclude group: "org.hamcrest" }
-//    androidTestImplementation Libs.Retrofit.retrofit
+    androidTestImplementation Libs.Retrofit.retrofit
 
     testImplementation Libs.MockK.unit
     testImplementation Libs.Kotlin.test

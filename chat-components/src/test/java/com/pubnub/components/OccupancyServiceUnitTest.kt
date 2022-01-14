@@ -6,8 +6,8 @@ import com.pubnub.framework.data.OccupancyMap
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.*
 import timber.log.Timber
 import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
@@ -32,9 +32,9 @@ class OccupancyServiceUnitTest {
 
     lateinit var service: OccupancyService
 
-    private val testCoroutineDispatcher = TestCoroutineDispatcher()
+    private val testCoroutineDispatcher = UnconfinedTestDispatcher()
 
-    private val testCoroutineScope = TestCoroutineScope(testCoroutineDispatcher)
+    private val testCoroutineScope = TestScope(testCoroutineDispatcher)
 
     @Before
     fun setup() {
