@@ -33,7 +33,7 @@ class TypingServiceUnitTest {
         }
     }
 
-    private val testCoroutineDispatcher = UnconfinedTestDispatcher()
+    private val testCoroutineDispatcher = StandardTestDispatcher()
 
     private val testCoroutineScope = TestScope(testCoroutineDispatcher)
 
@@ -68,11 +68,12 @@ class TypingServiceUnitTest {
     @After
     fun tearDown() {
         clearAllMocks()
+        service.unbind()
     }
 
     // region Binding
     @Test
-    fun whenBindIsCalled_thenListeningForSignalIsStarted() {
+    fun whenBindIsCalled_thenListeningForSignalIsStarted() = runTest {
         val channelId: ChannelId = "fakeChannel"
         service.bind(channelId)
 
@@ -80,7 +81,7 @@ class TypingServiceUnitTest {
     }
 
     @Test
-    fun whenBindIsCalled_thenTimeoutTimerIsStarted() {
+    fun whenBindIsCalled_thenTimeoutTimerIsStarted() = runTest {
         val channelId: ChannelId = "fakeChannel"
         service.bind(channelId)
 
@@ -88,7 +89,7 @@ class TypingServiceUnitTest {
     }
 
     @Test
-    fun whenUnbindIsCalled_thenListeningForSignalIsRemoved() {
+    fun whenUnbindIsCalled_thenListeningForSignalIsRemoved() = runTest {
         val channelId: ChannelId = "fakeChannel"
         service.bind(channelId)
         service.unbind()
@@ -97,7 +98,7 @@ class TypingServiceUnitTest {
     }
 
     @Test
-    fun whenUnbindIsCalled_thenTimeoutTimerIsRemoved() {
+    fun whenUnbindIsCalled_thenTimeoutTimerIsRemoved() = runTest {
         val channelId: ChannelId = "fakeChannel"
         service.bind(channelId)
         service.unbind()
@@ -110,15 +111,16 @@ class TypingServiceUnitTest {
     // region Listeners
 
     @Test
-    fun whenListenForSignalIsCalled_thenGetTypingIsExecuted() {
+    fun whenListenForSignalIsCalled_thenGetTypingIsExecuted() = runTest(UnconfinedTestDispatcher()) {
         val channelId: ChannelId = "fakeChannel"
         service.bind(channelId)
+        testCoroutineScope.advanceUntilIdle()
 
         verify(exactly = 1) { typingIndicator.getTyping() }
     }
 
     @Test
-    fun whenListenForSignalIsCalled_andResultIsAvailable_thenSetTypingDataIsExecuted() {
+    fun whenListenForSignalIsCalled_andResultIsAvailable_thenSetTypingDataIsExecuted() = runTest(UnconfinedTestDispatcher()) {
         val channelId: ChannelId = "fakeChannel"
         val fakeTyping = Typing("userId", channelId, true)
         val typingFlow: Flow<Typing> = flowOf(fakeTyping)
@@ -126,12 +128,12 @@ class TypingServiceUnitTest {
         every { typingIndicator.getTyping() } answers { typingFlow }
         service.bind(channelId)
 
-
+        testCoroutineScope.advanceUntilIdle()
         verify(exactly = 1) { service["setTypingData"](eq(fakeTyping)) }
     }
 
     @Test
-    fun whenStopListenForPresenceIsCalled_thenPresenceIsNotUpdatedAnymore() {
+    fun whenStopListenForPresenceIsCalled_thenPresenceIsNotUpdatedAnymore() = runTest(UnconfinedTestDispatcher()) {
         val channelId: ChannelId = "fakeChannel"
         val fakeTyping = Typing("userId", channelId, true)
         val fakeTyping2 = Typing("userId2", channelId, true)
@@ -143,18 +145,18 @@ class TypingServiceUnitTest {
 
         every { typingIndicator.getTyping() } answers { typingFlow }
         service.bind(channelId)
-
+        testCoroutineScope.advanceTimeBy(1_000L)
         verify(exactly = 1) { service["setTypingData"](eq(fakeTyping)) }
-//        testCoroutineScope.advanceUntilIdle()
         service.unbind()
 
+        testCoroutineScope.advanceUntilIdle()
         verify(exactly = 0, timeout = 10_000L) { service["setTypingData"](eq(fakeTyping2)) }
     }
     // endregion
 
     // region Timeout
     @Test
-    fun whenStartTimeoutTimerIsCalled_thenRemoveOutdatedIsCalledEverySecond() {
+    fun whenStartTimeoutTimerIsCalled_thenRemoveOutdatedIsCalledEverySecond() = runTest{
         val channelId: ChannelId = "fakeChannel"
         service.bind(channelId)
 
@@ -162,7 +164,7 @@ class TypingServiceUnitTest {
     }
 
     @Test
-    fun whenStopTimeoutTimerIsCalled_thenRemoveOutdatedIsNotCalledAnymore() {
+    fun whenStopTimeoutTimerIsCalled_thenRemoveOutdatedIsNotCalledAnymore() = runTest {
         val channelId: ChannelId = "fakeChannel"
         service.bind(channelId)
         verify(atMost = 1) { service["removeOutdated"]() }
@@ -175,7 +177,7 @@ class TypingServiceUnitTest {
     // region Outdated
 
     @Test
-    fun whenRemoveOutdatedIsCalled_andTypingItemTimestampIsOlderThan5SecondsAgo_thenTypingIsSetToFalse() {
+    fun whenRemoveOutdatedIsCalled_andTypingItemTimestampIsOlderThan5SecondsAgo_thenTypingIsSetToFalse() = runTest {
         val channelId: ChannelId = "fakeChannel"
         val fakeTyping = Typing("userId", channelId, true)
 
@@ -194,7 +196,7 @@ class TypingServiceUnitTest {
     }
 
     @Test
-    fun whenSetTypingDataIsCalled_andUserIsNotOnList_thenEmitNewDataIsExecuted() {
+    fun whenSetTypingDataIsCalled_andUserIsNotOnList_thenEmitNewDataIsExecuted() = runTest {
         val channelId: ChannelId = "fakeChannel"
         val fakeTyping = Typing("userId", channelId, true)
         val fakeTyping2 = Typing("userId2", channelId, true)
@@ -225,7 +227,7 @@ class TypingServiceUnitTest {
     }
 
     @Test
-    fun whenSetTypingDataIsCalled_andUserIsOnList_thenEmitNewDataIsExecuted_andPreviousUserDataIsReplaced() {
+    fun whenSetTypingDataIsCalled_andUserIsOnList_thenEmitNewDataIsExecuted_andPreviousUserDataIsReplaced() = runTest {
         val channelId: ChannelId = "fakeChannel"
         val fakeTyping = Typing("userId", channelId, false)
         val fakeTyping2 = Typing("userId", channelId, true)
@@ -255,7 +257,7 @@ class TypingServiceUnitTest {
     }
 
     @Test
-    fun whenSetTypingIsCalled_andShouldSendTypingEventReturnsTrue_thenTypingIndicatorSetTypingIsCalled() {
+    fun whenSetTypingIsCalled_andShouldSendTypingEventReturnsTrue_thenTypingIndicatorSetTypingIsCalled() = runTest {
         val channelId: ChannelId = "fakeChannel"
         val fakeTyping = Typing("userId", channelId, false)
 
@@ -277,7 +279,7 @@ class TypingServiceUnitTest {
     }
 
     @Test
-    fun whenSetTypingIsCalled_andShouldSendTypingEventReturnsFalse_thenTypingIndicatorSetTypingIsNotCalled() {
+    fun whenSetTypingIsCalled_andShouldSendTypingEventReturnsFalse_thenTypingIndicatorSetTypingIsNotCalled() = runTest {
         val channelId: ChannelId = "fakeChannel"
         val fakeTyping = Typing("userId", channelId, false)
 
