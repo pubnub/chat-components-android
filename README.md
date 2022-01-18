@@ -62,11 +62,10 @@ Our Android component library provides chat features like direct and group messa
 1. Go to the project’s `build.gradle` file and update the Jetpack Compose version:
 
     ```kotlin
-    compose_version = '1.0.2'
+    compose_version = '1.1.0-rc02'
     ```
 
 For any additional questions, refer to [Jetpack Compose documentation](https://developer.android.com/jetpack/compose/setup).
-Check warning on line 45 in docs/components/android/get-started-android.md
 
 ## Install chat components
 

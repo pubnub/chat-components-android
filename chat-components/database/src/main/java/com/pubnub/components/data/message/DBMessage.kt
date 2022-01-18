@@ -35,9 +35,9 @@ data class DBMessage(
     @PrimaryKey
     override val id: String,
     override val type: String,
-    override val text: String?,
-    override val attachment: List<DBAttachment>?,
-    override val custom: Map<String, Any>?,
+    override val text: String? = null,
+    override val attachment: List<DBAttachment>? = null,
+    override val custom: Map<String, Any>? = null,
     override val publisher: UserId,
     override val channel: ChannelId,
     override val timetoken: Timetoken = System.currentTimeMillis().timetoken,

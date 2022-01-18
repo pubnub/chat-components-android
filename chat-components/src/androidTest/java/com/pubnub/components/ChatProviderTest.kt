@@ -8,8 +8,11 @@ import com.pubnub.components.chat.ui.component.common.ThemeDefaults
 import com.pubnub.components.chat.ui.component.input.DefaultLocalMessageInputTheme
 import com.pubnub.components.chat.ui.component.input.LocalMessageInputTheme
 import com.pubnub.components.chat.ui.component.provider.LocalPubNub
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.*
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ChatProviderTest : BaseTest() {
 
     @get:Rule
@@ -18,8 +21,8 @@ class ChatProviderTest : BaseTest() {
     @Before
     override fun setUp() {
         super.setUp()
-        mockDatabase()
         mockPubNub()
+        mockDatabase()
     }
 
     @After
@@ -30,7 +33,7 @@ class ChatProviderTest : BaseTest() {
     }
 
     @Test
-    fun whenPubNubIsInitialized_thenLocalPubNubReturnsTheInstance() {
+    fun whenPubNubIsInitialized_thenLocalPubNubReturnsTheInstance() = runTest {
         // Given
         composeTestRule.setContent {
             ChatProvider(pubNub = pubNub!!) {
@@ -41,7 +44,7 @@ class ChatProviderTest : BaseTest() {
     }
 
     @Test
-    fun whenMessageInputThemeIsNotProvided_thenLocalCompositionReturnsTheDefaultInstance() {
+    fun whenMessageInputThemeIsNotProvided_thenLocalCompositionReturnsTheDefaultInstance() = runTest {
         // Given
         composeTestRule.setContent {
             ChatProvider(pubNub = pubNub!!) {
@@ -52,7 +55,7 @@ class ChatProviderTest : BaseTest() {
     }
 
     @Test
-    fun whenMessageInputThemeIsProvided_thenLocalCompositionReturnsThePassedInstance() {
+    fun whenMessageInputThemeIsProvided_thenLocalCompositionReturnsThePassedInstance() = runTest {
         // Given
         composeTestRule.setContent {
 

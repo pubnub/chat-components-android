@@ -11,12 +11,12 @@ import com.pubnub.framework.data.UserId
 data class DBMember(
     @PrimaryKey @ColumnInfo(name = "memberId") override val id: UserId,
     override val name: String,
-    override val email: String?,
-    override val externalId: String?,
-    override val profileUrl: String?,
-    override val custom: CustomData,
-    override val eTag: String?,
-    override val updated: String?,
+    override val email: String? = null,
+    override val externalId: String? = null,
+    override val profileUrl: String? = null,
+    override val custom: CustomData? = null,
+    override val eTag: String? = null,
+    override val updated: String? = null,
 ) : Member {
     @Keep
     data class CustomData(

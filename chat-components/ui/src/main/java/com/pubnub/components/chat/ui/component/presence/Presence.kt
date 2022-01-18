@@ -24,4 +24,8 @@ class Presence {
 
     fun filter(function: (UserId, Boolean) -> Boolean) =
         presence.filter { (member, state) -> function(member, state.value) }
+
+    override fun toString(): String {
+        return presence.toString()
+    }
 }

@@ -29,11 +29,14 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.awaitility.Awaitility
 import org.hamcrest.Matchers
 import org.junit.*
 import java.util.concurrent.atomic.AtomicReference
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MessageInputTest : BaseTest() {
 
     @get:Rule
@@ -54,7 +57,7 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test(expected = MessageServiceNotInitializedException::class)
-    fun whenMessageServiceIsNotInitialized_thenAnExceptionIsThrown() {
+    fun whenMessageServiceIsNotInitialized_thenAnExceptionIsThrown() = runTest{
         // Given
         composeTestRule.setContent {
             CompositionLocalProvider(
@@ -68,7 +71,7 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test(expected = TypingServiceNotInitializedException::class)
-    fun whenTypingServiceIsNotProvided_andTypingIndicatorIsTrue_thenAnExceptionIsThrown() {
+    fun whenTypingServiceIsNotProvided_andTypingIndicatorIsTrue_thenAnExceptionIsThrown() = runTest{
         // Given
         composeTestRule.setContent {
             CompositionLocalProvider(
@@ -82,7 +85,7 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test
-    fun whenTypingServiceIsNotProvided_andTypingIndicatorIsFalse_thenNoExceptionIsThrown() {
+    fun whenTypingServiceIsNotProvided_andTypingIndicatorIsFalse_thenNoExceptionIsThrown() = runTest{
         // Given
         composeTestRule.setContent {
             ChatProvider(pubNub = pubNub!!) {
@@ -92,7 +95,7 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test(expected = MessageServiceNotInitializedException::class)
-    fun whenMessageServiceIsNotProvided_thenAnExceptionIsThrown() {
+    fun whenMessageServiceIsNotProvided_thenAnExceptionIsThrown() = runTest{
         // Given
         composeTestRule.setContent {
             CompositionLocalProvider(
@@ -106,7 +109,7 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test(expected = MissingChannelException::class)
-    fun whenChannelIsNotProvided_thenAnExceptionIsThrown() {
+    fun whenChannelIsNotProvided_thenAnExceptionIsThrown() = runTest{
         // Given
         composeTestRule.setContent {
             CompositionLocalProvider(
@@ -119,7 +122,7 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test(expected = MissingPubNubException::class)
-    fun whenPubNubProviderIsNotUsed_thenAnExceptionIsThrown() {
+    fun whenPubNubProviderIsNotUsed_thenAnExceptionIsThrown() = runTest{
         // Given
         composeTestRule.setContent {
             CompositionLocalProvider(
@@ -133,7 +136,7 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test
-    fun whenPlaceholderWillBePassed_thenItWillBeShown() {
+    fun whenPlaceholderWillBePassed_thenItWillBeShown() = runTest{
         // Given
         val placeholder = "Text Placeholder"
         composeTestRule.setContent {
@@ -147,7 +150,7 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test
-    fun whenInitialTextWillBePassed_thenItWillBeShown() {
+    fun whenInitialTextWillBePassed_thenItWillBeShown() = runTest{
         // Given
         val text = "Initial text"
         composeTestRule.setContent {
@@ -161,12 +164,10 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test
-    fun whenSendButtonWillBePressed_thenOnSendWithMessageAsParameterWillBeInvokedAndFieldWillBeCleared() {
+    fun whenSendButtonWillBePressed_thenOnSendWithMessageAsParameterWillBeInvokedAndFieldWillBeCleared() = runTest{
         // Given
-        val inputDescription =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.message_input_text)
-        val buttonDescription =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.message_input_button)
+        val inputDescription = context.getString(R.string.message_input_text)
+        val buttonDescription = context.getString(R.string.message_input_button)
         val text = "Initial text"
         val sentMessage = AtomicReference<String>()//mutableStateOf("")
         val onSend: (String, Timetoken) -> Unit = { message, _ -> sentMessage.set(message) }
@@ -199,10 +200,9 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test
-    fun whenSendButtonWillBePressedAndMessageIsNotEmpty_thenMessageWillBeSent() {
+    fun whenSendButtonWillBePressedAndMessageIsNotEmpty_thenMessageWillBeSent() = runTest{
         // Given
-        val buttonDescription =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.message_input_button)
+        val buttonDescription = context.getString(R.string.message_input_button)
         val text = "Initial text"
         composeTestRule.setContent {
             ChatProvider(pubNub = pubNub!!) {
@@ -218,10 +218,9 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test
-    fun whenSendButtonWillBePressedAndMessageIsEmpty_thenMessageWillNotBeSent() {
+    fun whenSendButtonWillBePressedAndMessageIsEmpty_thenMessageWillNotBeSent() = runTest{
         // Given
-        val buttonDescription =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.message_input_button)
+        val buttonDescription = context.getString(R.string.message_input_button)
         val text = ""
         composeTestRule.setContent {
             ChatProvider(pubNub = pubNub!!) {
@@ -237,11 +236,10 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test
-    fun whenMessageWillBeSent_thenMessageServiceSendWillBeCalled() {
+    fun whenMessageWillBeSent_thenMessageServiceSendWillBeCalled() = runTest{
         // Given
         val messageService = mockk<DefaultMessageServiceImpl>(relaxed = true)
-        val buttonDescription =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.message_input_button)
+        val buttonDescription = context.getString(R.string.message_input_button)
         val text = "Initial text"
         composeTestRule.setContent {
             ChatProvider(pubNub = pubNub!!) {
@@ -259,12 +257,10 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test
-    fun whenMessageWillBeSent_andResultWillBeSuccess_thenOnMessageWillBeInvoked() {
+    fun whenMessageWillBeSent_andResultWillBeSuccess_thenOnMessageWillBeInvoked() = runTest{
         // Given
-        val inputDescription =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.message_input_text)
-        val buttonDescription =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.message_input_button)
+        val inputDescription = context.getString(R.string.message_input_text)
+        val buttonDescription = context.getString(R.string.message_input_button)
         val text = "Initial text"
         val sentMessage = AtomicReference<String>()//mutableStateOf("")
         val onSend: (String, Timetoken) -> Unit = { message, _ -> sentMessage.set(message) }
@@ -293,12 +289,10 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test
-    fun whenMessageWillBeSent_andResultWillBeFailure_thenOnErrorWillBeInvoked() {
+    fun whenMessageWillBeSent_andResultWillBeFailure_thenOnErrorWillBeInvoked() = runTest{
         // Given
-        val inputDescription =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.message_input_text)
-        val buttonDescription =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.message_input_button)
+        val inputDescription = context.getString(R.string.message_input_text)
+        val buttonDescription = context.getString(R.string.message_input_button)
         val text = "Initial text"
         val sentMessage = AtomicReference<String>()
         val error = AtomicReference<Exception>()

@@ -6,8 +6,8 @@ sealed class MemberUi {
     data class Data(
         val id: UserId,
         val name: String,
-        val profileUrl: String?,
-        val description: String,
+        val profileUrl: String? = null,
+        val description: String? = null,
     ) : MemberUi()
 
     data class Separator(val text: String) : MemberUi()
