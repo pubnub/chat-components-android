@@ -11,7 +11,6 @@ import com.pubnub.components.chat.ui.component.presence.Presence
 import com.pubnub.components.chat.ui.component.provider.MissingPubNubException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.awaitility.Awaitility
 import org.hamcrest.Matchers
@@ -54,8 +53,7 @@ class MemberListTest : BaseTest() {
     fun whenMemberListWillBePassed_thenItWillBeShown() = runTest{
         // Given
         val members = FAKE_MEMBERS
-        val memberList =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.member_list)
+        val memberList = context.getString(R.string.member_list)
         composeTestRule.setContent {
             ChatProvider(pubNub = pubNub!!) {
                 MemberList(members = members)
@@ -80,11 +78,10 @@ class MemberListTest : BaseTest() {
 
     @Suppress("UNCHECKED_CAST")
     @Test
-    fun whenMemberPagingDataWillBePassed_thenItWillBeShown() = runTest(UnconfinedTestDispatcher()) {
+    fun whenMemberPagingDataWillBePassed_thenItWillBeShown() = runTest {
         // Given
         val members = flowOf(PagingData.from(FAKE_MEMBERS) as PagingData<MemberUi>)
-        val memberList =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.member_list)
+        val memberList = context.getString(R.string.member_list)
 
         composeTestRule.setContent {
             ChatProvider(pubNub = pubNub!!) {
@@ -112,8 +109,7 @@ class MemberListTest : BaseTest() {
     fun whenMemberWillBePressed_thenOnSelectedWillBeCalled() = runTest{
         // Given
         val members = FAKE_MEMBERS
-        val memberList =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.member_list)
+        val memberList = context.getString(R.string.member_list)
 
         val selectedMember = AtomicReference<MemberUi.Data>()
         composeTestRule.setContent {
@@ -138,12 +134,9 @@ class MemberListTest : BaseTest() {
     fun whenMemberListWillBePassedWithoutPresenceObject_thenPresenceIndicatorWillNotBeShown() = runTest{
         // Given
         val members = FAKE_MEMBERS
-        val memberList =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.member_list)
-        val online =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.online_presence_indicator_member_list)
-        val offline =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.offline_presence_indicator_member_list)
+        val memberList = context.getString(R.string.member_list)
+        val online = context.getString(R.string.online_presence_indicator_member_list)
+        val offline = context.getString(R.string.offline_presence_indicator_member_list)
         composeTestRule.setContent {
             ChatProvider(pubNub = pubNub!!) {
                 MemberList(members = members, presence = null)
@@ -167,12 +160,9 @@ class MemberListTest : BaseTest() {
     fun whenMemberListWillBePassedWithPresenceObject_thenPresenceIndicatorWillBeShown() = runTest{
         // Given
         val members = FAKE_MEMBERS
-        val memberList =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.member_list)
-        val online =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.online_presence_indicator_member_list)
-        val offline =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.offline_presence_indicator_member_list)
+        val memberList = context.getString(R.string.member_list)
+        val online = context.getString(R.string.online_presence_indicator_member_list)
+        val offline = context.getString(R.string.offline_presence_indicator_member_list)
 
         val fakePresence = Presence().apply {
             add("user1", true)

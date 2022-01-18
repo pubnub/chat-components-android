@@ -11,10 +11,7 @@ import com.pubnub.components.chat.ui.component.provider.MissingPubNubException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.awaitility.Awaitility
-import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -53,8 +50,7 @@ class ChannelListTest : BaseTest() {
     fun whenChannelListWillBePassed_thenItWillBeShown() = runTest{
         // Given
         val channels = FAKE_CHANNELS
-        val channelList =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.channel_list)
+        val channelList = context.getString(R.string.channel_list)
         composeTestRule.setContent {
             ChatProvider(pubNub = pubNub!!) {
                 ChannelList(channels = channels, onSelected = {})
@@ -67,7 +63,7 @@ class ChannelListTest : BaseTest() {
 
             channels.forEachIndexed { index, item ->
                 // Thumbnail
-                onChildAt(3 * index).assertContentDescriptionEquals(InstrumentationRegistry.getInstrumentation().context.getString(R.string.thumbnail))
+                onChildAt(3 * index).assertContentDescriptionEquals(context.getString(R.string.thumbnail))
                 // Channel name
                 onChildAt(3 * index + 1).assert(hasText(item.name))
                 // Channel description
@@ -78,11 +74,10 @@ class ChannelListTest : BaseTest() {
 
     @Suppress("UNCHECKED_CAST")
     @Test
-    fun whenChannelPagingDataWillBePassed_thenItWillBeShown() = runTest(UnconfinedTestDispatcher()) {
+    fun whenChannelPagingDataWillBePassed_thenItWillBeShown() = runTest {
         // Given
         val channels = flowOf(PagingData.from(FAKE_CHANNELS)) as Flow<PagingData<ChannelUi>>
-        val channelList =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.channel_list)
+        val channelList = context.getString(R.string.channel_list)
 
         composeTestRule.setContent {
             ChatProvider(pubNub = pubNub!!) {
@@ -95,20 +90,8 @@ class ChannelListTest : BaseTest() {
             assertIsDisplayed()
 
             FAKE_CHANNELS.forEachIndexed { index, item ->
-//                Results are flat in Compose 1.1.0 :(
-//                onChildAt(index).apply {
-//                    printToLog("TREE")
-//                    assertHasClickAction()
-//                    onChildren().apply {
-//                        assertAny(hasText(item.name))
-//                        assertAny(hasText(item.description!!))
-//                    }
-//                }
-
-//                Workaround
-
                 // Thumbnail
-                onChildAt(3 * index).assertContentDescriptionEquals(InstrumentationRegistry.getInstrumentation().context.getString(R.string.thumbnail))
+                onChildAt(3 * index).assertContentDescriptionEquals(context.getString(R.string.thumbnail))
                 // Channel name
                 onChildAt(3 * index + 1).assert(hasText(item.name))
                 // Channel description
@@ -116,32 +99,6 @@ class ChannelListTest : BaseTest() {
             }
         }
     }
-
-    // Not possible to check it with new compose version :(
-//    @Test
-//    fun whenChannelWillBePressed_thenOnSelectedWillBeCalled() {
-//        // Given
-//        val channels = FAKE_CHANNELS
-//        val channelList =
-//            InstrumentationRegistry.getInstrumentation().context.getString(R.string.channel_list)
-//
-//        val selectedChannel = AtomicReference<ChannelUi.Data>()
-//        composeTestRule.setContent {
-//            ChatProvider(pubNub = pubNub!!) {
-//                ChannelList(channels = channels, onSelected = { selectedChannel.set(it) })
-//            }
-//        }
-//
-//        // Then
-//        composeTestRule.onNodeWithContentDescription(channelList, useUnmergedTree = true).apply {
-//            assertIsDisplayed()
-//
-//            channels.forEachIndexed { index, item ->
-//                onChildAt(3* index).onParent().performClick()
-//                Awaitility.await().untilAtomic(selectedChannel, Matchers.equalTo(item))
-//            }
-//        }
-//    }
 
     private val FAKE_CHANNELS = listOf(
         ChannelUi.Data(

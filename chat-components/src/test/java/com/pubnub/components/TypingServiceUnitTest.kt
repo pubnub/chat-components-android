@@ -111,7 +111,7 @@ class TypingServiceUnitTest {
     // region Listeners
 
     @Test
-    fun whenListenForSignalIsCalled_thenGetTypingIsExecuted() = runTest(UnconfinedTestDispatcher()) {
+    fun whenListenForSignalIsCalled_thenGetTypingIsExecuted() = runTest {
         val channelId: ChannelId = "fakeChannel"
         service.bind(channelId)
         testCoroutineScope.advanceUntilIdle()
@@ -120,7 +120,7 @@ class TypingServiceUnitTest {
     }
 
     @Test
-    fun whenListenForSignalIsCalled_andResultIsAvailable_thenSetTypingDataIsExecuted() = runTest(UnconfinedTestDispatcher()) {
+    fun whenListenForSignalIsCalled_andResultIsAvailable_thenSetTypingDataIsExecuted() = runTest {
         val channelId: ChannelId = "fakeChannel"
         val fakeTyping = Typing("userId", channelId, true)
         val typingFlow: Flow<Typing> = flowOf(fakeTyping)
@@ -133,7 +133,7 @@ class TypingServiceUnitTest {
     }
 
     @Test
-    fun whenStopListenForPresenceIsCalled_thenPresenceIsNotUpdatedAnymore() = runTest(UnconfinedTestDispatcher()) {
+    fun whenStopListenForPresenceIsCalled_thenPresenceIsNotUpdatedAnymore() = runTest {
         val channelId: ChannelId = "fakeChannel"
         val fakeTyping = Typing("userId", channelId, true)
         val fakeTyping2 = Typing("userId2", channelId, true)

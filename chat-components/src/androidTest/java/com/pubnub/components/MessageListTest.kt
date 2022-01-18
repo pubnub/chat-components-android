@@ -42,8 +42,7 @@ class MessageListTest : BaseTest() {
 //    fun whenMessagePagingDataWillBePassed_thenItWillBeShown() {
 //        // Given
 //        val messages = flowOf(PagingData.from(FAKE_DATA))
-//        val messageList =
-//            InstrumentationRegistry.getInstrumentation().context.getString(R.string.message_list)
+//        val messageList = context.getString(R.string.message_list)
 //        composeTestRule.setContent {
 //            PubNubProvider(pubNub = pubNub) {
 //                MessageList(messages = messages, onMemberSelected = {})
@@ -75,8 +74,7 @@ class MessageListTest : BaseTest() {
 //    fun whenMessageMemberIconWillBePressed_thenOnSelectedWillBeCalled() {
 //        // Given
 //        val messages = flowOf(PagingData.from(FAKE_DATA))
-//        val messageList =
-//            InstrumentationRegistry.getInstrumentation().context.getString(R.string.message_list)
+//        val messageList = context.getString(R.string.message_list)
 //        val selectedMember = AtomicReference<MemberId>()
 //
 //        composeTestRule.setContent {

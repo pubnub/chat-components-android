@@ -10,8 +10,8 @@ import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.*
 import timber.log.Timber
 
@@ -32,7 +32,7 @@ class MessageRemoteMediatorUnitTest {
         }
     }
 
-    private val testCoroutineDispatcher = UnconfinedTestDispatcher()
+    private val testCoroutineDispatcher = StandardTestDispatcher()
 
     private val testCoroutineScope = TestScope(testCoroutineDispatcher)
 
