@@ -133,7 +133,7 @@ object Libs {
     }
 
     object PubNub {
-        private const val version = "6.3.0"
+        private const val version = "7.0.0"
         const val pubnub = "com.pubnub:pubnub-kotlin:$version"
     }
 
