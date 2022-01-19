@@ -8,6 +8,7 @@ import com.pubnub.components.data.message.MessageDao
 import com.pubnub.components.repository.util.Query
 import com.pubnub.components.repository.util.Sorted
 import com.pubnub.framework.data.ChannelId
+import com.pubnub.framework.data.MessageId
 import com.pubnub.framework.util.Timetoken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -26,55 +27,55 @@ class DefaultMessageRepository(
     /**
      * Returns Message with Channel list
      *
-     * @param messageId Message ID to match
+     * @param id Message ID to match
      * @return DBMessage if exists, null otherwise
      */
-    override suspend fun get(messageId: String): DBMessage? =
-        messageDao.get(messageId)
+    override suspend fun get(id: MessageId): DBMessage? =
+        messageDao.get(id)
 
     /**
      * Returns list of Messages with Channels
      *
-     * @param channelId ID of Channel to get Message from
+     * @param id ID of Channel to get Message from
      * @param count Count of Messages to return
      * @param before If true, returns the Messages before passed Timestamp. Otherwise returns messages after Timestamp
      * @param timestamp Timestamp to get Messages before or after
      * @return List of DBMessage
      */
-    override suspend fun get(
-        channelId: String,
+    override suspend fun getList(
+        id: ChannelId,
         count: Int,
         before: Boolean,
-        timestamp: Long,
+        timestamp: Timetoken,
     ): List<DBMessage> =
         if (before) messageDao.getBefore(
-            channelId = channelId,
+            id = id,
             count = count,
             timestamp = timestamp
         )
-        else messageDao.getAfter(channelId = channelId, count = count, timestamp = timestamp)
+        else messageDao.getAfter(id = id, count = count, timestamp = timestamp)
 
     /**
      * Checks if database contains Message with passed id
      *
-     * @param messageId ID of Message to check
+     * @param id ID of Message to check
      *
      * @return True if Message exists, False otherwise
      */
-    override suspend fun has(messageId: String): Boolean =
-        get(messageId) != null
+    override suspend fun has(id: MessageId): Boolean =
+        get(id) != null
 
     /**
      * Returns Paginated Source of Message list
      *
-     * @param channelId When not null, returned list contains only Messages from passed channel.
+     * @param id When not null, returned list contains only Messages from passed channel.
      *              Otherwise all the Messages are returned.
      * @param filter Room filter query
      * @param sorted Array of Sorted objects, result will be sorted by it.
      * @return PagingSource of DBChannelWithMembers
      */
     override fun getAll(
-        channelId: String?,
+        id: ChannelId?,
         filter: Query?,
         vararg sorted: Sorted,
     ): PagingSource<Int, DBMessage> {
@@ -82,13 +83,13 @@ class DefaultMessageRepository(
         val arguments: MutableList<Any> = mutableListOf()
 
         // Where clause
-        if (filter != null || channelId != null)
+        if (filter != null || id != null)
             stringQuery += "WHERE"
 
         // Filter by userId
-        if (channelId != null) {
+        if (id != null) {
             stringQuery += "channel LIKE ?"
-            arguments.add(channelId)
+            arguments.add(id)
         }
 
         // Filtering
@@ -109,52 +110,52 @@ class DefaultMessageRepository(
     /**
      * Returns last Message for passed Channel ID
      *
-     * @param channelId ID of Channel to get last Message from
+     * @param id ID of Channel to get last Message from
      * @return DBMessage or null
      */
-    override suspend fun getLast(channelId: String): DBMessage? =
-        messageDao.getLast(channelId).firstOrNull()
+    override suspend fun getLast(id: ChannelId): DBMessage? =
+        messageDao.getLast(id).firstOrNull()
 
     /**
      * Returns list of last Messages for passed Channel ID
      *
-     * @param channelId ID of Channel to get last Message from
+     * @param id ID of Channel to get last Message from
      * @param count Count of Messages to return
      * @return Flow of List<DBMessage>
      */
     override fun getLastByChannel(
-        channelId: ChannelId,
+        id: ChannelId,
         count: Long,
     ): Flow<List<DBMessage>> =
-        messageDao.getLastByChannel(channelId, count)
+        messageDao.getLastByChannel(id, count)
 
     /**
      * Checks if there is more Messages before passed Timestamp
      *
-     * @param channelId ID of Channel to check Messages from
+     * @param id ID of Channel to check Messages from
      * @param timestamp Timestamp to check
      * @return True if there are Messages before passed Timestamp, False otherwise
      */
-    override suspend fun hasMoreBefore(channelId: String, timestamp: Timetoken): Boolean =
-        messageDao.getBefore(channelId, 1, timestamp).isNotEmpty()
+    override suspend fun hasMoreBefore(id: ChannelId, timestamp: Timetoken): Boolean =
+        messageDao.getBefore(id, 1, timestamp).isNotEmpty()
 
     /**
      * Checks if there is more Messages after passed Timestamp
      *
-     * @param channelId ID of Channel to check Messages from
+     * @param id ID of Channel to check Messages from
      * @param timestamp Timestamp to check
      * @return True if there are Messages after passed Timestamp, False otherwise
      */
-    override suspend fun hasMoreAfter(channelId: String, timestamp: Timetoken): Boolean =
-        messageDao.getAfter(channelId, 1, timestamp).isNotEmpty()
+    override suspend fun hasMoreAfter(id: ChannelId, timestamp: Timetoken): Boolean =
+        messageDao.getAfter(id, 1, timestamp).isNotEmpty()
 
     /**
      * Adds passed Message to database
      *
      * @param message DBMessage object do add
      */
-    override suspend fun add(message: DBMessage) {
-        messageDao.insert(message)
+    override suspend fun add(vararg message: DBMessage) {
+        messageDao.insert(*message)
     }
 
     /**
@@ -169,10 +170,10 @@ class DefaultMessageRepository(
     /**
      * Removes all Messages from passed Channel
      *
-     * @param channel ID of Channel to remove Messages from
+     * @param id ID of Channel to remove Messages from
      */
-    override suspend fun removeAll(channel: ChannelId) {
-        messageDao.deleteAll(channel)
+    override suspend fun removeAll(id: ChannelId) {
+        messageDao.deleteAll(id)
     }
 
     /**
@@ -185,37 +186,14 @@ class DefaultMessageRepository(
     }
 
     /**
-     * Sets status of Message
-     *
-     * @param messageId Id of Message to set status to
-     * @param isSent True if Message is sent, False otherwise
-     * @param exception Exception of sending Message, or null
-     * @param timestamp Timestamp of update, or null
-     */
-    override suspend fun setStatus(
-        messageId: String,
-        isSent: Boolean,
-        exception: String?,
-        timestamp: Timetoken?,
-    ) {
-        val message = get(messageId) ?: throw Exception("Message not found exception")
-        val updatedMessage = message.copy(
-            isSent = isSent,
-            exception = exception,
-            timetoken = timestamp ?: message.timetoken,
-        )
-        messageDao.update(updatedMessage)
-    }
-
-    /**
      * Sets SENT status to Message
      *
-     * @param messageId Id of Message to set status to
+     * @param id Id of Message to set status to
      * @param timestamp Timestamp of update, or null
      */
-    override suspend fun setSent(messageId: String, timestamp: Timetoken?) {
+    override suspend fun setSent(id: MessageId, timestamp: Timetoken?) {
         setStatus(
-            messageId = messageId,
+            id = id,
             isSent = true,
             exception = null,
             timestamp = timestamp,
@@ -225,17 +203,17 @@ class DefaultMessageRepository(
     /**
      * Sets ERROR status to Message
      *
-     * @param messageId Id of Message to set status to
+     * @param id Id of Message to set status to
      * @param exception Exception of sending Message, or null
      * @param timestamp Timestamp of update, or null
      */
     override suspend fun setSendingError(
-        messageId: String,
+        id: MessageId,
         exception: String?,
         timestamp: Timetoken?,
     ) {
         setStatus(
-            messageId = messageId,
+            id = id,
             isSent = false,
             exception = exception,
             timestamp = timestamp,
@@ -245,9 +223,32 @@ class DefaultMessageRepository(
     /**
      * Returns last message Timestamp
      *
-     * @param channelId ID of Channel to get Messages from
+     * @param id ID of Channel to get Messages from
      * @return last Message Timestamp or 1, when not exists
      */
-    override suspend fun getLastTimestamp(channelId: String): Long =
-        messageDao.getLast(channelId).firstOrNull()?.timetoken ?: 1L
+    override suspend fun getLastTimestamp(id: ChannelId): Timetoken =
+        messageDao.getLast(id).firstOrNull()?.timetoken ?: 1L
+
+    /**
+     * Sets status of Message
+     *
+     * @param id Id of Message to set status to
+     * @param isSent True if Message is sent, False otherwise
+     * @param exception Exception of sending Message, or null
+     * @param timestamp Timestamp of update, or null
+     */
+    private suspend fun setStatus(
+        id: MessageId,
+        isSent: Boolean,
+        exception: String?,
+        timestamp: Timetoken?,
+    ) {
+        val message = get(id) ?: throw Exception("Message not found exception")
+        val updatedMessage = message.copy(
+            isSent = isSent,
+            exception = exception,
+            timetoken = timestamp ?: message.timetoken,
+        )
+        messageDao.update(updatedMessage)
+    }
 }

@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.platform.app.InstrumentationRegistry
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
 import com.pubnub.components.data.Database
@@ -26,6 +27,9 @@ open class BaseTest {
 
     private val userId: UserId = "fakeUser"
 
+    internal val context: Context
+    get() = InstrumentationRegistry.getInstrumentation().context
+
     @Before
     @CallSuper
     open fun setUp() {
@@ -36,6 +40,7 @@ open class BaseTest {
     @CallSuper
     open fun tearDown() {
         clearAllMocks()
+        unmockkAll()
     }
 
     fun mockPubNub() {

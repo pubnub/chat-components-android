@@ -31,7 +31,7 @@ import java.util.*
  */
 class MessageInputViewModel(
     private val messageService: MessageService<DBMessage>,
-    private val userId: UserId,
+    private val id: UserId,
     private val typingService: TypingService? = null,
 ) : ViewModel() {
 
@@ -41,7 +41,7 @@ class MessageInputViewModel(
          * predefined [TypingService], @see [defaultWithTypingService()]
          *
          * @param messageService Message Service implementation
-         * @param userId ID of current user
+         * @param id ID of current user
          * @param typingService Typing Service implementation
          *
          * @return ViewModel instance
@@ -49,27 +49,27 @@ class MessageInputViewModel(
         @Composable
         fun default(
             messageService: MessageService<DBMessage> = LocalMessageService.current,
-            userId: UserId = LocalPubNub.current.configuration.uuid,
+            id: UserId = LocalPubNub.current.configuration.uuid,
             typingService: TypingService? = null,
         ): MessageInputViewModel =
             viewModel(
-                factory = MessageInputViewModelFactory(messageService, userId, typingService)
+                factory = MessageInputViewModelFactory(messageService, id, typingService)
             )
 
         /**
          * Returns default implementation of [MessageInputViewModel] with predefined [TypingService]
          *
          * @param messageService Message Service implementation
-         * @param userId ID of current user
+         * @param id ID of current user
          *
          * @return ViewModel instance
          */
         @Composable
         fun defaultWithTypingService(
             messageService: MessageService<DBMessage> = LocalMessageService.current,
-            userId: UserId = LocalPubNub.current.configuration.uuid,
+            id: UserId = LocalPubNub.current.configuration.uuid,
         ): MessageInputViewModel =
-            default(messageService, userId, LocalTypingService.current)
+            default(messageService, id, LocalTypingService.current)
     }
 
     private val time: Timetoken get() = System.currentTimeMillis().timetoken
@@ -77,7 +77,7 @@ class MessageInputViewModel(
     /**
      * Send a message to all subscribers of a channel, and store it in local database.
      *
-     * @param channelId ID of the channel
+     * @param id ID of the channel
      * @param message Text to send
      * @param type Type of a message, @see [NetworkMessage.Type]
      * @param attachments List of attachments
@@ -86,20 +86,20 @@ class MessageInputViewModel(
      */
     @Suppress("NAME_SHADOWING")
     fun send(
-        channelId: ChannelId,
+        id: ChannelId,
         message: String,
         @NetworkMessageType type: String = NetworkMessage.Type.DEFAULT,
         attachments: List<NetworkMessage.Attachment>? = null,
         onSuccess: (String, Timetoken) -> Unit = { _: String, _: Timetoken -> },
         onError: (Exception) -> Unit = { _: Exception -> }
     ) {
-        Timber.i("Sending message '$message' to channel '$channelId'")
-        val data = create(channelId, type, message, attachments)
+        Timber.i("Sending message '$message' to channel '$id'")
+        val data = create(id, type, message, attachments)
         viewModelScope.launch(Dispatchers.IO) {
             messageService.send(
-                channel = channelId,
+                id = id,
                 message = data,
-                meta = hashMapOf("uuid" to userId),
+                meta = hashMapOf("uuid" to this@MessageInputViewModel.id),
                 onSuccess = onSuccess,
                 onError = onError,
             )
@@ -107,15 +107,15 @@ class MessageInputViewModel(
     }
 
     private fun create(
-        channel: ChannelId,
+        id: ChannelId,
         type: String,
         text: String,
         attachments: List<NetworkMessage.Attachment>?
     ) =
         DBMessage(
             id = UUID.randomUUID().toString(),
-            publisher = userId,
-            channel = channel,
+            publisher = this.id,
+            channel = id,
             type = type,
             text = text,
             attachment = attachments?.toDb(),
@@ -127,25 +127,25 @@ class MessageInputViewModel(
     /**
      * Sets the current user typing state on passed channel
      *
-     * @param channelId ID of the channel
+     * @param id ID of the channel
      * @param isTyping [Boolean.true] if user is typing, [Boolean.false] otherwise
      */
-    fun setTyping(channelId: ChannelId, isTyping: Boolean) {
+    fun setTyping(id: ChannelId, isTyping: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            typingService?.setTyping(userId, channelId, isTyping)
+            typingService?.setTyping(this@MessageInputViewModel.id, id, isTyping)
         }
     }
 }
 
 class MessageInputViewModelFactory(
     private val messageService: MessageService<DBMessage>,
-    private val userId: UserId,
+    private val id: UserId,
     private val typingService: TypingService? = null,
 ) :
     ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return MessageInputViewModel(messageService, userId, typingService) as T
+        return MessageInputViewModel(messageService, id, typingService) as T
     }
 }
 

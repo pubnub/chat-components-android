@@ -89,7 +89,7 @@ class MemberViewModel constructor(
             pagingSourceFactory =
             {
                 repository.getAll(
-                    channelId = channelId,
+                    id = channelId,
                     filter = filter,
                     sorted = sorted,
                 )

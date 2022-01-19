@@ -25,7 +25,7 @@ object DefaultMemberRenderer : MemberRenderer {
     @Composable
     override fun Member(
         name: String,
-        description: String,
+        description: String?,
         profileUrl: String,
         online: Boolean?,
         onClick: () -> Unit,
@@ -62,7 +62,7 @@ object DefaultMemberRenderer : MemberRenderer {
     @Composable
     fun MemberItemView(
         name: String,
-        description: String,
+        description: String?,
         profileUrl: String,
         clickAction: () -> Unit,
         online: Boolean? = null,
@@ -114,18 +114,20 @@ object DefaultMemberRenderer : MemberRenderer {
                 )
 
                 // description
-                Text(
-                    text = description,
-                    fontWeight = theme.description.fontWeight,
-                    fontSize = theme.description.fontSize,
-                    color = theme.description.color,
-                    overflow = theme.description.overflow,
-                    maxLines = theme.description.maxLines,
-                    modifier = theme.description.modifier.placeholder(
-                        visible = placeholder,
-                        color = Color.Gray
-                    ),
-                )
+                description?.let {
+                    Text(
+                        text = it,
+                        fontWeight = theme.description.fontWeight,
+                        fontSize = theme.description.fontSize,
+                        color = theme.description.color,
+                        overflow = theme.description.overflow,
+                        maxLines = theme.description.maxLines,
+                        modifier = theme.description.modifier.placeholder(
+                            visible = placeholder,
+                            color = Color.Gray
+                        ),
+                    )
+                }
             }
         }
     }

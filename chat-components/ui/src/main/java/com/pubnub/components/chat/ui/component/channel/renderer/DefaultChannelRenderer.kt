@@ -19,14 +19,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
+import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.google.accompanist.placeholder.placeholder
 import com.pubnub.components.chat.ui.R
 import com.pubnub.components.chat.ui.component.channel.LocalChannelListTheme
 import com.pubnub.components.chat.util.CenterInside
+import org.jetbrains.annotations.Async
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalCoilApi::class)
 object DefaultChannelRenderer : ChannelRenderer {
@@ -34,10 +39,10 @@ object DefaultChannelRenderer : ChannelRenderer {
     override fun Channel(
         name: String,
         description: String,
-        profileUrl: String,
-        onClick: () -> Unit,
+        modifier: Modifier,
+        profileUrl: String?,
+        onClick: (() -> Unit)?,
         onLeave: (() -> Unit)?,
-        modifier: Modifier
     ) {
         ChannelItemView(
             title = name,
@@ -73,30 +78,28 @@ object DefaultChannelRenderer : ChannelRenderer {
     fun ChannelItemView(
         title: String,
         description: String,
-        iconUrl: String,
-        clickAction: () -> Unit,
+        modifier: Modifier = Modifier,
+        iconUrl: String? = null,
+        clickAction: (() -> Unit)? = null,
         leaveAction: (() -> Unit)? = null,
         placeholder: Boolean = false,
-        modifier: Modifier = Modifier,
     ) {
 
         val theme = LocalChannelListTheme.current
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = modifier.clickable { clickAction() },
+            modifier = modifier.apply{ clickAction?.let { action -> clickable { action() } } },
         ) {
             // icon
-            Image(
-                painter = rememberImagePainter(
-                    data = iconUrl,
-                    builder = {
-                        crossfade(false)
-                        placeholder(drawableResId = R.drawable.ic_baseline_account_circle_24)
-                        transformations(CircleCropTransformation())
-                    }
-                ),
-                contentDescription = "Thumbnail",
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(iconUrl)
+                    .placeholder(drawableResId = R.drawable.ic_baseline_account_circle_24)
+                    .crossfade(false)
+                    .transformations(CircleCropTransformation())
+                    .build(),
+                contentDescription = LocalContext.current.resources.getString(R.string.thumbnail),
                 contentScale = CenterInside,
                 modifier = theme.image.placeholder(visible = placeholder, color = Color.Gray),
             )
@@ -135,7 +138,7 @@ object DefaultChannelRenderer : ChannelRenderer {
             if (leaveAction != null && theme.icon.icon != null)
                 Icon(
                     imageVector = theme.icon.icon!!,
-                    contentDescription = "Leave",
+                    contentDescription = LocalContext.current.resources.getString(R.string.leave),
                     modifier = Modifier
                         .clip(theme.icon.shape)
                         .clickable { leaveAction() }
@@ -171,7 +174,7 @@ object DefaultChannelRenderer : ChannelRenderer {
             onClick?.let { action ->
                 Icon(
                     imageVector = Icons.Rounded.AddCircleOutline,
-                    contentDescription = "Add",
+                    contentDescription = LocalContext.current.resources.getString(R.string.add),
                     modifier = Modifier
                         .size(24.dp)
                         .clip(CircleShape)

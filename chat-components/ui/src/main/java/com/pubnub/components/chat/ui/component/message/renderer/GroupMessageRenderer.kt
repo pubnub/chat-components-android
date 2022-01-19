@@ -19,7 +19,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
+import coil.compose.AsyncImage
 import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
 import com.google.accompanist.placeholder.placeholder
 import com.pubnub.components.chat.ui.R
 import com.pubnub.components.chat.ui.component.common.ShapeTheme
@@ -78,31 +80,30 @@ object GroupMessageRenderer : MessageRenderer {
 
     @Composable
     override fun Separator(text: String) {
-        val separatorTheme = LocalMessageListTheme.current.separator
-        val messageTheme = LocalMessageListTheme.current.message.text
-        CompositionLocalProvider(
-            LocalContentAlpha provides ContentAlpha.disabled,
-        ) {
-            Row(
-                modifier = separatorTheme.modifier,
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Divider(modifier = Modifier.weight(1f), color = messageTheme.color)
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Text(text = text, theme = messageTheme)
-
-                Spacer(modifier = Modifier.width(8.dp))
-                Divider(modifier = Modifier.weight(1f), color = messageTheme.color)
-            }
-        }
+//        val separatorTheme = LocalMessageListTheme.current.separator
+//        val messageTheme = LocalMessageListTheme.current.message.text
+//        CompositionLocalProvider(
+//            LocalContentAlpha provides ContentAlpha.disabled,
+//        ) {
+//            Row(
+//                modifier = separatorTheme.modifier,
+//                horizontalArrangement = Arrangement.Center,
+//                verticalAlignment = Alignment.CenterVertically,
+//            ) {
+//                Divider(modifier = Modifier.weight(1f), color = messageTheme.color)
+//                Spacer(modifier = Modifier.width(8.dp))
+//
+//                Text(text = text, theme = messageTheme)
+//
+//                Spacer(modifier = Modifier.width(8.dp))
+//                Divider(modifier = Modifier.weight(1f), color = messageTheme.color)
+//            }
+//        }
     }
 
     private val dateFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
     private fun Timetoken.formatDate() =
         dateFormat.format(this.seconds).uppercase()
-
 
     @Composable
     fun GroupChatMessage(
@@ -386,15 +387,13 @@ object GroupMessageRenderer : MessageRenderer {
         imageUrl: String,
         modifier: Modifier = Modifier.defaultMinSize(200.dp, 200.dp)
     ) {
-        val painter = rememberImagePainter(
-            data = imageUrl,
-            builder = {
-                crossfade(true)
-            }
-        )
+        val model = ImageRequest.Builder(LocalContext.current)
+            .data(imageUrl)
+            .crossfade(true)
+            .build()
 
-        Image(
-            painter = painter,
+        AsyncImage(
+            model = model,
             contentDescription = imageUrl,
             alignment = Alignment.TopStart,
             modifier = modifier,

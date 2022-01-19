@@ -1,4 +1,4 @@
-# Android Chat Components
+# PubNub Chat Components for Android
 
 Chat components provide easy-to-use building blocks to create Android chat applications, for use cases like live event messaging, telemedicine, and service desk support.
 
@@ -24,6 +24,7 @@ Our Android component library provides chat features like direct and group messa
 
 ## Related documentation
 
+* [PubNub Chat Components for Android Documentation](https://www.pubnub.com/docs/chat/components/android/overview-android)
 * [Kotlin SDK Documentation](https://www.pubnub.com/docs/sdks/kotlin)
 * [Jetpack Compose Tutorial](https://developer.android.com/jetpack/compose/tutorial)
 * [Android Room Tutorial](https://developer.android.com/training/data-storage/room)
@@ -33,7 +34,7 @@ Our Android component library provides chat features like direct and group messa
 
 | Name | Requirement |
 | :--- | :------ |
-| [Android Studio](https://developer.android.com/studio/) | >= Arctic Fox 2020.3.1 |
+| [Android Studio](https://developer.android.com/studio/preview) | >= Bumblebee 2021.1.1 |
 | Platform | Android |
 | Language | Kotlin |
 | UI Toolkit | Jetpack Compose |
@@ -45,9 +46,7 @@ Our Android component library provides chat features like direct and group messa
 
 1. When you create a new app, the first set of keys is generated automatically, but a single app can have as many keysets as you like. We recommend that you create separate keysets for production and test environments.
 
-   :bulb: **Additional features**
-   
-      _Depending on your use case, you may want your application to have some PubNub features, such as Presence, Storage and Playback (including correct Retention), or Objects. To use them, you must first enable them on your Admin Portal keysets. If you decide to use Objects, be sure to select a geographic region corresponding to most users of your application._
+> **NOTE:** Depending on your use case, you may want your application to have some PubNub features, such as Presence, Storage and Playback (including correct Retention), or Objects. To use them, you must first enable them on your Admin Portal keysets. If you decide to use Objects, be sure to select a geographic region corresponding to most users of your application.
 
 
 ## Create a new project for your app
@@ -63,11 +62,10 @@ Our Android component library provides chat features like direct and group messa
 1. Go to the project’s `build.gradle` file and update the Jetpack Compose version:
 
     ```kotlin
-    compose_version = '1.0.2'
+    compose_version = '1.1.0-rc02'
     ```
 
 For any additional questions, refer to [Jetpack Compose documentation](https://developer.android.com/jetpack/compose/setup).
-Check warning on line 45 in docs/components/android/get-started-android.md
 
 ## Install chat components
 
@@ -75,7 +73,7 @@ Check warning on line 45 in docs/components/android/get-started-android.md
 
     ```kotlin
     implementation "com.pubnub:pubnub-kotlin:6.2.0"
-    implementation "com.pubnub.components:chat-android:0.1.0"
+    implementation "com.pubnub.components:chat-android:0.1.1"
     ```
 
 1. Click **Sync Now** to build dependencies for your Android project.

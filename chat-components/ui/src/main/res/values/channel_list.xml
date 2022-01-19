@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- GROUP NAMES -->
+    <string name="channels">Channels</string>
+    <string name="direct_chats">Direct Chats</string>
+    <string name="group_title">Group</string>
+    <string name="default_title">Default</string>
+    <string name="direct_title">Direct</string>
+
+    <!-- RENDERER -->
+    <string name="thumbnail">Thumbnail</string>
+    <string name="leave">Leave</string>
+    <string name="add">Add</string>
+
     <!-- SEMANTICS -->
     <string name="channel_list">channel_list</string>
 </resources>

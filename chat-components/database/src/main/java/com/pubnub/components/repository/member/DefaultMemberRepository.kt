@@ -23,23 +23,23 @@ class DefaultMemberRepository(
     /**
      * Returns Member with Channel list
      *
-     * @param userId User ID to match
+     * @param id User ID to match
      * @return DBMemberWithChannels if exists, null otherwise
      */
-    override suspend fun get(userId: UserId): DBMemberWithChannels? =
-        memberDao.get(userId)
+    override suspend fun get(id: UserId): DBMemberWithChannels? =
+        memberDao.get(id)
 
     /**
      * Returns Paginated Source of Members with Channel list
      *
-     * @param channelId When not null, returns list of Members for selected channel.
+     * @param id When not null, returns list of Members for selected channel.
      *              Otherwise list of all Members will be returned.
      * @param filter Room filter query
      * @param sorted Array of Sorted objects, result will be sorted by it.
      * @return PagingSource of DBMemberWithChannels
      */
     override fun getAll(
-        channelId: ChannelId?,
+        id: ChannelId?,
         filter: Query?,
         vararg sorted: Sorted
     ): PagingSource<Int, DBMemberWithChannels> {
@@ -47,13 +47,13 @@ class DefaultMemberRepository(
         val arguments: MutableList<Any> = mutableListOf()
 
         // Where clause
-        if (filter != null || channelId != null)
+        if (filter != null || id != null)
             stringQuery += "WHERE"
 
         // Filter by channelId
-        if (channelId != null) {
+        if (id != null) {
             stringQuery += "memberId IN (SELECT memberId FROM `membership` WHERE channelId LIKE ?)"
-            arguments.add(channelId)
+            arguments.add(id)
         }
 
         // Filtering
@@ -74,12 +74,12 @@ class DefaultMemberRepository(
     /**
      * Returns complete list of Members
      *
-     * @param channelId When not null, returns list of Members from passed channelId.
+     * @param id When not null, returns list of Members from passed channelId.
      *                  Otherwise list of all Members will be returned.
      * @return List of DBMemberWithChannels
      */
-    override suspend fun getList(channelId: ChannelId?): List<DBMemberWithChannels> =
-        channelId?.let { memberDao.getList(it) } ?: memberDao.getList()
+    override suspend fun getList(id: ChannelId?): List<DBMemberWithChannels> =
+        id?.let { memberDao.getList(it) } ?: memberDao.getList()
 
     /**
      * Adds passed Member to database
@@ -93,9 +93,9 @@ class DefaultMemberRepository(
     /**
      * Removes Member with passed id
      *
-     * @param id ID of Membership to remove
+     * @param id ID of User to remove
      */
-    override suspend fun remove(id: String) {
+    override suspend fun remove(id: UserId) {
         memberDao.delete(id)
     }
 

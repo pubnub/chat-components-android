@@ -13,13 +13,16 @@ interface MessageService<Data : Message> {
 
     @Suppress("NAME_SHADOWING")
     suspend fun send(
-        channel: ChannelId, message: Data, meta: Any? = null, store: Boolean = true,
+        id: ChannelId,
+        message: Data,
+        meta: Any? = null,
+        store: Boolean = true,
         onSuccess: (String, Timetoken) -> Unit = { message, result -> Timber.i("Message '$message' sent, result: $result") },
         onError: (Exception) -> Unit = { Timber.i("Message sending error: $it") },
     )
 
     suspend fun pullHistory(
-        channel: ChannelId,
+        id: ChannelId,
         start: Long?,
         end: Long?,
         count: Int,

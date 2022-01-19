@@ -7,11 +7,14 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.pubnub.components.chat.provider.ChatProvider
 import com.pubnub.components.chat.ui.component.input.renderer.DefaultTypingIndicatorRenderer
 import com.pubnub.framework.data.Typing
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class TypingIndicatorTest : BaseTest() {
 
     @get:Rule
@@ -32,13 +35,12 @@ class TypingIndicatorTest : BaseTest() {
     }
 
     @Test
-    fun whenTypingDataWillBePassed_andTypingWillBeTrue_thenTypingIndicatorWillBeShown() {
+    fun whenTypingDataWillBePassed_andTypingWillBeTrue_thenTypingIndicatorWillBeShown() = runTest{
         // Given
-        val typingIndicator =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.typing_indicator)
+        val typingIndicator = context.getString(R.string.typing_indicator)
         val typingData = listOf(Typing("userId", "channelId", true))
 
-        val expectedText = InstrumentationRegistry.getInstrumentation().context.getString(
+        val expectedText = context.getString(
             R.string.is_typing,
             "userId"
         )
@@ -58,13 +60,12 @@ class TypingIndicatorTest : BaseTest() {
 
 
     @Test
-    fun whenTypingDataWillBePassed_andTypingWillBeFalse_thenTypingIndicatorWillNotBeShown() {
+    fun whenTypingDataWillBePassed_andTypingWillBeFalse_thenTypingIndicatorWillNotBeShown() = runTest{
         // Given
-        val typingIndicator =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.typing_indicator)
+        val typingIndicator = context.getString(R.string.typing_indicator)
         val typingData = listOf(Typing("userId", "channelId", false))
 
-        val expectedText = InstrumentationRegistry.getInstrumentation().context.getString(
+        val expectedText = context.getString(
             R.string.is_typing,
             "userId"
         )
@@ -83,15 +84,14 @@ class TypingIndicatorTest : BaseTest() {
     }
 
     @Test
-    fun whenTypingIsShowing_andTypingFalseIsReceived_thenTypingIndicatorWillBeHide() {
+    fun whenTypingIsShowing_andTypingFalseIsReceived_thenTypingIndicatorWillBeHide() = runTest{
         // Given
-        val typingIndicator =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.typing_indicator)
+        val typingIndicator = context.getString(R.string.typing_indicator)
         val typingData = listOf(Typing("userId", "channelId", true))
         val notTypingData = listOf(Typing("userId", "channelId", false))
         val typingState = mutableStateOf(typingData)
 
-        val expectedText = InstrumentationRegistry.getInstrumentation().context.getString(
+        val expectedText = context.getString(
             R.string.is_typing,
             "userId"
         )
@@ -118,15 +118,14 @@ class TypingIndicatorTest : BaseTest() {
     }
 
     @Test
-    fun whenTypingIsNotShowing_andTypingTrueIsReceived_thenTypingIndicatorWillBeShown() {
+    fun whenTypingIsNotShowing_andTypingTrueIsReceived_thenTypingIndicatorWillBeShown() = runTest{
         // Given
-        val typingIndicator =
-            InstrumentationRegistry.getInstrumentation().context.getString(R.string.typing_indicator)
+        val typingIndicator = context.getString(R.string.typing_indicator)
         val typingData = listOf(Typing("userId", "channelId", true))
         val notTypingData = listOf(Typing("userId", "channelId", false))
         val typingState = mutableStateOf(notTypingData)
 
-        val expectedText = InstrumentationRegistry.getInstrumentation().context.getString(
+        val expectedText = context.getString(
             R.string.is_typing,
             "userId"
         )

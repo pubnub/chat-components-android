@@ -9,10 +9,10 @@ interface ChannelRenderer {
     fun Channel(
         name: String,
         description: String,
-        profileUrl: String,
-        onClick: () -> Unit,
+        modifier: Modifier,
+        profileUrl: String?,
+        onClick: (() -> Unit)?,
         onLeave: (() -> Unit)?,
-        modifier: Modifier
     )
 
     @Composable

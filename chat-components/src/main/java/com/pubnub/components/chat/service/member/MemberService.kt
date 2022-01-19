@@ -18,6 +18,7 @@ interface MemberService<Data : Member> {
         includeCustom: Boolean = true,
     )
 
+    fun add(member: Data, includeCustom: Boolean)
     fun remove(id: UserId? = null)
 }
 
