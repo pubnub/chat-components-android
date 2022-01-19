@@ -38,10 +38,10 @@ Our Android component library provides chat features like direct and group messa
 
 1. Inside your Android Studio project, open the module's `build.gradle` module and add both Kotlin SDK and PubNub Chat Components for Android implementations:
 
-```kotlin
-implementation "com.pubnub:pubnub-kotlin:7.0.0"
-implementation "com.pubnub.components:chat-android:0.1.2"
-```
+    ```kotlin
+    implementation "com.pubnub:pubnub-kotlin:7.0.0"
+    implementation "com.pubnub.components:chat-android:0.2.0"
+    ```
 
 2. Click **Sync Now** or **Sync Project with Gradle Files** to build dependencies for your Android project.
 ### Test sample apps
