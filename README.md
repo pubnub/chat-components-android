@@ -43,7 +43,7 @@ implementation "com.pubnub:pubnub-kotlin:7.0.0"
 implementation "com.pubnub.components:chat-android:0.1.2"
 ```
 
-1. Click **Sync Now** or **Sync Project with Gradle Files** to build dependencies for your Android project.
+2. Click **Sync Now** or **Sync Project with Gradle Files** to build dependencies for your Android project.
 ### Test sample apps
 
 Explore [sample apps](https://github.com/pubnub/chat-components-android-examples/blob/master/README.md) that are built using chat components.
