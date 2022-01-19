@@ -7,7 +7,6 @@ apply plugin: "com.github.ben-manes.versions"
 buildscript {
     repositories {
         google()
-        jcenter()
         mavenCentral()
         gradlePluginPortal()
     }
@@ -23,7 +22,6 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
         mavenCentral()
 
         if (!Libs.AndroidX.Compose.snapshot.isEmpty()) {
