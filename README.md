@@ -30,7 +30,7 @@ Our Android component library provides chat features like direct and group messa
 | Platform | Android |
 | Language | Kotlin |
 | UI Toolkit | Jetpack Compose |
-| [PubNub Kotlin SDK](https://github.com/pubnub/kotlin) | >= 6.0.2 |
+| [PubNub Kotlin SDK](https://github.com/pubnub/kotlin) | >= 7.0.0 |
 
 ## Usage
 
