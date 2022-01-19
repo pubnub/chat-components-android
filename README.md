@@ -30,11 +30,23 @@ Our Android component library provides chat features like direct and group messa
 | Platform | Android |
 | Language | Kotlin |
 | UI Toolkit | Jetpack Compose |
-| [PubNub Kotlin SDK](https://github.com/pubnub/kotlin) | >= 6.0.2 |
+| [PubNub Kotlin SDK](https://github.com/pubnub/kotlin) | >= 7.0.0 |
 
 ## Usage
 
-Start by exploring our [sample apps](https://github.com/pubnub/chat-components-android-examples/blob/master/README.md) that are built using chat components.
+### Install chat components
+
+1. Inside your Android Studio project, open the module's `build.gradle` module and add both Kotlin SDK and PubNub Chat Components for Android implementations:
+
+```kotlin
+implementation "com.pubnub:pubnub-kotlin:7.0.0"
+implementation "com.pubnub.components:chat-android:0.1.2"
+```
+
+1. Click **Sync Now** or **Sync Project with Gradle Files** to build dependencies for your Android project.
+### Test sample apps
+
+Explore [sample apps](https://github.com/pubnub/chat-components-android-examples/blob/master/README.md) that are built using chat components.
 
 Follow the steps in the [Getting Started guide](https://www.pubnub.com/docs/chat/components/android/get-started-android) to set up a sample chat app and send your first message.
 
