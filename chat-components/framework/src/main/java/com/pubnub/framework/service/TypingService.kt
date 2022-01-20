@@ -14,6 +14,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Service to send and collect data about typing users
@@ -138,7 +139,7 @@ class TypingService constructor(
     private fun startTimeoutTimer() {
         if (typingTimeoutJob != null) return
         coroutineScope.launch(Dispatchers.IO) {
-            typingTimeoutJob = tickerFlow(Duration.seconds(1))
+            typingTimeoutJob = tickerFlow(1.seconds)
                 .onEach { removeOutdated() }
                 .launchIn(this)
         }

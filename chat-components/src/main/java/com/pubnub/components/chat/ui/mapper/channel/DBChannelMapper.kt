@@ -25,7 +25,7 @@ class DBChannelMapper : Mapper<DBChannelWithMembers, ChannelUi.Data> {
                 input.id,
                 input.name,
                 input.profileUrl,
-                input.custom.description
+                input.custom?.description
             )
         }
 }

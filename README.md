@@ -44,6 +44,7 @@ Our Android component library provides chat features like direct and group messa
     ```
 
 2. Click **Sync Now** or **Sync Project with Gradle Files** to build dependencies for your Android project.
+
 ### Test sample apps
 
 Explore [sample apps](https://github.com/pubnub/chat-components-android-examples/blob/master/README.md) that are built using chat components.

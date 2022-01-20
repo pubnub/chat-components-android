@@ -3,11 +3,14 @@ package com.pubnub.components
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.pubnub.components.chat.ui.component.channel.ChannelList
 import com.pubnub.components.chat.ui.component.provider.MissingPubNubException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MessageListTest : BaseTest() {
 
     @get:Rule
@@ -28,7 +31,7 @@ class MessageListTest : BaseTest() {
     }
 
     @Test(expected = MissingPubNubException::class)
-    fun whenPubNubProviderIsNotUsed_thenAnExceptionIsThrown() {
+    fun whenPubNubProviderIsNotUsed_thenAnExceptionIsThrown() = runTest{
         // Given
         composeTestRule.setContent {
             ChannelList(channels = emptyList(), onSelected = {})
@@ -39,8 +42,7 @@ class MessageListTest : BaseTest() {
 //    fun whenMessagePagingDataWillBePassed_thenItWillBeShown() {
 //        // Given
 //        val messages = flowOf(PagingData.from(FAKE_DATA))
-//        val messageList =
-//            InstrumentationRegistry.getInstrumentation().context.getString(R.string.message_list)
+//        val messageList = context.getString(R.string.message_list)
 //        composeTestRule.setContent {
 //            PubNubProvider(pubNub = pubNub) {
 //                MessageList(messages = messages, onMemberSelected = {})
@@ -72,8 +74,7 @@ class MessageListTest : BaseTest() {
 //    fun whenMessageMemberIconWillBePressed_thenOnSelectedWillBeCalled() {
 //        // Given
 //        val messages = flowOf(PagingData.from(FAKE_DATA))
-//        val messageList =
-//            InstrumentationRegistry.getInstrumentation().context.getString(R.string.message_list)
+//        val messageList = context.getString(R.string.message_list)
 //        val selectedMember = AtomicReference<MemberId>()
 //
 //        composeTestRule.setContent {

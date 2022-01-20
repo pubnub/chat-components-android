@@ -14,7 +14,7 @@ android {
         minSdk = 21
         targetSdk = 31
         versionCode = 1
-        versionName = "0.1.1"
+        versionName = "0.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -70,6 +70,7 @@ dependencies {
     implementation Libs.Kotlin.Coroutines.android
     implementation Libs.AndroidX.Activity.activityCompose
     api Libs.AndroidX.Room.runtime
+    api Libs.AndroidX.Room.paging
     api Libs.AndroidX.Room.ktx
     api Libs.AndroidX.Paging.runtime
     api Libs.AndroidX.Paging.extension

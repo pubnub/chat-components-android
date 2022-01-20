@@ -187,9 +187,9 @@ fun PubNubPreview(
     content: @Composable() () -> Unit,
 ) {
     val context = LocalContext.current
-    val pubNub = PubNub(PNConfiguration().apply { publishKey = ""; subscribeKey = "" })
+    val pubNub = PubNub(PNConfiguration(uuid = "previewUUID").apply { publishKey = ""; subscribeKey = "" })
     Database.initialize(context)
-    ChatProvider(pubNub) {
+    ChatProvider(pubNub, synchronize = false) {
         content()
     }
 }
