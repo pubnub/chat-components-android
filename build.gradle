@@ -44,3 +44,14 @@ allprojects {
     }
 }
 
+// https://github.com/ben-manes/gradle-versions-plugin
+def isUnstable = { String version ->
+    def unstableKeyword  = ['ALPHA', 'BETA'].any { it -> version.toUpperCase().contains(it) }
+    return unstableKeyword
+}
+
+tasks.named("dependencyUpdates").configure {
+    rejectVersionIf {
+        isUnstable(it.candidate.version)
+    }
+}
