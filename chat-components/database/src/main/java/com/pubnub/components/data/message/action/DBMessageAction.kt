@@ -17,14 +17,14 @@ data class DBMessageAction(
 
     override val messageTimestamp: Timetoken,
 
-    override val actionTimestamp: Timetoken,
+    override val published: Timetoken,
 
     override val type: String,
 
-    override val action: String,
+    override val value: String,
 
     @PrimaryKey
-    override val id: String = "$user-$channel-$messageTimestamp-$actionTimestamp-$type-$action",
+    override val id: String = "$user-$channel-$messageTimestamp-$published-$type-$value",
 ) : MessageAction {
 
     override fun equals(other: Any?): Boolean {
@@ -36,8 +36,8 @@ data class DBMessageAction(
         if (channel != other.channel) return false
         if (user != other.user) return false
         if (messageTimestamp != other.messageTimestamp) return false
-        if (actionTimestamp != other.actionTimestamp) return false
-        if (action != other.action) return false
+        if (published != other.published) return false
+        if (value != other.value) return false
         if (type != other.type) return false
         if (id != other.id) return false
 
@@ -48,8 +48,8 @@ data class DBMessageAction(
         var result = channel.hashCode()
         result = 31 * result + user.hashCode()
         result = 31 * result + messageTimestamp.hashCode()
-        result = 31 * result + actionTimestamp.hashCode()
-        result = 31 * result + action.hashCode()
+        result = 31 * result + published.hashCode()
+        result = 31 * result + value.hashCode()
         result = 31 * result + type.hashCode()
         result = 31 * result + id.hashCode()
         return result

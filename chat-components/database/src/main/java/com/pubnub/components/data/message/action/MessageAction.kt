@@ -2,13 +2,14 @@ package com.pubnub.components.data.message.action
 
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
+import com.pubnub.framework.util.Timetoken
 
 interface MessageAction {
     val id: String
     val channel: ChannelId
     val user: UserId
-    val messageTimestamp: Long
-    val actionTimestamp: Long
+    val messageTimestamp: Timetoken
+    val published: Timetoken
     val type: String
-    val action: String
+    val value: String
 }
