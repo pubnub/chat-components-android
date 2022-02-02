@@ -17,11 +17,13 @@ import com.pubnub.components.data.membership.DBMembership
 import com.pubnub.components.data.membership.MembershipDao
 import com.pubnub.components.data.message.DBMessage
 import com.pubnub.components.data.message.MessageDao
+import com.pubnub.components.data.message.action.DBMessageAction
+import com.pubnub.components.data.message.action.MessageActionDao
 
 object Database {
     private const val DATABASE_NAME = "pubnub_database"
 
-    lateinit var INSTANCE: PubNubDatabase<MessageDao<DBMessage, DBMessage>, ChannelDao<DBChannel, DBChannelWithMembers>, MemberDao<DBMember, DBMemberWithChannels>, MembershipDao<DBMembership>>
+    lateinit var INSTANCE: PubNubDatabase<MessageDao<DBMessage, DBMessage>, MessageActionDao<DBMessageAction>, ChannelDao<DBChannel, DBChannelWithMembers>, MemberDao<DBMember, DBMemberWithChannels>, MembershipDao<DBMembership>>
 
     fun initialize(
         applicationContext: Context,

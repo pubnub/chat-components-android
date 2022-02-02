@@ -1,5 +1,6 @@
 package com.pubnub.framework.service
 
+import androidx.annotation.StringDef
 import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.SubscribeCallback
 import com.pubnub.api.models.consumer.PNBoundedPage
@@ -219,8 +220,12 @@ class ActionService(
         _actions.emit(this@processAction)
     }
 
-    enum class Type(val value: String) {
-        EVENT_ADDED("added"),
-        EVENT_REMOVED("removed"),
+    @Retention(AnnotationRetention.SOURCE)
+    @StringDef(EVENT_ADDED, EVENT_REMOVED)
+    annotation class Type
+
+    companion object {
+        const val EVENT_ADDED = "added"
+        const val EVENT_REMOVED = "removed"
     }
 }
