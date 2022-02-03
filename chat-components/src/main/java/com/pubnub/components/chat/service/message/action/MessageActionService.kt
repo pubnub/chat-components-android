@@ -16,7 +16,6 @@ interface MessageActionService<IN: MessageAction> {
     // endregion
 
     // region Repository
-//    suspend fun insert(vararg action: IN)
     suspend fun add(channel: ChannelId, messageTimetoken: Timetoken, type: String, value: String)
     suspend fun remove(channel: ChannelId, messageTimetoken: Timetoken, published: Timetoken, type: String, value: String)
     // endregion

@@ -37,6 +37,8 @@ class DefaultMessageActionService(
 
     /**
      * Start listening for Actions
+     *
+     * @param types Accepted types of message actions, which will be stored in database
      */
     override fun bind(types: Array<String>) {
         Timber.e("Bind")
@@ -52,6 +54,12 @@ class DefaultMessageActionService(
         stopListenForActions()
     }
 
+    /**
+     * Synchronize message actions for provided channel
+     *
+     * @param channel ID of channel to synchronize
+     * @param lastTimetoken Last synchronization timestamp
+     */
     override fun synchronize(channel: ChannelId, lastTimetoken: Long?) {
         Timber.e("Sync actions for channel '$channel'")
         coroutineScope.launch(dispatcher) {
@@ -69,10 +77,17 @@ class DefaultMessageActionService(
         }
     }
 
-    private suspend fun insert(vararg action: DBMessageAction) {
-        messageActionRepository.insertUpdate(*action)
-    }
-
+    /**
+     * Removes existing message action
+     *
+     * The message action will be removed from the PubNub and local repository
+     *
+     * @param channel ID of the channel
+     * @param messageTimetoken Timetoken of the message
+     * @param published Timetoken of the message action
+     * @param type Action type
+     * @param value Action value
+     */
     override suspend fun remove(
         channel: ChannelId,
         messageTimetoken: Timetoken,
@@ -80,23 +95,46 @@ class DefaultMessageActionService(
         type: String,
         value: String,
     ) {
+        // TODO: try catch
         actionService.remove(channel, messageTimetoken, published)
         removeAction(userId, channel, messageTimetoken, type, value)
     }
 
+    /**
+     * Adds the message action
+     *
+     * The message action will be added to PubNub and local repository
+     *
+     * @param channel ID of the channel
+     * @param messageTimetoken Timetoken of the message
+     * @param type Action type
+     * @param value Action value
+     */
     override suspend fun add(
         channel: ChannelId,
         messageTimetoken: Long,
         type: String,
         value: String,
     ) {
+        // TODO: try catch
         val result = actionService.add(channel, PNMessageAction(type, value, messageTimetoken)).toResult(channel)
         addAction(result)
     }
 
     /**
+     * Stores the message action in the repository
+     *
+     * @param action Array of [DBMessageAction] objects to store
+     */
+    private suspend fun insert(vararg action: DBMessageAction) {
+        messageActionRepository.insertUpdate(*action)
+    }
+
+    /**
      * Listen for incoming Actions and process it
-     * @see process
+     *
+     * @see addAction
+     * @see removeAction
      */
     private fun listenForActions() {
         coroutineScope.launch(dispatcher) {
@@ -121,14 +159,18 @@ class DefaultMessageActionService(
     }
 
     /**
-     * Add message action
+     * Add message action to local repository
+     *
+     * @param result PubNub result object
      */
     private suspend fun addAction(result: PNMessageActionResult){
         messageActionRepository.add(mapper.map(result))
     }
 
     /**
-     * Remove message action
+     * Remove message action from local repository
+     *
+     * @param result PubNub result object
      */
     private suspend fun removeAction(result: PNMessageActionResult) {
         with(result){
@@ -137,7 +179,13 @@ class DefaultMessageActionService(
     }
 
     /**
-     * Remove message action
+     * Remove message action from repository
+     *
+     * @param user ID of the user
+     * @param channel ID of the channel
+     * @param messageTimetoken Timetoken of the message
+     * @param type Action type
+     * @param value Action value
      */
     private suspend fun removeAction(user: UserId, channel: ChannelId, messageTimetoken: Timetoken, type: String, value: String) {
         val action = messageActionRepository.get(user, channel, messageTimetoken, type, value)
