@@ -9,8 +9,8 @@ import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.repository.message.action.DefaultMessageActionRepository
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
+import com.pubnub.framework.mapper.Mapper
 import com.pubnub.framework.service.ActionService
-import com.pubnub.framework.service.ActionService.Companion.EVENT_ADDED
 import com.pubnub.framework.util.Timetoken
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.filter
@@ -23,14 +23,14 @@ import timber.log.Timber
     FlowPreview::class,
     DelicateCoroutinesApi::class,
 )
-class MessageReactionService(
+class DefaultMessageActionService(
     private val userId: UserId,
     private val actionService: ActionService,
     private val messageActionRepository: DefaultMessageActionRepository,
-    private val mapper: NetworkMessageActionMapper,
+    private val mapper: Mapper<PNMessageActionResult, DBMessageAction>,
     private val coroutineScope: CoroutineScope = GlobalScope,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-): ReactionService<DBMessageAction> {
+): MessageActionService<DBMessageAction> {
 
     private var actionJob: Job? = null
     private lateinit var types: Array<String>
@@ -53,20 +53,19 @@ class MessageReactionService(
     }
 
     override fun synchronize(channel: ChannelId, lastTimetoken: Long?) {
-        Timber.e("Sync reactions for channel '$channel'")
+        Timber.e("Sync actions for channel '$channel'")
         coroutineScope.launch(dispatcher) {
-            val lastReactionTimestamp =
-                lastTimetoken ?: messageActionRepository.getLastTimetoken(channel)
-            val reactions = actionService.getAll(
+            val lastActionTimestamp = lastTimetoken ?: messageActionRepository.getLastTimetoken(channel)
+            val actions = actionService.getAll(
                 channelId = channel,
-                end = lastReactionTimestamp + 1,
+                end = lastActionTimestamp + 1,
                 start = null,
                 limit = 100,
             )
                 .filter { it.type in types }
                 .map { mapper.map(it.toResult(channel)) }
 
-            insert(*reactions.toTypedArray())
+            insert(*actions.toTypedArray())
         }
     }
 
@@ -155,10 +154,3 @@ private fun PNMessageAction.toResult(channel: ChannelId): PNMessageActionResult 
         event = ActionService.EVENT_ADDED,
         data = this,
     )
-
-
-val LocalMessageActionService =
-    staticCompositionLocalOf<MessageReactionService> { throw MessageActionServiceNotInitializedException() }
-
-class MessageActionServiceNotInitializedException :
-    Exception("Message Action Service not initialized")

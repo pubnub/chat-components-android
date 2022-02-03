@@ -18,6 +18,9 @@ import com.pubnub.components.chat.service.member.DefaultMemberServiceImpl
 import com.pubnub.components.chat.service.member.LocalMemberService
 import com.pubnub.components.chat.service.message.DefaultMessageServiceImpl
 import com.pubnub.components.chat.service.message.LocalMessageService
+import com.pubnub.components.chat.service.message.action.DefaultMessageActionService
+import com.pubnub.components.chat.service.message.action.LocalActionService
+import com.pubnub.components.chat.service.message.action.LocalMessageActionService
 import com.pubnub.components.chat.ui.component.channel.DefaultChannelListTheme
 import com.pubnub.components.chat.ui.component.channel.LocalChannelListTheme
 import com.pubnub.components.chat.ui.component.input.DefaultLocalMessageInputTheme
@@ -48,9 +51,11 @@ import com.pubnub.components.repository.channel.DefaultChannelRepository
 import com.pubnub.components.repository.member.DefaultMemberRepository
 import com.pubnub.components.repository.membership.DefaultMembershipRepository
 import com.pubnub.components.repository.message.DefaultMessageRepository
+import com.pubnub.components.repository.message.action.DefaultMessageActionRepository
 import com.pubnub.framework.data.ChannelId
 
 import com.pubnub.framework.data.UserId
+import com.pubnub.framework.service.ActionService
 import com.pubnub.framework.service.LocalTypingService
 import com.pubnub.framework.service.TypingService
 import com.pubnub.framework.util.TypingIndicator
@@ -100,6 +105,7 @@ fun ChatProvider(
     // region Message
     val messageRepository =
         DefaultMessageRepository(database.messageDao())
+    val messageActionRepository = DefaultMessageActionRepository(database.actionDao())
     // endregion
 
     val errorHandler = TimberErrorHandler()
@@ -121,6 +127,7 @@ fun ChatProvider(
         // Repositories
         LocalChannelRepository provides channelRepository,
         LocalMessageRepository provides messageRepository,
+        LocalMessageActionRepository provides messageActionRepository,
         LocalMemberRepository provides memberRepository,
         LocalMembershipRepository provides membershipRepository,
 
@@ -149,6 +156,8 @@ fun WithServices(
         }.name
     }
 
+    val actionService = ActionService(LocalPubNub.current)
+
     CompositionLocalProvider(
         LocalMessageService provides DefaultMessageServiceImpl(
             LocalPubNub.current,
@@ -156,6 +165,13 @@ fun WithServices(
             NetworkMessageMapper(mapper),
             NetworkMessageHistoryMapper(mapper),
             LocalErrorHandler.current,
+        ),
+        LocalActionService provides actionService,
+        LocalMessageActionService provides DefaultMessageActionService(
+            LocalPubNub.current.configuration.uuid,
+            actionService,
+            LocalMessageActionRepository.current,
+            NetworkMessageActionMapper(),
         ),
         LocalChannelService provides DefaultChannelServiceImpl(
             LocalPubNub.current,

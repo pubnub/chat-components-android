@@ -12,9 +12,9 @@ import com.pubnub.components.data.message.MessageDao
 import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.data.message.action.MessageActionDao
 
-interface PubNubDatabase<Message : MessageDao<*, *>, Reaction : MessageActionDao<*>, Channel : ChannelDao<*, *>, Member : MemberDao<*, *>, Membership : MembershipDao<*>> {
+interface PubNubDatabase<Message : MessageDao<*, *>, Action : MessageActionDao<*>, Channel : ChannelDao<*, *>, Member : MemberDao<*, *>, Membership : MembershipDao<*>> {
     fun messageDao(): Message
-    fun reactionDao(): Reaction
+    fun actionDao(): Action
     fun channelDao(): Channel
     fun memberDao(): Member
     fun membershipDao(): Membership

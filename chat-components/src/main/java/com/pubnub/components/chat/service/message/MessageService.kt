@@ -26,7 +26,7 @@ interface MessageService<Data : Message> {
         start: Long?,
         end: Long?,
         count: Int,
-        withActions: Boolean = false,
+        withActions: Boolean = true,
         withUUID: Boolean = false
     )
 }

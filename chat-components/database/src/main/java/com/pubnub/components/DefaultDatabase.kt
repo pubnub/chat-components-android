@@ -38,7 +38,7 @@ import com.pubnub.components.data.message.action.DefaultMessageActionDao
 abstract class DefaultDatabase : RoomDatabase(),
     PubNubDatabase<DefaultMessageDao, DefaultMessageActionDao, DefaultChannelDao, DefaultMemberDao, DefaultMembershipDao> {
     abstract override fun messageDao(): DefaultMessageDao
-    abstract override fun reactionDao(): DefaultMessageActionDao
+    abstract override fun actionDao(): DefaultMessageActionDao
     abstract override fun channelDao(): DefaultChannelDao
     abstract override fun memberDao(): DefaultMemberDao
     abstract override fun membershipDao(): DefaultMembershipDao
