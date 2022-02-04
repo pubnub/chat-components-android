@@ -10,6 +10,7 @@ import com.pubnub.components.data.membership.*
 import com.pubnub.components.data.message.DBMessage
 import com.pubnub.components.data.message.MessageDao
 import com.pubnub.components.data.message.action.DBMessageAction
+import com.pubnub.components.data.message.action.DBMessageWithActions
 import com.pubnub.components.data.message.action.MessageActionDao
 
 interface PubNubDatabase<Message : MessageDao<*, *>, Action : MessageActionDao<*>, Channel : ChannelDao<*, *>, Member : MemberDao<*, *>, Membership : MembershipDao<*>> {
@@ -22,4 +23,4 @@ interface PubNubDatabase<Message : MessageDao<*, *>, Action : MessageActionDao<*
 
 @Suppress("UNCHECKED_CAST")
 fun DefaultDatabase.asPubNub() =
-    this as PubNubDatabase<MessageDao<DBMessage, DBMessage>, MessageActionDao<DBMessageAction>, ChannelDao<DBChannel, DBChannelWithMembers>, MemberDao<DBMember, DBMemberWithChannels>, MembershipDao<DBMembership>>
+    this as PubNubDatabase<MessageDao<DBMessage, DBMessageWithActions>, MessageActionDao<DBMessageAction>, ChannelDao<DBChannel, DBChannelWithMembers>, MemberDao<DBMember, DBMemberWithChannels>, MembershipDao<DBMembership>>

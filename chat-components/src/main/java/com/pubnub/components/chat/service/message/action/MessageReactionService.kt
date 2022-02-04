@@ -1,11 +1,12 @@
 package com.pubnub.components.chat.service.message.action
 
 import androidx.compose.runtime.staticCompositionLocalOf
+import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.data.message.action.MessageAction
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.util.Timetoken
 
-interface MessageActionService<IN: MessageAction> {
+interface MessageReactionService<IN: MessageAction> {
     // region Lifecycle
     fun bind(types: Array<String> = arrayOf("reaction"))
     fun unbind()
@@ -21,7 +22,7 @@ interface MessageActionService<IN: MessageAction> {
     // endregion
 }
 
-val LocalMessageActionService =
-    staticCompositionLocalOf<MessageActionService<*>> { throw MessageActionServiceNotInitializedException() }
+val LocalMessageReactionService =
+    staticCompositionLocalOf<MessageReactionService<DBMessageAction>> { throw MessageActionServiceNotInitializedException() }
 
 class MessageActionServiceNotInitializedException : Exception("MessageAction Service not initialized")

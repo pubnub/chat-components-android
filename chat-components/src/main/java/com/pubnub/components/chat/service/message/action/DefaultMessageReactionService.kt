@@ -1,12 +1,10 @@
 package com.pubnub.components.chat.service.message.action
 
-import androidx.compose.runtime.staticCompositionLocalOf
 import com.pubnub.api.models.consumer.message_actions.PNMessageAction
 import com.pubnub.api.models.consumer.pubsub.BasePubSubResult
 import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResult
-import com.pubnub.components.chat.network.mapper.NetworkMessageActionMapper
 import com.pubnub.components.data.message.action.DBMessageAction
-import com.pubnub.components.repository.message.action.DefaultMessageActionRepository
+import com.pubnub.components.repository.message.action.MessageActionRepository
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.mapper.Mapper
@@ -23,14 +21,14 @@ import timber.log.Timber
     FlowPreview::class,
     DelicateCoroutinesApi::class,
 )
-class DefaultMessageActionService(
+class DefaultMessageReactionService(
     private val userId: UserId,
     private val actionService: ActionService,
-    private val messageActionRepository: DefaultMessageActionRepository,
+    private val messageActionRepository: MessageActionRepository<DBMessageAction>,
     private val mapper: Mapper<PNMessageActionResult, DBMessageAction>,
     private val coroutineScope: CoroutineScope = GlobalScope,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-): MessageActionService<DBMessageAction> {
+): MessageReactionService<DBMessageAction> {
 
     private var actionJob: Job? = null
     private lateinit var types: Array<String>

@@ -18,9 +18,9 @@ import com.pubnub.components.chat.service.member.DefaultMemberServiceImpl
 import com.pubnub.components.chat.service.member.LocalMemberService
 import com.pubnub.components.chat.service.message.DefaultMessageServiceImpl
 import com.pubnub.components.chat.service.message.LocalMessageService
-import com.pubnub.components.chat.service.message.action.DefaultMessageActionService
+import com.pubnub.components.chat.service.message.action.DefaultMessageReactionService
 import com.pubnub.components.chat.service.message.action.LocalActionService
-import com.pubnub.components.chat.service.message.action.LocalMessageActionService
+import com.pubnub.components.chat.service.message.action.LocalMessageReactionService
 import com.pubnub.components.chat.ui.component.channel.DefaultChannelListTheme
 import com.pubnub.components.chat.ui.component.channel.LocalChannelListTheme
 import com.pubnub.components.chat.ui.component.input.DefaultLocalMessageInputTheme
@@ -31,6 +31,8 @@ import com.pubnub.components.chat.ui.component.member.DefaultMemberListTheme
 import com.pubnub.components.chat.ui.component.member.LocalMemberListTheme
 import com.pubnub.components.chat.ui.component.member.MemberUi
 import com.pubnub.components.chat.ui.component.message.*
+import com.pubnub.components.chat.ui.component.message.reaction.DefaultReactionTheme
+import com.pubnub.components.chat.ui.component.message.reaction.LocalReactionTheme
 import com.pubnub.components.chat.ui.component.provider.LocalChannel
 import com.pubnub.components.chat.ui.component.provider.LocalPubNub
 import com.pubnub.components.chat.ui.mapper.member.DBMemberMapper
@@ -46,6 +48,7 @@ import com.pubnub.components.data.membership.MembershipDao
 import com.pubnub.components.data.message.DBMessage
 import com.pubnub.components.data.message.MessageDao
 import com.pubnub.components.data.message.action.DBMessageAction
+import com.pubnub.components.data.message.action.DBMessageWithActions
 import com.pubnub.components.data.message.action.MessageActionDao
 import com.pubnub.components.repository.channel.DefaultChannelRepository
 import com.pubnub.components.repository.member.DefaultMemberRepository
@@ -66,7 +69,7 @@ import timber.log.Timber
 @Composable
 fun ChatProvider(
     pubNub: PubNub,
-    database: PubNubDatabase<MessageDao<DBMessage, DBMessage>, MessageActionDao<DBMessageAction>, ChannelDao<DBChannel, DBChannelWithMembers>, MemberDao<DBMember, DBMemberWithChannels>, MembershipDao<DBMembership>> = Database.INSTANCE,
+    database: PubNubDatabase<MessageDao<DBMessage, DBMessageWithActions>, MessageActionDao<DBMessageAction>, ChannelDao<DBChannel, DBChannelWithMembers>, MemberDao<DBMember, DBMemberWithChannels>, MembershipDao<DBMembership>> = Database.INSTANCE,
     channel: ChannelId = "channel.lobby",
     synchronize: Boolean = true,
     content: @Composable() () -> Unit,
@@ -121,6 +124,7 @@ fun ChatProvider(
         LocalMemberListTheme provides DefaultMemberListTheme,
         LocalMessageListTheme provides DefaultMessageListTheme,
         LocalMessageTheme provides DefaultLocalMessageTheme,
+        LocalReactionTheme provides DefaultReactionTheme,
         LocalIndicatorTheme provides DefaultIndicatorTheme,
         LocalProfileImageTheme provides DefaultProfileImageTheme,
 
@@ -162,12 +166,14 @@ fun WithServices(
         LocalMessageService provides DefaultMessageServiceImpl(
             LocalPubNub.current,
             LocalMessageRepository.current,
+            LocalMessageActionRepository.current,
             NetworkMessageMapper(mapper),
             NetworkMessageHistoryMapper(mapper),
+            NetworkMessageActionHistoryMapper(),
             LocalErrorHandler.current,
         ),
         LocalActionService provides actionService,
-        LocalMessageActionService provides DefaultMessageActionService(
+        LocalMessageReactionService provides DefaultMessageReactionService(
             LocalPubNub.current.configuration.uuid,
             actionService,
             LocalMessageActionRepository.current,
@@ -220,6 +226,8 @@ fun Synchronize() {
     val channelService = LocalChannelService.current
     val messageService = LocalMessageService.current
     val occupancyService = LocalOccupancyService.current
+    val actionService = LocalActionService.current
+    val messageActionService = LocalMessageReactionService.current
 
     val membershipRepository = LocalMembershipRepository.current
 
@@ -228,11 +236,15 @@ fun Synchronize() {
         Timber.e("ChannelEffect bind")
         messageService.bind()
         occupancyService.bind()
+        actionService.bind()
+        messageActionService.bind()
 
         onDispose {
             Timber.e("ChannelEffect unbind")
             messageService.unbind()
             occupancyService.unbind()
+            actionService.unbind()
+            messageActionService.unbind()
         }
     }
 

@@ -1,5 +1,6 @@
 package com.pubnub.components
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -27,7 +28,7 @@ import com.pubnub.components.data.message.action.DefaultMessageActionDao
         DBChannel::class,
     ],
     version = 2,
-    exportSchema = false,
+    exportSchema = true,
 )
 @TypeConverters(
     MessageAttachmentConverter::class,

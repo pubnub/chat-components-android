@@ -1,12 +1,17 @@
 package com.pubnub.components.chat.ui.component.message.renderer
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.*
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +33,10 @@ import com.pubnub.components.chat.ui.component.common.ShapeTheme
 import com.pubnub.components.chat.ui.component.common.TextTheme
 import com.pubnub.components.chat.ui.component.member.ProfileImage
 import com.pubnub.components.chat.ui.component.message.*
+import com.pubnub.components.chat.ui.component.message.reaction.ReactionUi
+import com.pubnub.components.chat.ui.component.message.reaction.SelectedReaction
+import com.pubnub.components.chat.ui.component.message.reaction.renderer.DefaultReactionPickerRenderer
+import com.pubnub.components.chat.ui.component.message.reaction.renderer.ReactionPickerRenderer
 import com.pubnub.framework.data.MessageId
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.util.Timetoken
@@ -47,6 +56,8 @@ import kotlin.random.Random
 
 object GroupMessageRenderer : MessageRenderer {
 
+    private const val REACTION_TYPE = "reaction"
+
     @Composable
     override fun Message(
         messageId: MessageId,
@@ -59,7 +70,15 @@ object GroupMessageRenderer : MessageRenderer {
         attachments: List<Attachment>?,
         timetoken: Timetoken,
         navigateToProfile: (UserId) -> Unit,
+        reactions: List<ReactionUi>,
+        onReaction: ((SelectedReaction) -> Unit)?,
+        reactionPickerRenderer: ReactionPickerRenderer,
     ) {
+        val onReactionSelected: ((String) -> Unit)? = onReaction?.let {
+            { reaction ->
+                onReaction(SelectedReaction(currentUserId, timetoken, REACTION_TYPE, reaction))
+            }
+        }
         GroupChatMessage(
             currentUserId = currentUserId,
             userId = userId,
@@ -70,6 +89,9 @@ object GroupMessageRenderer : MessageRenderer {
             attachments = attachments,
             timetoken = timetoken,
             navigateToProfile = navigateToProfile,
+            reactions = reactions,
+            onReaction = onReactionSelected,
+            reactionPicker = reactionPickerRenderer,
         )
     }
 
@@ -117,11 +139,18 @@ object GroupMessageRenderer : MessageRenderer {
         timetoken: Timetoken,
         navigateToProfile: (UserId) -> Unit,
         placeholder: Boolean = false,
+        reactions: List<ReactionUi> = emptyList(),
+        onReaction: ((String) -> Unit)? = null,
+        reactionPicker: ReactionPickerRenderer = DefaultReactionPickerRenderer,
     ) {
         val context = LocalContext.current
         val theme = LocalMessageListTheme.current.message
 
         val date = timetoken.formatDate()
+        val reactionEnabled = onReaction != null
+        val emojiReactions = reactions.filter { it.type == REACTION_TYPE }
+
+        var reactionsVisible by remember { mutableStateOf(false) }
 
         // region Placeholders
         val messagePlaceholder = Modifier.placeholder(
@@ -164,7 +193,14 @@ object GroupMessageRenderer : MessageRenderer {
         // endregion
 
         Row(
-            modifier = theme.modifier,
+            modifier = Modifier
+                .combinedClickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = rememberRipple(),
+                    onLongClick = { reactionsVisible = true },
+                    onClick = {},
+                )
+                .then(theme.modifier),
             verticalAlignment = theme.verticalAlignment,
         ) {
             Box(modifier = theme.profileImage.modifier) {
@@ -237,8 +273,30 @@ object GroupMessageRenderer : MessageRenderer {
                     shape = theme.shape.shape,
                     modifier = theme.shape.modifier
                 ) { body() }
-            }
 
+                if (reactionEnabled && emojiReactions.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    reactionPicker.Selector(
+                        currentUserId,
+                        emojiReactions,
+                        onReaction!!
+                    ) { reactionsVisible = true }
+                }
+            }
+        }
+
+        if (reactionEnabled) {
+            AnimatedVisibility(
+                visible = reactionsVisible,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                reactionPicker.Dialog(
+                    scope = this,
+                    onSelected = onReaction!!,
+                    onClose = { reactionsVisible = false }
+                )
+            }
         }
     }
 
@@ -256,6 +314,7 @@ object GroupMessageRenderer : MessageRenderer {
             timetoken = 0L,
             placeholder = true,
             navigateToProfile = {},
+            reactionPicker = DefaultReactionPickerRenderer,
         )
     }
 

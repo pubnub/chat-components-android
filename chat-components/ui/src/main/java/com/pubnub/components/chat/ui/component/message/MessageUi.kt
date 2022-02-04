@@ -1,6 +1,7 @@
 package com.pubnub.components.chat.ui.component.message
 
 import com.pubnub.components.chat.ui.component.member.MemberUi
+import com.pubnub.components.chat.ui.component.message.reaction.ReactionUi
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.MessageId
 import com.pubnub.framework.util.Timetoken
@@ -16,6 +17,7 @@ sealed class MessageUi {
         val timetoken: Timetoken,
         val isSending: Boolean,
         val isDelivered: Boolean,
+        val reactions: List<ReactionUi>
     ) : MessageUi()
 
     data class Separator(val text: String) : MessageUi()

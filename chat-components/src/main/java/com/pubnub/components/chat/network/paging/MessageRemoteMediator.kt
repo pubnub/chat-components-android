@@ -6,6 +6,7 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import com.pubnub.components.chat.service.message.MessageService
 import com.pubnub.components.data.message.DBMessage
+import com.pubnub.components.data.message.action.DBMessageWithActions
 import com.pubnub.components.repository.message.MessageRepository
 import com.pubnub.framework.data.ChannelId
 import kotlinx.coroutines.*
@@ -15,13 +16,13 @@ import java.io.IOException
 class MessageRemoteMediator constructor(
     private val channelId: ChannelId,
     private val service: MessageService<DBMessage>,
-    private val messageRepository: MessageRepository<DBMessage, DBMessage>,
+    private val messageRepository: MessageRepository<DBMessage, DBMessageWithActions>,
     private val messageCount: Int = 10,
     private val coroutineScope: CoroutineScope = GlobalScope,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-) : RemoteMediator<Int, DBMessage>() {
+) : RemoteMediator<Int, DBMessageWithActions>() {
 
-    private lateinit var lastState: PagingState<Int, DBMessage>
+    private lateinit var lastState: PagingState<Int, DBMessageWithActions>
 
     private var firstMessageTimestamp: Long? = 0L
     private var lastMessageTimestamp: Long? = 0L
@@ -32,7 +33,7 @@ class MessageRemoteMediator constructor(
 
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, DBMessage>,
+        state: PagingState<Int, DBMessageWithActions>,
     ): MediatorResult {
         lastState = state
         val page = when (loadType) {
@@ -75,7 +76,7 @@ class MessageRemoteMediator constructor(
         return MessageWindow(channelId, start, end)
     }
 
-    private suspend fun getTimeWindowForFirstMessage(state: PagingState<Int, DBMessage>): MessageWindow? {
+    private suspend fun getTimeWindowForFirstMessage(state: PagingState<Int, DBMessageWithActions>): MessageWindow? {
         // last page will contains oldest messages
         val messageTimetoken = state.pages.lastOrNull { it.data.isNotEmpty() }
             ?.data
@@ -97,7 +98,7 @@ class MessageRemoteMediator constructor(
         }
     }
 
-    private suspend fun getTimeWindowForLastMessage(state: PagingState<Int, DBMessage>): MessageWindow? {
+    private suspend fun getTimeWindowForLastMessage(state: PagingState<Int, DBMessageWithActions>): MessageWindow? {
 
         // first page will contains the newest messages
         val message = state.pages.firstOrNull { it.data.isNotEmpty() }
