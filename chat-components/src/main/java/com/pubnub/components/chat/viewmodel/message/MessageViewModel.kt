@@ -49,13 +49,10 @@ import java.util.*
  */
 @OptIn(ExperimentalPagingApi::class, FlowPreview::class)
 class MessageViewModel constructor(
-    private val currentUserId: UserId,
     private val channelId: ChannelId,
     private val messageRepository: MessageRepository<DBMessage, DBMessageWithActions>,
-    private val messageActionRepository: MessageActionRepository<DBMessageAction>,
     private val remoteMediator: MessageRemoteMediator?,
     private val presenceService: OccupancyService?,
-    private val messageReactionService: DefaultMessageReactionService?,
     private val config: PagingConfig = PagingConfig(pageSize = 10, enablePlaceholders = true),
     private val dbMapper: Mapper<DBMessageWithActions, MessageUi.Data>,
     private val uiMapper: Mapper<MessageUi.Data, DBMessageWithActions>,
@@ -78,13 +75,10 @@ class MessageViewModel constructor(
             mediator: MessageRemoteMediator? = null,
         ): MessageViewModel {
             val messageFactory = MessageViewModelFactory(
-                currentUserId = LocalPubNub.current.configuration.uuid,
                 channelId = id,
                 messageRepository = LocalMessageRepository.current,
-                messageActionRepository = LocalMessageActionRepository.current,
                 remoteMediator = mediator,
                 presenceService = LocalOccupancyService.current,
-                messageReactionService = LocalMessageReactionService.current as DefaultMessageReactionService,
                 dbMapper = DBMessageMapper(LocalMemberFormatter.current),
                 uiMapper = DomainMessageMapper(),
             )
@@ -116,10 +110,6 @@ class MessageViewModel constructor(
     private val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
     private fun Timetoken.formatDate(): String =
         dateFormat.format(this.seconds).lowercase(Locale.getDefault())
-
-    init {
-        synchronize()
-    }
 
     /**
      * Get Messages for selected Channel
@@ -170,44 +160,6 @@ class MessageViewModel constructor(
      * Removes all the messages from repository
      */
     fun removeAll() = viewModelScope.launch { messageRepository.removeAll(channelId) }
-
-    fun onReaction(reaction: SelectedReaction) {
-        Timber.e("On Reaction: $reaction")
-        viewModelScope.launch {
-            Timber.e("Looking for reaction '$reaction' ")
-            val storedReaction = messageActionRepository.get(
-                reaction.userId,
-                channelId,
-                reaction.messageTimetoken,
-                reaction.type,
-                reaction.value,
-            )
-
-            Timber.e("Stored action: $storedReaction")
-            if (storedReaction?.user == currentUserId)
-                messageReactionService?.remove(
-                    storedReaction.channel,
-                    storedReaction.messageTimestamp,
-                    storedReaction.published,
-                    storedReaction.type,
-                    storedReaction.value
-                )
-            else
-                messageReactionService?.add(
-                    channelId,
-                    reaction.messageTimetoken,
-                    reaction.type,
-                    reaction.value,
-                )
-        }
-    }
-
-    fun synchronize() {
-        if (messageReactionService == null) return
-        viewModelScope.launch(Dispatchers.IO) {
-            messageReactionService.synchronize(channelId)
-        }
-    }
 
     private fun MessageUi.toDb(): DBMessageWithActions = uiMapper.map(this as MessageUi.Data)
     private fun DBMessageWithActions.toUi(): MessageUi.Data = dbMapper.map(this)

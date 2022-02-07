@@ -19,27 +19,21 @@ import com.pubnub.framework.mapper.Mapper
 import kotlinx.coroutines.FlowPreview
 
 @OptIn(ExperimentalPagingApi::class, FlowPreview::class)
-class MessageViewModelFactory constructor(
+class ReactionViewModelFactory constructor(
+    private val currentUserId: UserId,
     private val channelId: ChannelId,
-    private val messageRepository: MessageRepository<DBMessage, DBMessageWithActions>,
-    private val config: PagingConfig = PagingConfig(pageSize = 10, enablePlaceholders = true),
-    private val remoteMediator: MessageRemoteMediator? = null,
-    private val presenceService: OccupancyService? = null,
-    private val dbMapper: Mapper<DBMessageWithActions, MessageUi.Data>,
-    private val uiMapper: Mapper<MessageUi.Data, DBMessageWithActions>,
+    private val messageActionRepository: MessageActionRepository<DBMessageAction>,
+    private val messageReactionService: DefaultMessageReactionService? = null,
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(MessageViewModel::class.java)) {
-            return MessageViewModel(
+        if (modelClass.isAssignableFrom(ReactionViewModel::class.java)) {
+            return ReactionViewModel(
+                currentUserId,
                 channelId,
-                messageRepository,
-                remoteMediator,
-                presenceService,
-                config,
-                dbMapper,
-                uiMapper,
+                messageActionRepository,
+                messageReactionService,
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
