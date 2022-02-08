@@ -7,18 +7,25 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.*
 import com.pubnub.components.chat.network.paging.MessageRemoteMediator
 import com.pubnub.components.chat.provider.LocalMemberFormatter
+import com.pubnub.components.chat.provider.LocalMessageActionRepository
 import com.pubnub.components.chat.provider.LocalMessageRepository
 import com.pubnub.components.chat.service.channel.LocalOccupancyService
 import com.pubnub.components.chat.service.channel.OccupancyService
 import com.pubnub.components.chat.service.message.LocalMessageService
+import com.pubnub.components.chat.service.message.action.DefaultMessageReactionService
+import com.pubnub.components.chat.service.message.action.LocalMessageReactionService
 import com.pubnub.components.chat.ui.component.message.MessageUi
+import com.pubnub.components.chat.ui.component.message.reaction.SelectedReaction
 import com.pubnub.components.chat.ui.component.presence.Presence
 import com.pubnub.components.chat.ui.component.provider.LocalChannel
 import com.pubnub.components.chat.ui.component.provider.LocalPubNub
 import com.pubnub.components.chat.ui.mapper.message.DBMessageMapper
 import com.pubnub.components.chat.ui.mapper.message.DomainMessageMapper
 import com.pubnub.components.data.message.DBMessage
-import com.pubnub.components.repository.message.DefaultMessageRepository
+import com.pubnub.components.data.message.action.DBMessageAction
+import com.pubnub.components.data.message.action.DBMessageWithActions
+import com.pubnub.components.repository.message.MessageRepository
+import com.pubnub.components.repository.message.action.MessageActionRepository
 import com.pubnub.components.repository.util.Sorted
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
@@ -32,6 +39,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -41,14 +49,13 @@ import java.util.*
  */
 @OptIn(ExperimentalPagingApi::class, FlowPreview::class)
 class MessageViewModel constructor(
-    private val currentUserId: UserId,
     private val channelId: ChannelId,
-    private val messageRepository: DefaultMessageRepository,
+    private val messageRepository: MessageRepository<DBMessage, DBMessageWithActions>,
     private val remoteMediator: MessageRemoteMediator?,
     private val presenceService: OccupancyService?,
     private val config: PagingConfig = PagingConfig(pageSize = 10, enablePlaceholders = true),
-    private val dbMapper: Mapper<DBMessage, MessageUi.Data>,
-    private val uiMapper: Mapper<MessageUi.Data, DBMessage>,
+    private val dbMapper: Mapper<DBMessageWithActions, MessageUi.Data>,
+    private val uiMapper: Mapper<MessageUi.Data, DBMessageWithActions>,
 ) : ViewModel() {
 
     companion object {
@@ -68,7 +75,6 @@ class MessageViewModel constructor(
             mediator: MessageRemoteMediator? = null,
         ): MessageViewModel {
             val messageFactory = MessageViewModelFactory(
-                currentUserId = LocalPubNub.current.configuration.uuid,
                 channelId = id,
                 messageRepository = LocalMessageRepository.current,
                 remoteMediator = mediator,
@@ -120,7 +126,7 @@ class MessageViewModel constructor(
                 )
             },
             remoteMediator = remoteMediator,
-        ).flow.map { paging -> paging.map { it.toMessageUi() } }
+        ).flow.map { paging -> paging.map { it.toMessageUi().also { Timber.i("Message $it") } } }
             .map { pagingData ->
                 pagingData.insertSeparators { after: MessageUi?, before: MessageUi? ->
                     if (
@@ -155,8 +161,9 @@ class MessageViewModel constructor(
      */
     fun removeAll() = viewModelScope.launch { messageRepository.removeAll(channelId) }
 
-    private fun MessageUi.toDb(): DBMessage = uiMapper.map(this as MessageUi.Data)
-    private fun DBMessage.toUi(): MessageUi.Data = dbMapper.map(this)
-    private fun DBMessage.toMessageUi(): MessageUi = this.toUi()
-    private fun List<DBMessage>.toUi(): List<MessageUi.Data> = map { it.toUi() }
+    private fun MessageUi.toDb(): DBMessageWithActions = uiMapper.map(this as MessageUi.Data)
+    private fun DBMessageWithActions.toUi(): MessageUi.Data = dbMapper.map(this)
+    private fun DBMessageWithActions.toMessageUi(): MessageUi = this.toUi()
+    private fun List<DBMessageWithActions>.toUi(): List<MessageUi.Data> = map { it.toUi() }
+
 }

@@ -6,12 +6,16 @@ import com.pubnub.api.models.consumer.PNBoundedPage
 import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.components.chat.network.data.NetworkMessage
+import com.pubnub.components.chat.network.mapper.NetworkMessageActionHistoryMapper
 import com.pubnub.components.chat.network.mapper.NetworkMessageHistoryMapper
 import com.pubnub.components.chat.network.mapper.NetworkMessageMapper
 import com.pubnub.components.chat.network.mapper.toNetwork
 import com.pubnub.components.chat.service.error.ErrorHandler
 import com.pubnub.components.data.message.DBMessage
+import com.pubnub.components.data.message.action.DBMessageAction
+import com.pubnub.components.data.message.action.DBMessageWithActions
 import com.pubnub.components.repository.message.MessageRepository
+import com.pubnub.components.repository.message.action.MessageActionRepository
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.util.Timetoken
 import com.pubnub.framework.util.data.PNException
@@ -28,9 +32,11 @@ import kotlinx.coroutines.flow.onEach
 @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
 class DefaultMessageServiceImpl(
     private val pubNub: PubNub,
-    private val messageRepository: MessageRepository<DBMessage, DBMessage>,
+    private val messageRepository: MessageRepository<DBMessage, DBMessageWithActions>,
+    private val messageActionRepository: MessageActionRepository<DBMessageAction>,
     private val networkMapper: NetworkMessageMapper,
     private val networkHistoryMapper: NetworkMessageHistoryMapper,
+    private val messageActionHistoryMapper: NetworkMessageActionHistoryMapper,
     private val errorHandler: ErrorHandler,
     private val coroutineScope: CoroutineScope = GlobalScope,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
@@ -153,7 +159,9 @@ class DefaultMessageServiceImpl(
                 onComplete = { result ->
                     // Store messages
                     result.channels.forEach { (channel, messages) ->
+                        // TODO: FIX that asap!
                         networkHistoryMapper.channel = channel
+                        messageActionHistoryMapper.channel = channel
 
                         // Just in case of message mapper issue
                         messages.sortedByDescending { it.timetoken }.onEach {
@@ -166,6 +174,13 @@ class DefaultMessageServiceImpl(
                                     "Cannot map message ${it.message.toJson(pubNub.mapper)}"
                                 )
                             }
+                            try {
+                                val actions = messageActionHistoryMapper.map(it)
+                                insertMessageAction(*actions)
+
+                            } catch (e: Exception) {
+                                errorHandler.onError(e, "Cannot map message action ${it.toJson(pubNub.mapper)}")
+                            }
                         }
                     }
                 },
@@ -173,6 +188,12 @@ class DefaultMessageServiceImpl(
                     errorHandler.onError(exception, "Cannot pull history")
                 }
             )
+    }
+
+    private fun insertMessageAction(vararg action: DBMessageAction) {
+        coroutineScope.launch(dispatcher) {
+            messageActionRepository.insertUpdate(*action)
+        }
     }
 
     // region Inner binding

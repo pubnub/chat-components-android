@@ -31,6 +31,7 @@ import com.pubnub.components.chat.ui.component.message.IndicatorTheme
 import com.pubnub.components.chat.ui.component.message.MessageListTheme
 import com.pubnub.components.chat.ui.component.message.MessageTheme
 import com.pubnub.components.chat.ui.component.message.ProfileImageTheme
+import com.pubnub.components.chat.ui.component.message.reaction.ReactionTheme
 
 object ThemeDefaults {
 
@@ -53,6 +54,63 @@ object ThemeDefaults {
             color = MaterialTheme.colors.onSurface.copy(alpha = 0.54f)
         ),
     ) = TypingIndicatorTheme(modifier, icon, text)
+
+    @Composable
+    fun reaction(
+        modifier: Modifier = Modifier
+            //.fillMaxWidth()
+            .padding(16.dp, 12.dp),
+        selectedReaction: ButtonTheme = button(
+            shape = RoundedCornerShape(50),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = MaterialTheme.colors.primaryVariant.copy(alpha = 0.2f),
+                contentColor = Color(0xDE3F3F3F)
+            ),
+            border = BorderStroke(1.dp, Color(0xFFced6e0)),
+            elevation = null,
+            text = text(
+                color = Color(0xDE3f3f3f),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Light,
+                textAlign = TextAlign.Center,
+            ),
+            contentPadding = PaddingValues(6.dp),
+            modifier = Modifier
+                .height(28.dp)
+                .defaultMinSize(minWidth = 40.dp),
+        ),
+        unselectedReaction: ButtonTheme = button(
+            shape = RoundedCornerShape(50),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Color(0xFFe9eef4),
+                contentColor = Color(0xDE3F3F3F)
+            ),
+            border = BorderStroke(1.dp, Color(0xFFced6e0)),
+            elevation = null,
+            text = text(
+                color = Color(0xDE3f3f3f),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Light,
+                textAlign = TextAlign.Center,
+            ),
+            contentPadding = PaddingValues(6.dp),
+            modifier = Modifier
+                .height(28.dp)
+                .defaultMinSize(minWidth = 40.dp),
+        ),
+        dialogShape: ShapeTheme = shape(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            shape = RoundedCornerShape(50),
+            color = MaterialTheme.colors.background,
+        ),
+    ) = ReactionTheme(
+        modifier,
+        selectedReaction,
+        unselectedReaction,
+        dialogShape,
+    )
 
     @Composable
     fun channelList(
