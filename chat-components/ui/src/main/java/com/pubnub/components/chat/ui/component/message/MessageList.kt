@@ -15,14 +15,16 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.pubnub.components.chat.ui.R
 import com.pubnub.components.chat.ui.component.member.getRandomProfileUrl
-import com.pubnub.components.chat.ui.component.message.reaction.SelectedReaction
-import com.pubnub.components.chat.ui.component.message.reaction.renderer.DefaultReactionPickerRenderer
-import com.pubnub.components.chat.ui.component.message.reaction.renderer.ReactionPickerRenderer
+import com.pubnub.components.chat.ui.component.message.reaction.PickedReaction
+import com.pubnub.components.chat.ui.component.message.reaction.renderer.DefaultReactionsPickerRenderer
+import com.pubnub.components.chat.ui.component.message.reaction.renderer.ReactionsRenderer
 import com.pubnub.components.chat.ui.component.message.renderer.GroupMessageRenderer
 import com.pubnub.components.chat.ui.component.message.renderer.MessageRenderer
 import com.pubnub.components.chat.ui.component.presence.Presence
 import com.pubnub.components.chat.ui.component.provider.LocalPubNub
+import com.pubnub.framework.data.MessageId
 import com.pubnub.framework.data.UserId
+import com.pubnub.framework.util.Timetoken
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -31,10 +33,11 @@ fun MessageList(
     messages: Flow<PagingData<MessageUi>>,
     modifier: Modifier = Modifier,
     onMemberSelected: (UserId) -> Unit = { _: UserId -> },
-    onReactionSelected: ((SelectedReaction) -> Unit)? = null,
+    onShowMenu: ((MessageId) -> Unit)? = null,
+    onReactionSelected: ((PickedReaction) -> Unit)? = null,
     presence: Presence? = null,
     renderer: MessageRenderer = GroupMessageRenderer,
-    reactionPickerRenderer: ReactionPickerRenderer = DefaultReactionPickerRenderer,
+    reactionsPickerRenderer: ReactionsRenderer = DefaultReactionsPickerRenderer,
     ) {
 
     val theme = LocalMessageListTheme.current
@@ -78,8 +81,9 @@ fun MessageList(
                                 timetoken = message.timetoken,
                                 navigateToProfile = onMemberSelected,
                                 reactions = message.reactions,
-                                onReaction = onReactionSelected,
-                                reactionPickerRenderer = reactionPickerRenderer,
+                                onShowMenu = onShowMenu,
+                                onReactionSelected = onReactionSelected,
+                                reactionsPickerRenderer = reactionsPickerRenderer,
                             )
                         }
                     }

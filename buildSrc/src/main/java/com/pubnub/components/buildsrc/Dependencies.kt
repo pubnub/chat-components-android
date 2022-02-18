@@ -17,6 +17,7 @@ object Libs {
         const val swipeRefresh = "com.google.accompanist:accompanist-swiperefresh:$version"
         const val placeholder = "com.google.accompanist:accompanist-placeholder:$version"
         const val navigation = "com.google.accompanist:accompanist-navigation-animation:$version"
+        const val flowLayout = "com.google.accompanist:accompanist-flowlayout:$version"
     }
 
     object Coil {
@@ -76,7 +77,14 @@ object Libs {
             const val tooling = "androidx.compose.ui:ui-tooling:1.1.0-rc01"
             const val animation = "androidx.compose.animation:animation:$version"
             const val uiTest = "androidx.compose.ui:ui-test-junit4:1.1.0-rc01"
+        }
 
+        object Emoji {
+            private const val version = "1.0.1"
+
+            const val emoji = "androidx.emoji2:emoji2:$version"
+            const val emojiViews = "androidx.emoji2:emoji2-views:$version"
+            const val emojiViewsHelper = "androidx.emoji2:emoji2-views-helper:$version"
         }
 
         object Lifecycle {

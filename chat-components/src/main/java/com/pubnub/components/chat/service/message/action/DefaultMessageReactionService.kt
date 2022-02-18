@@ -115,8 +115,9 @@ class DefaultMessageReactionService(
         value: String,
     ) {
         // TODO: try catch
-        val result = actionService.add(channel, PNMessageAction(type, value, messageTimetoken)).toResult(channel)
-        addAction(result)
+        val result = actionService.add(channel, PNMessageAction(type, value, messageTimetoken))
+        Timber.e("Result $result")
+        addAction(result.toResult(channel))
     }
 
     /**

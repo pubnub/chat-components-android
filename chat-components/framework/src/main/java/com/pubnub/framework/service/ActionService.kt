@@ -13,6 +13,7 @@ import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResu
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.util.Framework
 import com.pubnub.framework.util.flow.single
+import com.pubnub.framework.util.toJson
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
@@ -52,7 +53,7 @@ class ActionService(
         channelId: ChannelId,
         messageAction: PNMessageAction,
     ): PNAddMessageActionResult {
-        Timber.i("Send message action to channel '$channelId': $messageAction")
+        Timber.i("Send message action to channel '$channelId': ${messageAction.toJson(pubNub.mapper)}")
         return pubNub.addMessageAction(
             channel = channelId,
             messageAction = messageAction,

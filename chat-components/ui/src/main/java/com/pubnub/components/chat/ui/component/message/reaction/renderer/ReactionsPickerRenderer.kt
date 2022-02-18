@@ -3,24 +3,22 @@ package com.pubnub.components.chat.ui.component.message.reaction.renderer
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
+import com.pubnub.components.chat.ui.component.message.reaction.Emoji
 import com.pubnub.components.chat.ui.component.message.reaction.ReactionUi
 import com.pubnub.framework.data.UserId
 
 @OptIn(ExperimentalAnimationApi::class)
-interface ReactionPickerRenderer {
+interface ReactionsRenderer {
 
     @Composable
-    fun Dialog(
-        scope: AnimatedVisibilityScope?,
-        onSelected: (String) -> Unit,
-        onClose: () -> Unit,
+    fun Picker(
+        onSelected: (Emoji) -> Unit,
     )
 
     @Composable
-    fun Selector(
+    fun PickedList(
         currentUserId: UserId,
         reactions: List<ReactionUi>,
-        onSelected: (String) -> Unit,
-        onAdd: () -> Unit,
+        onSelected: (Emoji) -> Unit,
     )
 }

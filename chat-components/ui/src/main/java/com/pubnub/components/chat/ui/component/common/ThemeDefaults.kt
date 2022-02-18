@@ -58,8 +58,7 @@ object ThemeDefaults {
     @Composable
     fun reaction(
         modifier: Modifier = Modifier
-            //.fillMaxWidth()
-            .padding(16.dp, 12.dp),
+            .fillMaxWidth(),
         selectedReaction: ButtonTheme = button(
             shape = RoundedCornerShape(50),
             colors = ButtonDefaults.buttonColors(
@@ -100,9 +99,8 @@ object ThemeDefaults {
         ),
         dialogShape: ShapeTheme = shape(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            shape = RoundedCornerShape(50),
+                .fillMaxWidth().padding(8.dp),
+            shape = MaterialTheme.shapes.large,
             color = MaterialTheme.colors.background,
         ),
     ) = ReactionTheme(

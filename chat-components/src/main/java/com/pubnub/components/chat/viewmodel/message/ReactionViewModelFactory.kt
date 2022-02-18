@@ -20,7 +20,6 @@ import kotlinx.coroutines.FlowPreview
 
 @OptIn(ExperimentalPagingApi::class, FlowPreview::class)
 class ReactionViewModelFactory constructor(
-    private val currentUserId: UserId,
     private val channelId: ChannelId,
     private val messageActionRepository: MessageActionRepository<DBMessageAction>,
     private val messageReactionService: DefaultMessageReactionService? = null,
@@ -30,7 +29,6 @@ class ReactionViewModelFactory constructor(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ReactionViewModel::class.java)) {
             return ReactionViewModel(
-                currentUserId,
                 channelId,
                 messageActionRepository,
                 messageReactionService,
