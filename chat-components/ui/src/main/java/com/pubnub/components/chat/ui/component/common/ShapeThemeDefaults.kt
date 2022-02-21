@@ -31,7 +31,8 @@ object ShapeThemeDefaults {
         modifier = modifier,
         color = color,
         shape = shape,
-    ),
+    )
+
     @Composable
     fun linkPreview(
         shape: Shape = RoundedCornerShape(0.dp, 0.dp, 8.dp, 8.dp),
