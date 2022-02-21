@@ -31,7 +31,7 @@ class MessageListTest : BaseTest() {
     }
 
     @Test(expected = MissingPubNubException::class)
-    fun whenPubNubProviderIsNotUsed_thenAnExceptionIsThrown() = runTest{
+    fun whenPubNubProviderIsNotUsed_thenAnExceptionIsThrown() = runTest {
         // Given
         composeTestRule.setContent {
             ChannelList(channels = emptyList(), onSelected = {})

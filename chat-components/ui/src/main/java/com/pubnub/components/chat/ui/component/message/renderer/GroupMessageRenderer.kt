@@ -1,16 +1,18 @@
 package com.pubnub.components.chat.ui.component.message.renderer
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.*
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -33,8 +35,8 @@ import com.pubnub.components.chat.ui.component.common.TextTheme
 import com.pubnub.components.chat.ui.component.member.ProfileImage
 import com.pubnub.components.chat.ui.component.message.*
 import com.pubnub.components.chat.ui.component.message.reaction.Emoji
-import com.pubnub.components.chat.ui.component.message.reaction.ReactionUi
 import com.pubnub.components.chat.ui.component.message.reaction.PickedReaction
+import com.pubnub.components.chat.ui.component.message.reaction.ReactionUi
 import com.pubnub.components.chat.ui.component.message.reaction.renderer.DefaultReactionsPickerRenderer
 import com.pubnub.components.chat.ui.component.message.reaction.renderer.ReactionsRenderer
 import com.pubnub.framework.data.MessageId
@@ -42,7 +44,6 @@ import com.pubnub.framework.data.UserId
 import com.pubnub.framework.util.Timetoken
 import com.pubnub.framework.util.seconds
 import kotlinx.coroutines.*
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
@@ -75,10 +76,17 @@ object GroupMessageRenderer : MessageRenderer {
     ) {
         val onReaction: ((Emoji) -> Unit)? = onReactionSelected?.let {
             { reaction ->
-                onReactionSelected(PickedReaction(currentUserId, timetoken, reaction.type, reaction.value))
+                onReactionSelected(
+                    PickedReaction(
+                        currentUserId,
+                        timetoken,
+                        reaction.type,
+                        reaction.value
+                    )
+                )
             }
         }
-        val onMenu: (() -> Unit)? = onShowMenu?.let{
+        val onMenu: (() -> Unit)? = onShowMenu?.let {
             { it(messageId) }
         }
         GroupChatMessage(
@@ -212,14 +220,15 @@ object GroupMessageRenderer : MessageRenderer {
                 )
             }
 
-            Column(modifier = Modifier
-                .combinedClickable(
-                    enabled = onShowMenu != null,
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = rememberRipple(),
-                    onLongClick = { onShowMenu?.let { onShowMenu() } },
-                    onClick = { },
-                )
+            Column(
+                modifier = Modifier
+                    .combinedClickable(
+                        enabled = onShowMenu != null,
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = rememberRipple(),
+                        onLongClick = { onShowMenu?.let { onShowMenu() } },
+                        onClick = { },
+                    )
             ) {
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(

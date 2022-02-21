@@ -5,7 +5,6 @@ import com.pubnub.components.chat.ui.component.message.Attachment
 import com.pubnub.components.chat.ui.component.message.MessageUi
 import com.pubnub.components.chat.ui.component.message.reaction.ReactionUi
 import com.pubnub.components.data.message.DBAttachment
-import com.pubnub.components.data.message.DBMessage
 import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.data.message.action.DBMessageWithActions
 import com.pubnub.framework.data.UserId

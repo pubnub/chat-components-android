@@ -1,26 +1,18 @@
 package com.pubnub.components.chat.ui.component.common
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pubnub.components.chat.ui.component.channel.ChannelListTheme
@@ -48,61 +40,33 @@ object ThemeDefaults {
         modifier: Modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp),
-        icon: IconTheme = IconThemeDefaults.icon(tint = MaterialTheme.colors.primaryVariant.copy(alpha = ContentAlpha.medium)),
+        icon: IconTheme = IconThemeDefaults.icon(
+            tint = MaterialTheme.colors.primaryVariant.copy(
+                alpha = ContentAlpha.medium
+            )
+        ),
         text: TextTheme = TextThemeDefaults.text(
             fontSize = 12.sp,
             color = MaterialTheme.colors.onSurface.copy(alpha = 0.54f)
         ),
     ) = TypingIndicatorTheme(modifier, icon, text)
 
+    @OptIn(ExperimentalMaterialApi::class)
     @Composable
     fun reaction(
-        modifier: Modifier = Modifier
-            .fillMaxWidth(),
-        selectedReaction: ButtonTheme = ButtonThemeDefaults.button(
-            shape = RoundedCornerShape(50),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = MaterialTheme.colors.primaryVariant.copy(alpha = 0.2f),
-                contentColor = Color(0xDE3F3F3F)
-            ),
-            border = BorderStroke(1.dp, Color(0xFFced6e0)),
-            elevation = null,
-            text = TextThemeDefaults.text(
-                color = Color(0xDE3f3f3f),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Light,
-                textAlign = TextAlign.Center,
-            ),
-            contentPadding = PaddingValues(6.dp),
-            modifier = Modifier
-                .height(28.dp)
-                .defaultMinSize(minWidth = 40.dp),
-        ),
-        unselectedReaction: ButtonTheme = ButtonThemeDefaults.button(
-            shape = RoundedCornerShape(50),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = Color(0xFFe9eef4),
-                contentColor = Color(0xDE3F3F3F)
-            ),
-            border = BorderStroke(1.dp, Color(0xFFced6e0)),
-            elevation = null,
-            text = TextThemeDefaults.text(
-                color = Color(0xDE3f3f3f),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Light,
-                textAlign = TextAlign.Center,
-            ),
-            contentPadding = PaddingValues(6.dp),
-            modifier = Modifier
-                .height(28.dp)
-                .defaultMinSize(minWidth = 40.dp),
-        ),
-        dialogShape: ShapeTheme = ShapeThemeDefaults.dialogShape()
+        pickerModifier: Modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState()),
+        listFlowRow: FlowRowTheme = FlowRowThemeDefaults.reactionList(),
+        dialog: ModalBottomSheetLayoutTheme = ModalBottomSheetLayoutThemeDefaults.reaction(),
+        selectedReaction: ButtonTheme = ButtonThemeDefaults.selectedReaction(),
+        notSelectedReaction: ButtonTheme = ButtonThemeDefaults.notSelectedReaction(),
     ) = ReactionTheme(
-        modifier,
+        pickerModifier,
+        listFlowRow,
         selectedReaction,
-        unselectedReaction,
-        dialogShape,
+        notSelectedReaction,
+        dialog,
     )
 
     @Composable
@@ -137,7 +101,11 @@ object ThemeDefaults {
         message: MessageTheme = message(),
         messageOwn: MessageTheme = message(
             title = TextThemeDefaults.messageTitle(MaterialTheme.colors.primary),
-            shape = ShapeThemeDefaults.messageBackground(color = MaterialTheme.colors.primary.copy(alpha = 0.4f))
+            shape = ShapeThemeDefaults.messageBackground(
+                color = MaterialTheme.colors.primary.copy(
+                    alpha = 0.4f
+                )
+            )
         ),
         separator: TextTheme = TextThemeDefaults.messageSeparator(),
     ) = MessageListTheme(modifier, arrangement, message, messageOwn, separator)

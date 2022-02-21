@@ -28,7 +28,7 @@ class DefaultMessageReactionService(
     private val mapper: Mapper<PNMessageActionResult, DBMessageAction>,
     private val coroutineScope: CoroutineScope = GlobalScope,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-): MessageReactionService<DBMessageAction> {
+) : MessageReactionService<DBMessageAction> {
 
     private var actionJob: Job? = null
     private lateinit var types: Array<String>
@@ -61,7 +61,8 @@ class DefaultMessageReactionService(
     override fun synchronize(channel: ChannelId, lastTimetoken: Long?) {
         Timber.e("Sync actions for channel '$channel'")
         coroutineScope.launch(dispatcher) {
-            val lastActionTimestamp = lastTimetoken ?: messageActionRepository.getLastTimetoken(channel)
+            val lastActionTimestamp =
+                lastTimetoken ?: messageActionRepository.getLastTimetoken(channel)
             val actions = actionService.getAll(
                 channelId = channel,
                 end = lastActionTimestamp + 1,
@@ -115,7 +116,8 @@ class DefaultMessageReactionService(
         value: String,
     ) {
         // TODO: try catch
-        val result = actionService.add(channel, PNMessageAction(type, value, messageTimetoken)).toResult(channel)
+        val result = actionService.add(channel, PNMessageAction(type, value, messageTimetoken))
+            .toResult(channel)
         addAction(result)
     }
 
@@ -139,7 +141,7 @@ class DefaultMessageReactionService(
             actionJob = actionService.actions
                 .filter { it.publisher != userId }
                 .onEach { result ->
-                    when(result.event){
+                    when (result.event) {
                         ActionService.EVENT_ADDED -> addAction(result)
                         ActionService.EVENT_REMOVED -> removeAction(result)
                     }
@@ -161,7 +163,7 @@ class DefaultMessageReactionService(
      *
      * @param result PubNub result object
      */
-    private suspend fun addAction(result: PNMessageActionResult){
+    private suspend fun addAction(result: PNMessageActionResult) {
         messageActionRepository.add(mapper.map(result))
     }
 
@@ -171,8 +173,14 @@ class DefaultMessageReactionService(
      * @param result PubNub result object
      */
     private suspend fun removeAction(result: PNMessageActionResult) {
-        with(result){
-            removeAction(user = data.uuid!!, channel = channel, messageTimetoken = data.messageTimetoken, type = data.type, value = data.value)
+        with(result) {
+            removeAction(
+                user = data.uuid!!,
+                channel = channel,
+                messageTimetoken = data.messageTimetoken,
+                type = data.type,
+                value = data.value
+            )
         }
     }
 
@@ -185,7 +193,13 @@ class DefaultMessageReactionService(
      * @param type Action type
      * @param value Action value
      */
-    private suspend fun removeAction(user: UserId, channel: ChannelId, messageTimetoken: Timetoken, type: String, value: String) {
+    private suspend fun removeAction(
+        user: UserId,
+        channel: ChannelId,
+        messageTimetoken: Timetoken,
+        type: String,
+        value: String
+    ) {
         val action = messageActionRepository.get(user, channel, messageTimetoken, type, value)
         Timber.e("Remove action $action")
         if (action != null)

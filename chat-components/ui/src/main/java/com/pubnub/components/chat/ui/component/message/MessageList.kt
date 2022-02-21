@@ -24,7 +24,6 @@ import com.pubnub.components.chat.ui.component.presence.Presence
 import com.pubnub.components.chat.ui.component.provider.LocalPubNub
 import com.pubnub.framework.data.MessageId
 import com.pubnub.framework.data.UserId
-import com.pubnub.framework.util.Timetoken
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -38,7 +37,7 @@ fun MessageList(
     presence: Presence? = null,
     renderer: MessageRenderer = GroupMessageRenderer,
     reactionsPickerRenderer: ReactionsRenderer = DefaultReactionsPickerRenderer,
-    ) {
+) {
 
     val theme = LocalMessageListTheme.current
     val context = LocalContext.current

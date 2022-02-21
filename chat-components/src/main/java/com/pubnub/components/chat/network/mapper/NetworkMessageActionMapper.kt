@@ -4,7 +4,7 @@ import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResu
 import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.framework.mapper.Mapper
 
-class NetworkMessageActionMapper: Mapper<PNMessageActionResult, DBMessageAction> {
+class NetworkMessageActionMapper : Mapper<PNMessageActionResult, DBMessageAction> {
     override fun map(input: PNMessageActionResult): DBMessageAction =
         DBMessageAction(
             value = input.messageAction.value,

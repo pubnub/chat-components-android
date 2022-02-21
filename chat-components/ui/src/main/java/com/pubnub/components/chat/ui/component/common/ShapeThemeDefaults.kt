@@ -24,7 +24,9 @@ object ShapeThemeDefaults {
 
     @Composable
     fun dialogShape(
-        modifier:Modifier = Modifier.fillMaxWidth().padding(8.dp),
+        modifier: Modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
         color: Color = MaterialTheme.colors.background,
         shape: Shape = MaterialTheme.shapes.large,
     ) = shape(

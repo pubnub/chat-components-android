@@ -1,6 +1,5 @@
 package com.pubnub.components.chat.ui.component.message.reaction.renderer
 
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import com.pubnub.components.chat.ui.component.message.reaction.Emoji

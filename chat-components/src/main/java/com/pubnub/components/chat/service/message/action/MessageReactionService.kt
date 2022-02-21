@@ -6,7 +6,7 @@ import com.pubnub.components.data.message.action.MessageAction
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.util.Timetoken
 
-interface MessageReactionService<IN: MessageAction> {
+interface MessageReactionService<IN : MessageAction> {
     // region Lifecycle
     fun bind(types: Array<String> = arrayOf("reaction"))
     fun unbind()
@@ -18,11 +18,18 @@ interface MessageReactionService<IN: MessageAction> {
 
     // region Repository
     suspend fun add(channel: ChannelId, messageTimetoken: Timetoken, type: String, value: String)
-    suspend fun remove(channel: ChannelId, messageTimetoken: Timetoken, published: Timetoken, type: String, value: String)
+    suspend fun remove(
+        channel: ChannelId,
+        messageTimetoken: Timetoken,
+        published: Timetoken,
+        type: String,
+        value: String
+    )
     // endregion
 }
 
 val LocalMessageReactionService =
     staticCompositionLocalOf<MessageReactionService<DBMessageAction>> { throw MessageActionServiceNotInitializedException() }
 
-class MessageActionServiceNotInitializedException : Exception("MessageAction Service not initialized")
+class MessageActionServiceNotInitializedException :
+    Exception("MessageAction Service not initialized")

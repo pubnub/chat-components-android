@@ -1,7 +1,9 @@
 package com.pubnub.components.chat.ui.component.message.reaction.renderer
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -24,7 +26,12 @@ import com.pubnub.framework.data.UserId
 import kotlinx.coroutines.launch
 import kotlin.math.floor
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalAnimationApi::class, ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
+@OptIn(
+    ExperimentalComposeUiApi::class,
+    ExperimentalAnimationApi::class,
+    ExperimentalMaterialApi::class,
+    ExperimentalFoundationApi::class
+)
 object DefaultReactionsPickerRenderer : ReactionsRenderer {
 
     private const val VISIBLE_ITEMS_COUNT = 6
@@ -37,6 +44,7 @@ object DefaultReactionsPickerRenderer : ReactionsRenderer {
         UnicodeEmoji("\uD83D\uDE22"),    // 😢 crying face U+1F622
         UnicodeEmoji("\uD83D\uDD25"),    // 🔥 fire U+1F525
     )
+
     @Composable
     override fun Picker(
         onSelected: (Emoji) -> Unit,
@@ -66,7 +74,7 @@ object DefaultReactionsPickerRenderer : ReactionsRenderer {
         sheetState: ModalBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden),
         onSelected: (Emoji) -> Unit,
         content: @Composable () -> Unit
-    ){
+    ) {
         val theme = LocalReactionTheme.current
         val coroutineScope = rememberCoroutineScope()
         val action: (Emoji) -> Unit = {
@@ -77,11 +85,11 @@ object DefaultReactionsPickerRenderer : ReactionsRenderer {
         ModalBottomSheetLayout(
             sheetState = sheetState,
             sheetContent = { ReactionsPicker(onSelected = action) },
-            sheetShape = theme.dialogShape.shape,
-            sheetElevation = ModalBottomSheetDefaults.Elevation, // TODO: add elevation to theme
-            sheetBackgroundColor = theme.dialogShape.tint, // TODO: modify theme
-            sheetContentColor = contentColorFor(theme.dialogShape.tint), // TODO: modify theme
-            scrimColor = ModalBottomSheetDefaults.scrimColor, // TODO: modify theme
+            sheetShape = theme.dialog.sheetShape,
+            sheetElevation = theme.dialog.sheetElevation,
+            sheetBackgroundColor = theme.dialog.sheetBackgroundColor,
+            sheetContentColor = theme.dialog.sheetContentColor,
+            scrimColor = theme.dialog.scrimColor,
         ) {
             content()
         }
@@ -98,9 +106,7 @@ object DefaultReactionsPickerRenderer : ReactionsRenderer {
         BoxWithConstraints {
             itemWidth = floor(this.maxWidth.value / VISIBLE_ITEMS_COUNT).dp
             Row(
-                modifier = theme.modifier
-                    .horizontalScroll(rememberScrollState()),
-                //horizontalArrangement = Arrangement.spacedBy(12.dp), // TODO: modify theme
+                modifier = theme.pickerModifier,
             ) {
                 val modifier = Modifier.size(itemWidth)
 
@@ -121,7 +127,7 @@ object DefaultReactionsPickerRenderer : ReactionsRenderer {
         onSelected: () -> Unit,
         modifier: Modifier = Modifier,
     ) {
-        when(emoji){
+        when (emoji) {
             is UnicodeEmoji -> {
                 ReactionsPickerTextButton(
                     text = emoji.value,
@@ -171,10 +177,10 @@ object DefaultReactionsPickerRenderer : ReactionsRenderer {
                     contentDescription = "reaction"
                 }
                 .clickable(onClick = onSelected),
-        ){
+        ) {
             AutoText(
                 text = text,
-                theme = theme.unselectedReaction.text,
+                theme = theme.notSelectedReaction.text,
             )
         }
     }
@@ -190,18 +196,22 @@ object DefaultReactionsPickerRenderer : ReactionsRenderer {
         val theme = LocalReactionTheme.current
 
         FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            mainAxisSpacing = 6.dp,
-            crossAxisSpacing = 6.dp,
+            modifier = theme.listFlowRow.modifier,
+            mainAxisSize = theme.listFlowRow.mainAxisSize,
+            mainAxisAlignment = theme.listFlowRow.mainAxisAlignment,
+            mainAxisSpacing = theme.listFlowRow.mainAxisSpacing,
+            crossAxisAlignment = theme.listFlowRow.crossAxisAlignment,
+            crossAxisSpacing = theme.listFlowRow.crossAxisSpacing,
+            lastLineMainAxisAlignment = theme.listFlowRow.lastLineMainAxisAlignment,
         ) {
             // Get only defined emojis
             val filteredReactions = reactions.filter { reaction ->
                 emojis.any { it.type == reaction.type && it.value == reaction.value }
             }
 
-            for(reaction in filteredReactions) {
+            for (reaction in filteredReactions) {
                 val reactionTheme =
-                    if (reaction.members.any { it.id == currentUserId }) theme.selectedReaction else theme.unselectedReaction
+                    if (reaction.members.any { it.id == currentUserId }) theme.selectedReaction else theme.notSelectedReaction
 
                 val emoji = reaction.toEmoji()
                 PickedReactionButton(
@@ -232,7 +242,7 @@ object DefaultReactionsPickerRenderer : ReactionsRenderer {
                 contentDescription = "reaction"
             },
         ) {
-            when(emoji){
+            when (emoji) {
                 is UnicodeEmoji ->
                     Text(
                         text = emoji.value,
@@ -286,7 +296,7 @@ object DefaultReactionsPickerRenderer : ReactionsRenderer {
     // endregion
 
     private fun ReactionUi.toEmoji(): Emoji =
-        when(type){
+        when (type) {
             "reaction" -> UnicodeEmoji(value)
             else -> throw RuntimeException("Cannot map reaction [$type:$value] to Emoji object")
         }
@@ -295,7 +305,7 @@ object DefaultReactionsPickerRenderer : ReactionsRenderer {
 @Preview(widthDp = 200)
 @Preview(device = Devices.PIXEL_2_XL)
 @Composable
-private fun PickedUnicodeReactionsButton(){
+private fun PickedUnicodeReactionsButton() {
     val member1 = MemberUi.Data("member1", "Member Nr 1")
     val member2 = MemberUi.Data("member2", "Member Nr 2")
     val member3 = MemberUi.Data("member3", "Member Nr 3")
@@ -304,12 +314,36 @@ private fun PickedUnicodeReactionsButton(){
         DefaultReactionsPickerRenderer.PickedList(
             "member1",
             listOf(
-                ReactionUi("\uD83D\uDC4D", "reaction", listOf(member1)),                         // 👍 thumbs up
-                ReactionUi("\u2764", "reaction", listOf(member1, member2)),                 // ❤ red heart U+2764
-                ReactionUi("\uD83D\uDE02", "reaction", listOf(member1, member2, member3)),       // 😂 face with tears of joy U+1F602
-                ReactionUi("\uD83D\uDE32", "reaction", listOf(member2, member3)),                // 😲 astonished face U+1F632
-                ReactionUi("\uD83D\uDE22", "reaction", listOf(member2)),                         // 😢 crying face U+1F622
-                ReactionUi("\uD83D\uDD25", "reaction", listOf(member3)),                         // 🔥 fire U+1F525
+                ReactionUi(
+                    "\uD83D\uDC4D",
+                    "reaction",
+                    listOf(member1)
+                ),                         // 👍 thumbs up
+                ReactionUi(
+                    "\u2764",
+                    "reaction",
+                    listOf(member1, member2)
+                ),                      // ❤  red heart U+2764
+                ReactionUi(
+                    "\uD83D\uDE02",
+                    "reaction",
+                    listOf(member1, member2, member3)
+                ),       // 😂 face with tears of joy U+1F602
+                ReactionUi(
+                    "\uD83D\uDE32",
+                    "reaction",
+                    listOf(member2, member3)
+                ),                // 😲 astonished face U+1F632
+                ReactionUi(
+                    "\uD83D\uDE22",
+                    "reaction",
+                    listOf(member2)
+                ),                         // 😢 crying face U+1F622
+                ReactionUi(
+                    "\uD83D\uDD25",
+                    "reaction",
+                    listOf(member3)
+                ),                         // 🔥 fire U+1F525
             ),
         ) {}
     }
@@ -318,23 +352,8 @@ private fun PickedUnicodeReactionsButton(){
 @Preview(widthDp = 200, heightDp = 600)
 @Preview(device = Devices.PIXEL_2_XL, heightDp = 600)
 @Composable
-private fun ReactionsPicker(){
+private fun ReactionsPicker() {
     CompositionLocalProvider(LocalReactionTheme provides DefaultReactionTheme) {
-        DefaultReactionsPickerRenderer.ReactionsPicker{}
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Preview(widthDp = 200, heightDp = 600)
-@Preview(device = Devices.PIXEL_2_XL, heightDp = 600)
-@Composable
-private fun ReactionsPickerBottomSheet(){
-    CompositionLocalProvider(LocalReactionTheme provides DefaultReactionTheme) {
-        DefaultReactionsPickerRenderer.ReactionsBottomSheetLayout(
-            sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Expanded),
-            onSelected = {},
-        ) {
-            Text("Hello")
-        }
+        DefaultReactionsPickerRenderer.ReactionsPicker {}
     }
 }

@@ -179,7 +179,10 @@ class DefaultMessageServiceImpl(
                                 insertMessageAction(*actions)
 
                             } catch (e: Exception) {
-                                errorHandler.onError(e, "Cannot map message action ${it.toJson(pubNub.mapper)}")
+                                errorHandler.onError(
+                                    e,
+                                    "Cannot map message action ${it.toJson(pubNub.mapper)}"
+                                )
                             }
                         }
                     }

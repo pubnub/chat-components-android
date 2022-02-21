@@ -1,6 +1,5 @@
 package com.pubnub.components.chat.ui.component.member
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -8,10 +7,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.AsyncImage
-import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
-import com.pubnub.components.chat.ui.R
 import com.pubnub.components.chat.ui.component.member.renderer.DefaultMemberRenderer.OnlineIndicator
 import com.pubnub.components.chat.ui.component.message.LocalProfileImageTheme
 import com.pubnub.components.chat.util.CenterInside
