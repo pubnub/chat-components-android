@@ -304,12 +304,12 @@ private fun PickedUnicodeReactionsButton(){
         DefaultReactionsPickerRenderer.PickedList(
             "member1",
             listOf(
-                ReactionUi("\u1F44D", "reaction", listOf(member1)),                         // 👍 thumbs up
+                ReactionUi("\uD83D\uDC4D", "reaction", listOf(member1)),                         // 👍 thumbs up
                 ReactionUi("\u2764", "reaction", listOf(member1, member2)),                 // ❤ red heart U+2764
-                ReactionUi("\u1F602", "reaction", listOf(member1, member2, member3)),       // 😂 face with tears of joy U+1F602
-                ReactionUi("\u1F632", "reaction", listOf(member2, member3)),                // 😲 astonished face U+1F632
-                ReactionUi("\u1F622", "reaction", listOf(member2)),                         // 😢 crying face U+1F622
-                ReactionUi("\u1F525", "reaction", listOf(member3)),                         // 🔥 fire U+1F525
+                ReactionUi("\uD83D\uDE02", "reaction", listOf(member1, member2, member3)),       // 😂 face with tears of joy U+1F602
+                ReactionUi("\uD83D\uDE32", "reaction", listOf(member2, member3)),                // 😲 astonished face U+1F632
+                ReactionUi("\uD83D\uDE22", "reaction", listOf(member2)),                         // 😢 crying face U+1F622
+                ReactionUi("\uD83D\uDD25", "reaction", listOf(member3)),                         // 🔥 fire U+1F525
             ),
         ) {}
     }

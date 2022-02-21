@@ -194,15 +194,7 @@ object GroupMessageRenderer : MessageRenderer {
         // endregion
 
         Row(
-            modifier = Modifier
-                .combinedClickable(
-                    enabled = onShowMenu != null,
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = rememberRipple(),
-                    onLongClick = { onShowMenu?.let { onShowMenu() } },
-                    onClick = { },
-                )
-                .then(theme.modifier),
+            modifier = theme.modifier,
             verticalAlignment = theme.verticalAlignment,
         ) {
             Box(modifier = theme.profileImage.modifier) {
@@ -220,7 +212,15 @@ object GroupMessageRenderer : MessageRenderer {
                 )
             }
 
-            Column {
+            Column(modifier = Modifier
+                .combinedClickable(
+                    enabled = onShowMenu != null,
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = rememberRipple(),
+                    onLongClick = { onShowMenu?.let { onShowMenu() } },
+                    onClick = { },
+                )
+            ) {
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(
                         text = title, theme = theme.title, modifier = theme.title.modifier.then(
@@ -344,25 +344,10 @@ object GroupMessageRenderer : MessageRenderer {
         modifier: Modifier = Modifier,
     ) {
 
-        val uriHandler = LocalUriHandler.current
-        ClickableText(
+        Text(
             text = message,
             modifier = modifier.then(placeholder),
             style = theme.asStyle(),
-            onClick = {
-                message
-                    .getStringAnnotations(start = it, end = it)
-                    .firstOrNull()
-                    ?.let { annotation ->
-                        Timber.e("Annotation $annotation")
-                        when (annotation.tag) {
-                            SymbolAnnotationType.LINK.name -> {
-                                uriHandler.openUri(annotation.item)
-                            }
-                            else -> Unit
-                        }
-                    }
-            }
         )
     }
 
