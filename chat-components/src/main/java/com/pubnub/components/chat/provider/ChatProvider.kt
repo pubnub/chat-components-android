@@ -18,7 +18,7 @@ import com.pubnub.components.chat.service.member.DefaultMemberServiceImpl
 import com.pubnub.components.chat.service.member.LocalMemberService
 import com.pubnub.components.chat.service.message.DefaultMessageServiceImpl
 import com.pubnub.components.chat.service.message.LocalMessageService
-import com.pubnub.components.chat.service.message.action.DefaultMessageReactionService
+import com.pubnub.components.chat.service.message.action.DefaultMessageReactionServiceImpl
 import com.pubnub.components.chat.service.message.action.LocalActionService
 import com.pubnub.components.chat.service.message.action.LocalMessageReactionService
 import com.pubnub.components.chat.ui.component.channel.DefaultChannelListTheme
@@ -173,11 +173,12 @@ fun WithServices(
             LocalErrorHandler.current,
         ),
         LocalActionService provides actionService,
-        LocalMessageReactionService provides DefaultMessageReactionService(
+        LocalMessageReactionService provides DefaultMessageReactionServiceImpl(
             LocalPubNub.current.configuration.uuid,
             actionService,
             LocalMessageActionRepository.current,
             NetworkMessageActionMapper(),
+            LocalErrorHandler.current,
         ),
         LocalChannelService provides DefaultChannelServiceImpl(
             LocalPubNub.current,

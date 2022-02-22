@@ -3,6 +3,7 @@ package com.pubnub.components.chat.service.message.action
 import com.pubnub.api.models.consumer.message_actions.PNMessageAction
 import com.pubnub.api.models.consumer.pubsub.BasePubSubResult
 import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResult
+import com.pubnub.components.chat.service.error.ErrorHandler
 import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.repository.message.action.MessageActionRepository
 import com.pubnub.framework.data.ChannelId
@@ -21,11 +22,12 @@ import timber.log.Timber
     FlowPreview::class,
     DelicateCoroutinesApi::class,
 )
-class DefaultMessageReactionService(
+class DefaultMessageReactionServiceImpl(
     private val userId: UserId,
     private val actionService: ActionService,
     private val messageActionRepository: MessageActionRepository<DBMessageAction>,
     private val mapper: Mapper<PNMessageActionResult, DBMessageAction>,
+    private val errorHandler: ErrorHandler,
     private val coroutineScope: CoroutineScope = GlobalScope,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : MessageReactionService<DBMessageAction> {
@@ -94,9 +96,12 @@ class DefaultMessageReactionService(
         type: String,
         value: String,
     ) {
-        // TODO: try catch
-        actionService.remove(channel, messageTimetoken, published)
-        removeAction(userId, channel, messageTimetoken, type, value)
+        try {
+            actionService.remove(channel, messageTimetoken, published)
+            removeAction(userId, channel, messageTimetoken, type, value)
+        } catch (e: Exception) {
+            errorHandler.onError(e, "Cannot remove message action")
+        }
     }
 
     /**
@@ -115,10 +120,13 @@ class DefaultMessageReactionService(
         type: String,
         value: String,
     ) {
-        // TODO: try catch
-        val result = actionService.add(channel, PNMessageAction(type, value, messageTimetoken))
-            .toResult(channel)
-        addAction(result)
+        try {
+            val result = actionService.add(channel, PNMessageAction(type, value, messageTimetoken))
+                .toResult(channel)
+            addAction(result)
+        } catch (e: Exception) {
+            errorHandler.onError(e, "Cannot add message action")
+        }
     }
 
     /**
