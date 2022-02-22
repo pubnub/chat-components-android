@@ -31,10 +31,9 @@ interface MessageRepository<DB : Message, Data : Message> {
     suspend fun has(id: MessageId): Boolean
     suspend fun hasMoreBefore(id: ChannelId, timestamp: Timetoken): Boolean
     suspend fun hasMoreAfter(id: ChannelId, timestamp: Timetoken): Boolean
-    suspend fun add(vararg message: DB)
     suspend fun remove(message: DB)
     suspend fun removeAll(id: ChannelId)
-    suspend fun update(message: DB)
+    suspend fun insertOrUpdate(vararg message: DB)
     suspend fun setSent(
         id: MessageId,
         timestamp: Timetoken? = null,

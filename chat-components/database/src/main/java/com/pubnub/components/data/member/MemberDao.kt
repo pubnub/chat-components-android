@@ -24,10 +24,7 @@ interface MemberDao<DB : Member, Data : Member> {
     fun getList(id: ChannelId): List<Data>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(vararg data: DB)
-
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun update(vararg data: DB)
+    suspend fun insertOrUpdate(vararg data: DB)
 
     @Delete
     suspend fun delete(data: DB)

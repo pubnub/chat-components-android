@@ -79,7 +79,7 @@ class DefaultMessageServiceImpl(
         val newMessage = message.copy(isSent = false, exception = null)
 
         // Add message to repository
-        messageRepository.add(newMessage)
+        messageRepository.insertOrUpdate(newMessage)
 
         coroutineScope.launch(dispatcher) {
 
@@ -195,7 +195,7 @@ class DefaultMessageServiceImpl(
 
     private fun insertMessageAction(vararg action: DBMessageAction) {
         coroutineScope.launch(dispatcher) {
-            messageActionRepository.insertUpdate(*action)
+            messageActionRepository.insertOrUpdate(*action)
         }
     }
 
@@ -267,10 +267,7 @@ class DefaultMessageServiceImpl(
      */
     private fun insertOrUpdate(message: DBMessage) {
         coroutineScope.launch(dispatcher) {
-            runBlocking {
-                if (messageRepository.has(message.id)) messageRepository.update(message)
-                else messageRepository.add(message)
-            }
+            messageRepository.insertOrUpdate(message)
         }
     }
 }

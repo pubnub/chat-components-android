@@ -9,7 +9,7 @@ interface MembershipRepository<DB : Membership> {
     suspend fun get(id: MembershipId): DB?
     fun getAll(id: UserId): Flow<List<DB>>
     suspend fun getList(): List<DB>
-    suspend fun add(vararg membership: DB)
+    suspend fun insertOrUpdate(vararg membership: DB)
     suspend fun remove(id: MembershipId)
     suspend fun size(): Long
 }

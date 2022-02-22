@@ -15,8 +15,7 @@ interface MessageActionRepository<DB : MessageAction> {
     ): DB?
 
     suspend fun has(id: String): Boolean
-    suspend fun add(vararg action: DB)
     suspend fun remove(vararg action: DB)
-    suspend fun insertUpdate(vararg data: DB)
+    suspend fun insertOrUpdate(vararg action: DB)
     suspend fun getLastTimetoken(channel: ChannelId): Timetoken
 }

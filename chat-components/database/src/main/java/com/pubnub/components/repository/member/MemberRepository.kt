@@ -16,7 +16,7 @@ interface MemberRepository<DB : Member, Data : Member> {
     ): PagingSource<Int, Data>
 
     suspend fun getList(id: ChannelId? = null): List<Data>
-    suspend fun add(vararg member: DB)
+    suspend fun insertOrUpdate(vararg member: DB)
     suspend fun remove(id: UserId)
     suspend fun size(): Long
 }

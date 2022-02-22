@@ -95,7 +95,7 @@ class DefaultMemberServiceImpl(
 
                 // repo
                 val membersList = data.toList().map { networkMapper.map(it) }.toTypedArray()
-                memberRepository.add(*membersList)
+                memberRepository.insertOrUpdate(*membersList)
 
                 onNext(obtainedPage, totalCount!!)
             }
@@ -140,7 +140,7 @@ class DefaultMemberServiceImpl(
             when (event.extractedMessage) {
                 is PNSetUUIDMetadataEventMessage -> {
                     val member = (event.extractedMessage as PNSetUUIDMetadataEventMessage).data
-                    memberRepository.add(networkMapper.map(member))
+                    memberRepository.insertOrUpdate(networkMapper.map(member))
                 }
                 is PNDeleteUUIDMetadataEventMessage -> {
                     val member = (event.extractedMessage as PNDeleteUUIDMetadataEventMessage).uuid

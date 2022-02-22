@@ -127,7 +127,7 @@ class DefaultMessageReactionService(
      * @param action Array of [DBMessageAction] objects to store
      */
     private suspend fun insert(vararg action: DBMessageAction) {
-        messageActionRepository.insertUpdate(*action)
+        messageActionRepository.insertOrUpdate(*action)
     }
 
     /**
@@ -164,7 +164,7 @@ class DefaultMessageReactionService(
      * @param result PubNub result object
      */
     private suspend fun addAction(result: PNMessageActionResult) {
-        messageActionRepository.add(mapper.map(result))
+        messageActionRepository.insertOrUpdate(mapper.map(result))
     }
 
     /**

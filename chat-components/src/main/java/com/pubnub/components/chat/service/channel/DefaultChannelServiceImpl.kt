@@ -95,7 +95,7 @@ class DefaultChannelServiceImpl(
 
                 // repo
                 val channelsList = data.toList().map { networkMapper.map(it) }.toTypedArray()
-                channelRepository.add(*channelsList)
+                channelRepository.insertOrUpdate(*channelsList)
 
                 onNext(obtainedPage, totalCount!!)
             }
@@ -136,7 +136,7 @@ class DefaultChannelServiceImpl(
             when (event.extractedMessage) {
                 is PNSetChannelMetadataEventMessage -> {
                     val channel = (event.extractedMessage as PNSetChannelMetadataEventMessage).data
-                    channelRepository.add(networkMapper.map(channel))
+                    channelRepository.insertOrUpdate(networkMapper.map(channel))
                 }
                 is PNDeleteChannelMetadataEventMessage -> {
                     val channel =

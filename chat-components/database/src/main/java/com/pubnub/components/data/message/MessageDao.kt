@@ -56,10 +56,7 @@ interface MessageDao<DB : Message, Data : Message> {
     fun getLastByChannel(id: ChannelId, count: Long): Flow<List<Data>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(vararg message: DB)
-
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun update(vararg message: DB)
+    suspend fun insertOrUpdate(vararg message: DB)
 
     @Delete
     suspend fun delete(messageData: DB)

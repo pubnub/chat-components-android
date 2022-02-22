@@ -80,14 +80,14 @@ class DefaultChannelRepository(
         channelDao.getList()
 
     /**
-     * Adds passed Channels to database
+     * Inserts passed Channels to database, or updates them if they exists
      *
      * @param channel DBChannel object do add
      */
-    override suspend fun add(
+    override suspend fun insertOrUpdate(
         vararg channel: DBChannel,
     ) {
-        channelDao.insert(*channel)
+        channelDao.insertOrUpdate(*channel)
     }
 
     /**

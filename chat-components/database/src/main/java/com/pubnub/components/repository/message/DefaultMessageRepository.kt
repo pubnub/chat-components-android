@@ -151,15 +151,6 @@ class DefaultMessageRepository(
         messageDao.getAfter(id, 1, timestamp).isNotEmpty()
 
     /**
-     * Adds passed Message to database
-     *
-     * @param message DBMessage object do add
-     */
-    override suspend fun add(vararg message: DBMessage) {
-        messageDao.insert(*message)
-    }
-
-    /**
      * Removes passed Message from database
      *
      * @param message DBMessage object do remove
@@ -178,12 +169,12 @@ class DefaultMessageRepository(
     }
 
     /**
-     * Updates passed Message
+     * Inserts the new message, or updates if it's already exists
      *
      * @param message DBMessage object to update
      */
-    override suspend fun update(message: DBMessage) {
-        messageDao.update(message)
+    override suspend fun insertOrUpdate(vararg message: DBMessage) {
+        messageDao.insertOrUpdate(*message)
     }
 
     /**
@@ -250,6 +241,6 @@ class DefaultMessageRepository(
             exception = exception,
             timetoken = timestamp ?: message.timetoken,
         )
-        messageDao.update(updatedMessage)
+        messageDao.insertOrUpdate(updatedMessage)
     }
 }

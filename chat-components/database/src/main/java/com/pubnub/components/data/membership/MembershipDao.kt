@@ -25,10 +25,7 @@ interface MembershipDao<Data : Membership> {
     fun getList(): List<Data>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(vararg data: Data)
-
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun update(vararg data: Data)
+    suspend fun insertOrUpdate(vararg data: Data)
 
     @Delete
     suspend fun delete(data: Data)
