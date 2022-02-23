@@ -6,28 +6,28 @@ import androidx.sqlite.db.SupportSQLiteQuery
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
 
-interface ChannelDao<DB : Channel, Data : Channel> {
+interface ChannelDao<IN : Channel, OUT : Channel> {
     @Transaction
     @Query("SELECT * FROM `channel` WHERE channelId LIKE :id LIMIT 1")
-    suspend fun get(id: ChannelId): Data?
+    suspend fun get(id: ChannelId): OUT?
 
     @Transaction
     @RawQuery
-    fun getAll(query: SupportSQLiteQuery): PagingSource<Int, Data>
+    fun getAll(query: SupportSQLiteQuery): PagingSource<Int, OUT>
 
     @Transaction
     @Query("SELECT * FROM `channel`")
-    suspend fun getList(): List<Data>
+    suspend fun getList(): List<OUT>
 
     @Transaction
     @Query("SELECT * FROM `channel` WHERE channelId IN (SELECT channelId FROM `membership` WHERE memberId LIKE :id)")
-    fun getList(id: UserId): List<Data>
+    fun getList(id: UserId): List<OUT>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrUpdate(vararg data: DB)
+    suspend fun insertOrUpdate(vararg data: IN)
 
     @Delete
-    suspend fun delete(data: DB)
+    suspend fun delete(data: IN)
 
     @Transaction
     @Query("DELETE FROM `channel` WHERE channelId LIKE :id")

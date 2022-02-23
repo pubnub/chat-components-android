@@ -13,8 +13,10 @@ import com.pubnub.components.chat.ui.component.member.MemberUi
 import com.pubnub.components.chat.ui.component.presence.Presence
 import com.pubnub.components.chat.ui.component.provider.LocalPubNub
 import com.pubnub.components.chat.ui.mapper.member.DBMemberMapper
+import com.pubnub.components.data.member.DBMember
 import com.pubnub.components.data.member.DBMemberWithChannels
 import com.pubnub.components.repository.member.DefaultMemberRepository
+import com.pubnub.components.repository.member.MemberRepository
 import com.pubnub.components.repository.util.Query
 import com.pubnub.components.repository.util.Sorted
 import com.pubnub.framework.data.ChannelId
@@ -31,7 +33,7 @@ import kotlinx.coroutines.flow.map
 @OptIn(ExperimentalPagingApi::class, FlowPreview::class)
 class MemberViewModel constructor(
     private val pubNub: PubNub,
-    private val repository: DefaultMemberRepository,
+    private val repository: MemberRepository<DBMember, DBMemberWithChannels>,
     private val presenceService: OccupancyService?,
     private val dbMapper: Mapper<DBMemberWithChannels, MemberUi.Data>,
 ) : ViewModel() {
@@ -50,7 +52,7 @@ class MemberViewModel constructor(
         @Composable
         fun default(
             pubNub: PubNub = LocalPubNub.current,
-            repository: DefaultMemberRepository = LocalMemberRepository.current,
+            repository: MemberRepository<DBMember, DBMemberWithChannels> = LocalMemberRepository.current,
             occupancyService: OccupancyService = LocalOccupancyService.current,
             dbMapper: Mapper<DBMemberWithChannels, MemberUi.Data> = DBMemberMapper(),
         ): MemberViewModel {

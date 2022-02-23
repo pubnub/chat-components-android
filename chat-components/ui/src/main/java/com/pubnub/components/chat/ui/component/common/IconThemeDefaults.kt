@@ -17,7 +17,7 @@ object IconThemeDefaults {
     fun icon(
         icon: ImageVector? = null,
         shape: Shape = CircleShape,
-        tint: Color = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.medium),//LocalContentColor.current.copy(alpha = ContentAlpha.medium),
+        tint: Color = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.medium),
         modifier: Modifier = Modifier
             .size(40.dp)
             .padding(8.dp),

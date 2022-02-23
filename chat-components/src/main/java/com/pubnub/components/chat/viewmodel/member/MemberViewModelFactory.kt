@@ -6,15 +6,17 @@ import androidx.paging.ExperimentalPagingApi
 import com.pubnub.api.PubNub
 import com.pubnub.components.chat.service.channel.OccupancyService
 import com.pubnub.components.chat.ui.component.member.MemberUi
+import com.pubnub.components.data.member.DBMember
 import com.pubnub.components.data.member.DBMemberWithChannels
 import com.pubnub.components.repository.member.DefaultMemberRepository
+import com.pubnub.components.repository.member.MemberRepository
 import com.pubnub.framework.mapper.Mapper
 import kotlinx.coroutines.FlowPreview
 
 @OptIn(ExperimentalPagingApi::class, FlowPreview::class)
 class MemberViewModelFactory(
     private val pubNub: PubNub,
-    private val repository: DefaultMemberRepository,
+    private val repository: MemberRepository<DBMember, DBMemberWithChannels>,
     private val presenceService: OccupancyService?,
     private val dbMapper: Mapper<DBMemberWithChannels, MemberUi.Data>,
 ) : ViewModelProvider.Factory {

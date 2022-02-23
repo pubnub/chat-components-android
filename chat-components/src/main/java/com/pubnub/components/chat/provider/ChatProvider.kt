@@ -9,16 +9,16 @@ import com.pubnub.components.BuildConfig
 import com.pubnub.components.PubNubDatabase
 import com.pubnub.components.R
 import com.pubnub.components.chat.network.mapper.*
-import com.pubnub.components.chat.service.channel.DefaultChannelServiceImpl
+import com.pubnub.components.chat.service.channel.DefaultChannelService
 import com.pubnub.components.chat.service.channel.LocalChannelService
 import com.pubnub.components.chat.service.channel.LocalOccupancyService
 import com.pubnub.components.chat.service.channel.OccupancyService
 import com.pubnub.components.chat.service.error.TimberErrorHandler
-import com.pubnub.components.chat.service.member.DefaultMemberServiceImpl
+import com.pubnub.components.chat.service.member.DefaultMemberService
 import com.pubnub.components.chat.service.member.LocalMemberService
-import com.pubnub.components.chat.service.message.DefaultMessageServiceImpl
+import com.pubnub.components.chat.service.message.DefaultMessageService
 import com.pubnub.components.chat.service.message.LocalMessageService
-import com.pubnub.components.chat.service.message.action.DefaultMessageReactionServiceImpl
+import com.pubnub.components.chat.service.message.action.DefaultMessageReactionService
 import com.pubnub.components.chat.service.message.action.LocalActionService
 import com.pubnub.components.chat.service.message.action.LocalMessageReactionService
 import com.pubnub.components.chat.ui.component.channel.DefaultChannelListTheme
@@ -163,7 +163,7 @@ fun WithServices(
     val actionService = ActionService(LocalPubNub.current)
 
     CompositionLocalProvider(
-        LocalMessageService provides DefaultMessageServiceImpl(
+        LocalMessageService provides DefaultMessageService(
             LocalPubNub.current,
             LocalMessageRepository.current,
             LocalMessageActionRepository.current,
@@ -173,20 +173,20 @@ fun WithServices(
             LocalErrorHandler.current,
         ),
         LocalActionService provides actionService,
-        LocalMessageReactionService provides DefaultMessageReactionServiceImpl(
+        LocalMessageReactionService provides DefaultMessageReactionService(
             LocalPubNub.current.configuration.uuid,
             actionService,
             LocalMessageActionRepository.current,
             NetworkMessageActionMapper(),
             LocalErrorHandler.current,
         ),
-        LocalChannelService provides DefaultChannelServiceImpl(
+        LocalChannelService provides DefaultChannelService(
             LocalPubNub.current,
             LocalChannelRepository.current,
             NetworkChannelMapper(mapper),
             LocalErrorHandler.current,
         ),
-        LocalMemberService provides DefaultMemberServiceImpl(
+        LocalMemberService provides DefaultMemberService(
             LocalPubNub.current,
             LocalMemberRepository.current,
             NetworkMemberMapper(mapper),

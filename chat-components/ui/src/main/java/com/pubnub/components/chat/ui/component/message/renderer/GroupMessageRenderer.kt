@@ -202,7 +202,13 @@ object GroupMessageRenderer : MessageRenderer {
         // endregion
 
         Row(
-            modifier = theme.modifier,
+            modifier = theme.modifier.combinedClickable(
+                enabled = onShowMenu != null,
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(),
+                onLongClick = { onShowMenu?.let { onShowMenu() } },
+                onClick = { },
+            ),
             verticalAlignment = theme.verticalAlignment,
         ) {
             Box(modifier = theme.profileImage.modifier) {
@@ -222,13 +228,7 @@ object GroupMessageRenderer : MessageRenderer {
 
             Column(
                 modifier = Modifier
-                    .combinedClickable(
-                        enabled = onShowMenu != null,
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = rememberRipple(),
-                        onLongClick = { onShowMenu?.let { onShowMenu() } },
-                        onClick = { },
-                    )
+
             ) {
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(

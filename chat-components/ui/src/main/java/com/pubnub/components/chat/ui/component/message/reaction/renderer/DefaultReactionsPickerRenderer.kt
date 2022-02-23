@@ -34,7 +34,7 @@ import kotlin.math.floor
 )
 object DefaultReactionsPickerRenderer : ReactionsRenderer {
 
-    private const val VISIBLE_ITEMS_COUNT = 6
+    var visibleItemsCount = 6
 
     var emojis: List<Emoji> = listOf(
         UnicodeEmoji("\uD83D\uDC4D"),    // 👍 thumbs up
@@ -104,7 +104,7 @@ object DefaultReactionsPickerRenderer : ReactionsRenderer {
 
         var itemWidth by remember { mutableStateOf(64.dp) }
         BoxWithConstraints {
-            itemWidth = floor(this.maxWidth.value / VISIBLE_ITEMS_COUNT).dp
+            itemWidth = floor(this.maxWidth.value / visibleItemsCount).dp
             Row(
                 modifier = theme.pickerModifier,
             ) {

@@ -10,7 +10,7 @@ import com.pubnub.api.enums.PNStatusCategory
 import com.pubnub.api.models.consumer.PNPublishResult
 import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.components.chat.provider.ChatProvider
-import com.pubnub.components.chat.service.message.DefaultMessageServiceImpl
+import com.pubnub.components.chat.service.message.DefaultMessageService
 import com.pubnub.components.chat.service.message.LocalMessageService
 import com.pubnub.components.chat.service.message.MessageServiceNotInitializedException
 import com.pubnub.components.chat.ui.component.common.ThemeDefaults
@@ -240,7 +240,7 @@ class MessageInputTest : BaseTest() {
     @Test
     fun whenMessageWillBeSent_thenMessageServiceSendWillBeCalled() = runTest {
         // Given
-        val messageService = mockk<DefaultMessageServiceImpl>(relaxed = true)
+        val messageService = mockk<DefaultMessageService>(relaxed = true)
         val buttonDescription = context.getString(R.string.message_input_button)
         val text = "Initial text"
         composeTestRule.setContent {

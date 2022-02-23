@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
-class DefaultMessageServiceImpl(
+class DefaultMessageService(
     private val pubNub: PubNub,
     private val messageRepository: MessageRepository<DBMessage, DBMessageWithActions>,
     private val messageActionRepository: MessageActionRepository<DBMessageAction>,

@@ -22,7 +22,7 @@ import timber.log.Timber
     FlowPreview::class,
     DelicateCoroutinesApi::class,
 )
-class DefaultMessageReactionServiceImpl(
+class DefaultMessageReactionService(
     private val userId: UserId,
     private val actionService: ActionService,
     private val messageActionRepository: MessageActionRepository<DBMessageAction>,

@@ -19,7 +19,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @OptIn(DelicateCoroutinesApi::class)
-class DefaultChannelServiceImpl(
+class DefaultChannelService(
     val pubNub: PubNub,
     private val channelRepository: ChannelRepository<DBChannel, DBChannelWithMembers>,
     private val networkMapper: NetworkChannelMapper,

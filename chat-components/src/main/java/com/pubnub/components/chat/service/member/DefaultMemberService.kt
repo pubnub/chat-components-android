@@ -19,7 +19,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @OptIn(DelicateCoroutinesApi::class)
-class DefaultMemberServiceImpl(
+class DefaultMemberService(
     private val pubNub: PubNub,
     private val memberRepository: MemberRepository<DBMember, DBMemberWithChannels>,
     private val networkMapper: NetworkMemberMapper,

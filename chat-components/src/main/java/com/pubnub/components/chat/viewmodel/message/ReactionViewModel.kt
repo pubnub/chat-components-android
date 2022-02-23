@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.ExperimentalPagingApi
 import com.pubnub.components.chat.provider.LocalMessageActionRepository
-import com.pubnub.components.chat.service.message.action.DefaultMessageReactionServiceImpl
+import com.pubnub.components.chat.service.message.action.DefaultMessageReactionService
 import com.pubnub.components.chat.service.message.action.LocalMessageReactionService
 import com.pubnub.components.chat.ui.component.message.reaction.PickedReaction
 import com.pubnub.components.chat.ui.component.provider.LocalChannel
@@ -25,7 +25,7 @@ import timber.log.Timber
 class ReactionViewModel constructor(
     private val channelId: ChannelId,
     private val messageActionRepository: MessageActionRepository<DBMessageAction>,
-    private val messageReactionService: DefaultMessageReactionServiceImpl?,
+    private val messageReactionService: DefaultMessageReactionService?,
 ) : ViewModel() {
 
     companion object {
@@ -43,7 +43,7 @@ class ReactionViewModel constructor(
             val factory = ReactionViewModelFactory(
                 channelId = id,
                 messageActionRepository = LocalMessageActionRepository.current,
-                messageReactionService = LocalMessageReactionService.current as DefaultMessageReactionServiceImpl,
+                messageReactionService = LocalMessageReactionService.current as DefaultMessageReactionService,
             )
             return viewModel(factory = factory)
         }
