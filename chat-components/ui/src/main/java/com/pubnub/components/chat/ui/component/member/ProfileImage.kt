@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import coil.annotation.ExperimentalCoilApi
-import coil.compose.AsyncImage
 import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
@@ -27,12 +26,14 @@ fun ProfileImage(
     with(LocalProfileImageTheme.current) {
 
         Box(modifier = modifier) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(imageUrl)
-                    .crossfade(false)
-                    .transformations(CircleCropTransformation())
-                    .build(),
+            Image(
+                painter = rememberImagePainter(
+                    data = imageUrl,
+                    builder = {
+                        crossfade(false)
+                        transformations(CircleCropTransformation())
+                    }
+                ),
                 contentDescription = null,
                 contentScale = CenterInside,
                 modifier = Modifier.fillMaxSize(),
