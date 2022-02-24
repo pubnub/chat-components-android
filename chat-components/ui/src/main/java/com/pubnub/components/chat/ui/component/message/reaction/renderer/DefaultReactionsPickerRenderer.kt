@@ -216,7 +216,7 @@ object DefaultReactionsPickerRenderer : ReactionsRenderer {
                 val emoji = reaction.toEmoji()
                 PickedReactionButton(
                     emoji = emoji,
-                    text = "${reaction.members.size}",
+                    text = if(reaction.members.size < 100) "${reaction.members.size}" else "99+",
                     onSelected = { onSelected(emoji) },
                     theme = reactionTheme,
                 )
@@ -300,6 +300,29 @@ object DefaultReactionsPickerRenderer : ReactionsRenderer {
             "reaction" -> UnicodeEmoji(value)
             else -> throw RuntimeException("Cannot map reaction [$type:$value] to Emoji object")
         }
+}
+
+
+@Preview
+@Composable
+private fun PickedUnicodeReactionsCount() {
+    CompositionLocalProvider(LocalReactionTheme provides DefaultReactionTheme) {
+        DefaultReactionsPickerRenderer.PickedList(
+            "member1",
+            listOf(
+                ReactionUi(
+                    "\uD83D\uDC4D",
+                    "reaction",
+                    List(99){ MemberUi.Data("member", "Member")}
+                ),                         // 👍 thumbs up
+                ReactionUi(
+                    "\u2764",
+                    "reaction",
+                    List(100){ MemberUi.Data("member", "Member")}
+                ),                      // ❤  red heart U+2764
+            ),
+        ) {}
+    }
 }
 
 @Preview(widthDp = 200)
