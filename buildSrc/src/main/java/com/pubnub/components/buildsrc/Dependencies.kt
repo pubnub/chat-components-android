@@ -5,14 +5,14 @@ object Versions {
 }
 
 object Libs {
-    const val androidGradlePlugin = "com.android.tools.build:gradle:7.1.0"
+    const val androidGradlePlugin = "com.android.tools.build:gradle:7.1.2"
     const val ktLint = "com.pinterest:ktlint:${Versions.ktLint}"
     const val jdkDesugar = "com.android.tools:desugar_jdk_libs:1.1.5"
     const val gradleMavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.18.0"
-    const val gradleVersionsPlugin = "com.github.ben-manes:gradle-versions-plugin:0.41.0"
+    const val gradleVersionsPlugin = "com.github.ben-manes:gradle-versions-plugin:0.42.0"
 
     object Accompanist {
-        private const val version = "0.22.1-rc"
+        private const val version = "0.23.0"
 
         const val swipeRefresh = "com.google.accompanist:accompanist-swiperefresh:$version"
         const val placeholder = "com.google.accompanist:accompanist-placeholder:$version"
@@ -46,7 +46,7 @@ object Libs {
     }
 
     object Google {
-        const val gson = "com.google.code.gson:gson:2.8.9"
+        const val gson = "com.google.code.gson:gson:2.9.0"
     }
 
     object AndroidX {
@@ -64,7 +64,7 @@ object Libs {
 
         object Compose {
             const val snapshot = ""
-            private const val version = "1.1.0-rc03"
+            private const val version = "1.1.1"
 
             const val runtime = "androidx.compose.runtime:runtime:$version"
             const val runtimeLivedata = "androidx.compose.runtime:runtime-livedata:$version"
@@ -80,7 +80,7 @@ object Libs {
         }
 
         object Lifecycle {
-            private const val version = "2.4.0"
+            private const val version = "2.4.1"
             const val viewModelCompose =
                 "androidx.lifecycle:lifecycle-viewmodel-compose:$version"
             const val viewModelKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:$version"
@@ -93,7 +93,7 @@ object Libs {
         }
 
         object Room {
-            private const val version = "2.4.1"
+            private const val version = "2.4.2"
             const val runtime = "androidx.room:room-runtime:$version"
             const val compiler = "androidx.room:room-compiler:$version"
             const val paging = "androidx.room:room-paging:$version"
@@ -119,7 +119,7 @@ object Libs {
     }
 
     object Hilt {
-        private const val version = "2.40.5"
+        private const val version = "2.41"
 
         const val gradlePlugin = "com.google.dagger:hilt-android-gradle-plugin:$version"
         const val android = "com.google.dagger:hilt-android:$version"
