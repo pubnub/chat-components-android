@@ -14,21 +14,6 @@ import com.pubnub.framework.util.timetoken
 @Keep
 @Entity(
     tableName = "message",
-    foreignKeys = [
-        ForeignKey(
-            entity = DBMember::class,
-            parentColumns = arrayOf("memberId"),
-            childColumns = arrayOf("publisher"),
-            onDelete = ForeignKey.NO_ACTION,
-        ),
-//        Warning: Entity must exists in db! So Channel must exists in db before Message will be saved
-//        ForeignKey(
-//            entity = DBChannel::class,
-//            parentColumns = arrayOf("id"),
-//            childColumns = arrayOf("channel"),
-//            onDelete = ForeignKey.NO_ACTION,
-//        ),
-    ],
     indices = [Index("publisher")]
 )
 data class DBMessage(
