@@ -13,7 +13,6 @@ import com.pubnub.framework.util.timetoken
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 /**

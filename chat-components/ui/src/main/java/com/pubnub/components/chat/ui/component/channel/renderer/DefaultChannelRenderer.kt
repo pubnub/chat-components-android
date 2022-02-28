@@ -28,7 +28,6 @@ import com.google.accompanist.placeholder.placeholder
 import com.pubnub.components.chat.ui.R
 import com.pubnub.components.chat.ui.component.channel.LocalChannelListTheme
 import com.pubnub.components.chat.util.CenterInside
-import org.jetbrains.annotations.Async
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalCoilApi::class)
 object DefaultChannelRenderer : ChannelRenderer {
@@ -86,7 +85,7 @@ object DefaultChannelRenderer : ChannelRenderer {
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = modifier.apply{ clickAction?.let { action -> clickable { action() } } },
+            modifier = modifier.apply { clickAction?.let { action -> clickable { action() } } },
         ) {
             // icon
             Image(

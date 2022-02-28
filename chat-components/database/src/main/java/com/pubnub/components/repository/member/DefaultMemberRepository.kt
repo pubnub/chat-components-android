@@ -82,12 +82,12 @@ class DefaultMemberRepository(
         id?.let { memberDao.getList(it) } ?: memberDao.getList()
 
     /**
-     * Adds passed Member to database
+     * Inserts passed Members to database, or updates them if they exists
      *
      * @param member DBMember object to add
      */
-    override suspend fun add(vararg member: DBMember) {
-        memberDao.insert(*member)
+    override suspend fun insertOrUpdate(vararg member: DBMember) {
+        memberDao.insertOrUpdate(*member)
     }
 
     /**

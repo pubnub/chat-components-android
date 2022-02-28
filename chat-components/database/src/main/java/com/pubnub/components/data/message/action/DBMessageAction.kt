@@ -24,7 +24,7 @@ data class DBMessageAction(
     override val value: String,
 
     @PrimaryKey
-    override val id: String = "$user-$channel-$messageTimestamp-$published-$type-$value",
+    override val id: String = "$user-$messageTimestamp-$published",
 ) : MessageAction {
 
     override fun equals(other: Any?): Boolean {

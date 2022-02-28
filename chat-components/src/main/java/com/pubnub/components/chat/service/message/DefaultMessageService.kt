@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
-class DefaultMessageServiceImpl(
+class DefaultMessageService(
     private val pubNub: PubNub,
     private val messageRepository: MessageRepository<DBMessage, DBMessageWithActions>,
     private val messageActionRepository: MessageActionRepository<DBMessageAction>,
@@ -79,7 +79,7 @@ class DefaultMessageServiceImpl(
         val newMessage = message.copy(isSent = false, exception = null)
 
         // Add message to repository
-        messageRepository.add(newMessage)
+        messageRepository.insertOrUpdate(newMessage)
 
         coroutineScope.launch(dispatcher) {
 
@@ -179,7 +179,10 @@ class DefaultMessageServiceImpl(
                                 insertMessageAction(*actions)
 
                             } catch (e: Exception) {
-                                errorHandler.onError(e, "Cannot map message action ${it.toJson(pubNub.mapper)}")
+                                errorHandler.onError(
+                                    e,
+                                    "Cannot map message action ${it.toJson(pubNub.mapper)}"
+                                )
                             }
                         }
                     }
@@ -192,7 +195,7 @@ class DefaultMessageServiceImpl(
 
     private fun insertMessageAction(vararg action: DBMessageAction) {
         coroutineScope.launch(dispatcher) {
-            messageActionRepository.insertUpdate(*action)
+            messageActionRepository.insertOrUpdate(*action)
         }
     }
 
@@ -264,10 +267,7 @@ class DefaultMessageServiceImpl(
      */
     private fun insertOrUpdate(message: DBMessage) {
         coroutineScope.launch(dispatcher) {
-            runBlocking {
-                if (messageRepository.has(message.id)) messageRepository.update(message)
-                else messageRepository.add(message)
-            }
+            messageRepository.insertOrUpdate(message)
         }
     }
 }

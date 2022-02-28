@@ -37,12 +37,12 @@ class DefaultMessageActionRepository(
         messageActionDao.get(user, channel, messageTimetoken, type, value)
 
     /**
-     * Adds passed MessageAction to database
+     * Inserts passed MessageActions to database, or updates them if they exists
      *
      * @param action DBMessageAction object to add
      */
-    override suspend fun add(vararg action: DBMessageAction) {
-        messageActionDao.insert(*action)
+    override suspend fun insertOrUpdate(vararg action: DBMessageAction) {
+        messageActionDao.insertOrUpdate(*action)
     }
 
     /**
@@ -61,18 +61,6 @@ class DefaultMessageActionRepository(
      */
     override suspend fun has(id: String): Boolean =
         messageActionDao.get(id) != null
-
-    /**
-     * Insert MessageAction if not exists in database, or update existing one.
-     *
-     * @param data DBMessageAction objects to insert / update
-     */
-    override suspend fun insertUpdate(vararg data: DBMessageAction) {
-        data.forEach { reaction ->
-            if (has(reaction.id)) messageActionDao.update(reaction)
-            else add(reaction)
-        }
-    }
 
     /**
      * Returns the last Timestamp of stored MessageAction.

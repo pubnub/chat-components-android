@@ -11,8 +11,9 @@ import com.pubnub.components.chat.provider.LocalChannelRepository
 import com.pubnub.components.chat.ui.component.channel.ChannelUi
 import com.pubnub.components.chat.ui.component.provider.LocalPubNub
 import com.pubnub.components.chat.ui.mapper.channel.DBChannelMapper
+import com.pubnub.components.data.channel.DBChannel
 import com.pubnub.components.data.channel.DBChannelWithMembers
-import com.pubnub.components.repository.channel.DefaultChannelRepository
+import com.pubnub.components.repository.channel.ChannelRepository
 import com.pubnub.components.repository.util.Query
 import com.pubnub.components.repository.util.Sorted
 import com.pubnub.framework.data.ChannelId
@@ -32,7 +33,7 @@ import kotlinx.coroutines.withContext
 @OptIn(ExperimentalPagingApi::class)
 class ChannelViewModel constructor(
     private val id: UserId,
-    private val repository: DefaultChannelRepository,
+    private val repository: ChannelRepository<DBChannel, DBChannelWithMembers>,
     private val resources: Resources,
     private val dbMapper: Mapper<DBChannelWithMembers, ChannelUi.Data> = DBChannelMapper(),
 ) : ViewModel() {
@@ -52,7 +53,7 @@ class ChannelViewModel constructor(
         fun default(
             resources: Resources,
             id: UserId = LocalPubNub.current.configuration.uuid,
-            repository: DefaultChannelRepository = LocalChannelRepository.current,
+            repository: ChannelRepository<DBChannel, DBChannelWithMembers> = LocalChannelRepository.current,
             dbMapper: Mapper<DBChannelWithMembers, ChannelUi.Data> = DBChannelMapper(),
         ): ChannelViewModel {
             val channelFactory = ChannelViewModelFactory(id, repository, resources, dbMapper)

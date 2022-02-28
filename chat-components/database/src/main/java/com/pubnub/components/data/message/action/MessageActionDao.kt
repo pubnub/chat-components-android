@@ -31,11 +31,8 @@ interface MessageActionDao<Data : MessageAction> {
     fun getLast(channel: String): Flow<Data?>
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun insert(vararg reaction: Data)
-
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun update(vararg reaction: Data)
+    suspend fun insertOrUpdate(vararg action: Data)
 
     @Delete
-    suspend fun delete(vararg reaction: Data)
+    suspend fun delete(vararg action: Data)
 }

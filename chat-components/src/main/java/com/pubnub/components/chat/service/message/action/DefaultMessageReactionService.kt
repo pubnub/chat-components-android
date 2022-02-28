@@ -3,6 +3,7 @@ package com.pubnub.components.chat.service.message.action
 import com.pubnub.api.models.consumer.message_actions.PNMessageAction
 import com.pubnub.api.models.consumer.pubsub.BasePubSubResult
 import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResult
+import com.pubnub.components.chat.service.error.ErrorHandler
 import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.repository.message.action.MessageActionRepository
 import com.pubnub.framework.data.ChannelId
@@ -26,9 +27,10 @@ class DefaultMessageReactionService(
     private val actionService: ActionService,
     private val messageActionRepository: MessageActionRepository<DBMessageAction>,
     private val mapper: Mapper<PNMessageActionResult, DBMessageAction>,
+    private val errorHandler: ErrorHandler,
     private val coroutineScope: CoroutineScope = GlobalScope,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-): MessageReactionService<DBMessageAction> {
+) : MessageReactionService<DBMessageAction> {
 
     private var actionJob: Job? = null
     private lateinit var types: Array<String>
@@ -61,7 +63,8 @@ class DefaultMessageReactionService(
     override fun synchronize(channel: ChannelId, lastTimetoken: Long?) {
         Timber.e("Sync actions for channel '$channel'")
         coroutineScope.launch(dispatcher) {
-            val lastActionTimestamp = lastTimetoken ?: messageActionRepository.getLastTimetoken(channel)
+            val lastActionTimestamp =
+                lastTimetoken ?: messageActionRepository.getLastTimetoken(channel)
             val actions = actionService.getAll(
                 channelId = channel,
                 end = lastActionTimestamp + 1,
@@ -93,9 +96,12 @@ class DefaultMessageReactionService(
         type: String,
         value: String,
     ) {
-        // TODO: try catch
-        actionService.remove(channel, messageTimetoken, published)
-        removeAction(userId, channel, messageTimetoken, type, value)
+        try {
+            actionService.remove(channel, messageTimetoken, published)
+            removeAction(userId, channel, messageTimetoken, type, value)
+        } catch (e: Exception) {
+            errorHandler.onError(e, "Cannot remove message action")
+        }
     }
 
     /**
@@ -114,9 +120,13 @@ class DefaultMessageReactionService(
         type: String,
         value: String,
     ) {
-        // TODO: try catch
-        val result = actionService.add(channel, PNMessageAction(type, value, messageTimetoken)).toResult(channel)
-        addAction(result)
+        try {
+            val result = actionService.add(channel, PNMessageAction(type, value, messageTimetoken))
+                .toResult(channel)
+            addAction(result)
+        } catch (e: Exception) {
+            errorHandler.onError(e, "Cannot add message action")
+        }
     }
 
     /**
@@ -125,7 +135,7 @@ class DefaultMessageReactionService(
      * @param action Array of [DBMessageAction] objects to store
      */
     private suspend fun insert(vararg action: DBMessageAction) {
-        messageActionRepository.insertUpdate(*action)
+        messageActionRepository.insertOrUpdate(*action)
     }
 
     /**
@@ -139,7 +149,7 @@ class DefaultMessageReactionService(
             actionJob = actionService.actions
                 .filter { it.publisher != userId }
                 .onEach { result ->
-                    when(result.event){
+                    when (result.event) {
                         ActionService.EVENT_ADDED -> addAction(result)
                         ActionService.EVENT_REMOVED -> removeAction(result)
                     }
@@ -161,8 +171,8 @@ class DefaultMessageReactionService(
      *
      * @param result PubNub result object
      */
-    private suspend fun addAction(result: PNMessageActionResult){
-        messageActionRepository.add(mapper.map(result))
+    private suspend fun addAction(result: PNMessageActionResult) {
+        messageActionRepository.insertOrUpdate(mapper.map(result))
     }
 
     /**
@@ -171,8 +181,14 @@ class DefaultMessageReactionService(
      * @param result PubNub result object
      */
     private suspend fun removeAction(result: PNMessageActionResult) {
-        with(result){
-            removeAction(user = data.uuid!!, channel = channel, messageTimetoken = data.messageTimetoken, type = data.type, value = data.value)
+        with(result) {
+            removeAction(
+                user = data.uuid!!,
+                channel = channel,
+                messageTimetoken = data.messageTimetoken,
+                type = data.type,
+                value = data.value
+            )
         }
     }
 
@@ -185,7 +201,13 @@ class DefaultMessageReactionService(
      * @param type Action type
      * @param value Action value
      */
-    private suspend fun removeAction(user: UserId, channel: ChannelId, messageTimetoken: Timetoken, type: String, value: String) {
+    private suspend fun removeAction(
+        user: UserId,
+        channel: ChannelId,
+        messageTimetoken: Timetoken,
+        type: String,
+        value: String
+    ) {
         val action = messageActionRepository.get(user, channel, messageTimetoken, type, value)
         Timber.e("Remove action $action")
         if (action != null)

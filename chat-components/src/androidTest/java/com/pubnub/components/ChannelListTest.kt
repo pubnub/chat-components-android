@@ -3,7 +3,6 @@ package com.pubnub.components
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.paging.PagingData
-import androidx.test.platform.app.InstrumentationRegistry
 import com.pubnub.components.chat.provider.ChatProvider
 import com.pubnub.components.chat.ui.component.channel.ChannelList
 import com.pubnub.components.chat.ui.component.channel.ChannelUi
@@ -16,7 +15,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.util.concurrent.atomic.AtomicReference
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ChannelListTest : BaseTest() {
@@ -39,7 +37,7 @@ class ChannelListTest : BaseTest() {
     }
 
     @Test(expected = MissingPubNubException::class)
-    fun whenPubNubProviderIsNotUsed_thenAnExceptionIsThrown() = runTest{
+    fun whenPubNubProviderIsNotUsed_thenAnExceptionIsThrown() = runTest {
         // Given
         composeTestRule.setContent {
             ChannelList(channels = emptyList(), onSelected = {})
@@ -47,7 +45,7 @@ class ChannelListTest : BaseTest() {
     }
 
     @Test
-    fun whenChannelListWillBePassed_thenItWillBeShown() = runTest{
+    fun whenChannelListWillBePassed_thenItWillBeShown() = runTest {
         // Given
         val channels = FAKE_CHANNELS
         val channelList = context.getString(R.string.channel_list)
@@ -104,7 +102,7 @@ class ChannelListTest : BaseTest() {
         ChannelUi.Data(
             id = "channel-1",
             name = "Channel 1",
-            description ="Description 1",
+            description = "Description 1",
             type = ChannelUi.Data.DEFAULT,
             profileUrl = "url",
             members = emptyList()
@@ -118,7 +116,7 @@ class ChannelListTest : BaseTest() {
             members = emptyList()
         ),
         ChannelUi.Data(
-            id ="channel-3",
+            id = "channel-3",
             name = "Channel 3",
             description = "Description 3",
             type = ChannelUi.Data.DEFAULT,

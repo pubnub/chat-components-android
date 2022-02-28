@@ -15,8 +15,8 @@ data class DBChannel(
     override val type: String = "default",
     override val updated: String? = null,
     override val eTag: String? = null,
-    override val avatarURL: String?  = null,
-    override val custom: ChannelCustomData?  = null,
+    override val avatarURL: String? = null,
+    override val custom: ChannelCustomData? = null,
 ) : Channel
 
 typealias ChannelCustomData = HashMap<String, Any>

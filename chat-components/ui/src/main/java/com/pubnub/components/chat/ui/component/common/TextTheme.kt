@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 
 class TextTheme(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     color: Color,
     fontSize: TextUnit,
     fontStyle: FontStyle?,

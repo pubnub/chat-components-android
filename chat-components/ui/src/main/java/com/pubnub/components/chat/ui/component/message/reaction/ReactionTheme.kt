@@ -3,26 +3,31 @@ package com.pubnub.components.chat.ui.component.message.reaction
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.pubnub.components.chat.ui.component.common.ButtonTheme
-import com.pubnub.components.chat.ui.component.common.ShapeTheme
+import com.pubnub.components.chat.ui.component.common.FlowRowTheme
+import com.pubnub.components.chat.ui.component.common.ModalBottomSheetLayoutTheme
 import com.pubnub.components.chat.ui.component.common.ThemeDefaults
 import com.pubnub.components.chat.ui.component.provider.MissingThemeException
 
 class ReactionTheme(
-    modifier: Modifier,
+    pickerModifier: Modifier,
+    listFlowRow: FlowRowTheme,
     selectedReaction: ButtonTheme,
-    unselectedReaction: ButtonTheme,
-    dialogShape: ShapeTheme,
+    notSelectedReaction: ButtonTheme,
+    dialog: ModalBottomSheetLayoutTheme,
 ) {
-    var modifier by mutableStateOf(modifier, structuralEqualityPolicy())
+    var pickerModifier by mutableStateOf(pickerModifier, structuralEqualityPolicy())
+        internal set
+
+    var listFlowRow by mutableStateOf(listFlowRow, structuralEqualityPolicy())
         internal set
 
     var selectedReaction by mutableStateOf(selectedReaction, structuralEqualityPolicy())
         internal set
 
-    var unselectedReaction by mutableStateOf(unselectedReaction, structuralEqualityPolicy())
+    var notSelectedReaction by mutableStateOf(notSelectedReaction, structuralEqualityPolicy())
         internal set
 
-    var dialogShape by mutableStateOf(dialogShape, structuralEqualityPolicy())
+    var dialog by mutableStateOf(dialog, structuralEqualityPolicy())
         internal set
 }
 

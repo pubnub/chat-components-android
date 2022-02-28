@@ -1,7 +1,10 @@
 package com.pubnub.components.data.membership
 
 import androidx.paging.PagingSource
-import androidx.room.*
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.MembershipId
 import com.pubnub.framework.data.UserId
@@ -25,10 +28,7 @@ interface MembershipDao<Data : Membership> {
     fun getList(): List<Data>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(vararg data: Data)
-
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun update(vararg data: Data)
+    suspend fun insertOrUpdate(vararg data: Data)
 
     @Delete
     suspend fun delete(data: Data)

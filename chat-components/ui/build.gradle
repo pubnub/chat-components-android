@@ -13,7 +13,7 @@ android {
         minSdk = 21
         targetSdk = 31
         versionCode = 1
-        versionName = "0.2.0"
+        versionName = "0.3.0-rc28"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -54,6 +54,7 @@ dependencies {
     implementation Libs.Kotlin.stdlib
     implementation Libs.Kotlin.Coroutines.android
 
+    implementation Libs.Accompanist.flowLayout
     implementation Libs.AndroidX.appcompat
     implementation Libs.AndroidX.Compose.runtime
     implementation Libs.AndroidX.Compose.runtimeLivedata
@@ -64,11 +65,13 @@ dependencies {
     implementation Libs.AndroidX.Compose.layout
     implementation Libs.AndroidX.Compose.animation
     implementation Libs.AndroidX.Compose.tooling
-    implementation Libs.AndroidX.Lifecycle.viewModelCompose
 
+    implementation Libs.AndroidX.Lifecycle.viewModelCompose
     implementation Libs.AndroidX.Lifecycle.viewModelKtx
+
     implementation Libs.AndroidX.Paging.runtime
     implementation Libs.AndroidX.Paging.extension
+
     implementation Libs.AndroidX.datetime
 
     implementation Libs.Coil.coil

@@ -1,16 +1,15 @@
 package com.pubnub.components.chat.ui.component.message.renderer
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.*
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,23 +24,22 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
-import coil.request.ImageRequest
 import com.google.accompanist.placeholder.placeholder
 import com.pubnub.components.chat.ui.R
 import com.pubnub.components.chat.ui.component.common.ShapeTheme
 import com.pubnub.components.chat.ui.component.common.TextTheme
 import com.pubnub.components.chat.ui.component.member.ProfileImage
 import com.pubnub.components.chat.ui.component.message.*
+import com.pubnub.components.chat.ui.component.message.reaction.Emoji
+import com.pubnub.components.chat.ui.component.message.reaction.PickedReaction
 import com.pubnub.components.chat.ui.component.message.reaction.ReactionUi
-import com.pubnub.components.chat.ui.component.message.reaction.SelectedReaction
-import com.pubnub.components.chat.ui.component.message.reaction.renderer.DefaultReactionPickerRenderer
-import com.pubnub.components.chat.ui.component.message.reaction.renderer.ReactionPickerRenderer
+import com.pubnub.components.chat.ui.component.message.reaction.renderer.DefaultReactionsPickerRenderer
+import com.pubnub.components.chat.ui.component.message.reaction.renderer.ReactionsRenderer
 import com.pubnub.framework.data.MessageId
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.util.Timetoken
 import com.pubnub.framework.util.seconds
 import kotlinx.coroutines.*
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
@@ -54,8 +52,6 @@ import kotlin.random.Random
 )
 
 object GroupMessageRenderer : MessageRenderer {
-
-    private const val REACTION_TYPE = "reaction"
 
     @Composable
     override fun Message(
@@ -70,13 +66,24 @@ object GroupMessageRenderer : MessageRenderer {
         timetoken: Timetoken,
         navigateToProfile: (UserId) -> Unit,
         reactions: List<ReactionUi>,
-        onReaction: ((SelectedReaction) -> Unit)?,
-        reactionPickerRenderer: ReactionPickerRenderer,
+        onShowMenu: ((MessageId) -> Unit)?,
+        onReactionSelected: ((PickedReaction) -> Unit)?,
+        reactionsPickerRenderer: ReactionsRenderer,
     ) {
-        val onReactionSelected: ((String) -> Unit)? = onReaction?.let {
+        val onReaction: ((Emoji) -> Unit)? = onReactionSelected?.let {
             { reaction ->
-                onReaction(SelectedReaction(currentUserId, timetoken, REACTION_TYPE, reaction))
+                onReactionSelected(
+                    PickedReaction(
+                        currentUserId,
+                        timetoken,
+                        reaction.type,
+                        reaction.value
+                    )
+                )
             }
+        }
+        val onMenu: (() -> Unit)? = onShowMenu?.let {
+            { it(messageId) }
         }
         GroupChatMessage(
             currentUserId = currentUserId,
@@ -89,8 +96,9 @@ object GroupMessageRenderer : MessageRenderer {
             timetoken = timetoken,
             navigateToProfile = navigateToProfile,
             reactions = reactions,
-            onReaction = onReactionSelected,
-            reactionPicker = reactionPickerRenderer,
+            onShowMenu = onMenu,
+            onReactionSelected = onReaction,
+            reactionsPicker = reactionsPickerRenderer,
         )
     }
 
@@ -139,17 +147,15 @@ object GroupMessageRenderer : MessageRenderer {
         navigateToProfile: (UserId) -> Unit,
         placeholder: Boolean = false,
         reactions: List<ReactionUi> = emptyList(),
-        onReaction: ((String) -> Unit)? = null,
-        reactionPicker: ReactionPickerRenderer = DefaultReactionPickerRenderer,
+        onShowMenu: (() -> Unit)? = null,
+        onReactionSelected: ((Emoji) -> Unit)? = null,
+        reactionsPicker: ReactionsRenderer = DefaultReactionsPickerRenderer,
     ) {
         val context = LocalContext.current
         val theme = LocalMessageListTheme.current.message
 
         val date = timetoken.formatDate()
-        val reactionEnabled = onReaction != null
-        val emojiReactions = reactions.filter { it.type == REACTION_TYPE }
-
-        var reactionsVisible by remember { mutableStateOf(false) }
+        val reactionEnabled = onReactionSelected != null
 
         // region Placeholders
         val messagePlaceholder = Modifier.placeholder(
@@ -192,14 +198,13 @@ object GroupMessageRenderer : MessageRenderer {
         // endregion
 
         Row(
-            modifier = Modifier
-                .combinedClickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = rememberRipple(),
-                    onLongClick = { reactionsVisible = true },
-                    onClick = {},
-                )
-                .then(theme.modifier),
+            modifier = theme.modifier.combinedClickable(
+                enabled = onShowMenu != null,
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(),
+                onLongClick = { onShowMenu?.let { onShowMenu() } },
+                onClick = { },
+            ),
             verticalAlignment = theme.verticalAlignment,
         ) {
             Box(modifier = theme.profileImage.modifier) {
@@ -273,28 +278,14 @@ object GroupMessageRenderer : MessageRenderer {
                     modifier = theme.shape.modifier
                 ) { body() }
 
-                if (reactionEnabled && emojiReactions.isNotEmpty()) {
+                if (reactionEnabled && reactions.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(8.dp))
-                    reactionPicker.Selector(
+                    reactionsPicker.PickedList(
                         currentUserId,
-                        emojiReactions,
-                        onReaction!!
-                    ) { reactionsVisible = true }
+                        reactions,
+                        onReactionSelected!!
+                    )
                 }
-            }
-        }
-
-        if (reactionEnabled) {
-            AnimatedVisibility(
-                visible = reactionsVisible,
-                enter = fadeIn(),
-                exit = fadeOut(),
-            ) {
-                reactionPicker.Dialog(
-                    scope = this,
-                    onSelected = onReaction!!,
-                    onClose = { reactionsVisible = false }
-                )
             }
         }
     }
@@ -313,7 +304,7 @@ object GroupMessageRenderer : MessageRenderer {
             timetoken = 0L,
             placeholder = true,
             navigateToProfile = {},
-            reactionPicker = DefaultReactionPickerRenderer,
+            reactionsPicker = DefaultReactionsPickerRenderer,
         )
     }
 
@@ -341,25 +332,10 @@ object GroupMessageRenderer : MessageRenderer {
         modifier: Modifier = Modifier,
     ) {
 
-        val uriHandler = LocalUriHandler.current
-        ClickableText(
+        Text(
             text = message,
             modifier = modifier.then(placeholder),
             style = theme.asStyle(),
-            onClick = {
-                message
-                    .getStringAnnotations(start = it, end = it)
-                    .firstOrNull()
-                    ?.let { annotation ->
-                        Timber.e("Annotation $annotation")
-                        when (annotation.tag) {
-                            SymbolAnnotationType.LINK.name -> {
-                                uriHandler.openUri(annotation.item)
-                            }
-                            else -> Unit
-                        }
-                    }
-            }
         )
     }
 

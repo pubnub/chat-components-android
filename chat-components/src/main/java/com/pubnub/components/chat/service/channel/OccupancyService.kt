@@ -12,7 +12,10 @@ import com.pubnub.framework.data.UserId
 import com.pubnub.framework.mapper.OccupancyMapper
 import com.pubnub.framework.util.flow.coroutine
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.map
 import timber.log.Timber
 
 /**

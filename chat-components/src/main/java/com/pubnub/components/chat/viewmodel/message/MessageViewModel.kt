@@ -7,28 +7,21 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.*
 import com.pubnub.components.chat.network.paging.MessageRemoteMediator
 import com.pubnub.components.chat.provider.LocalMemberFormatter
-import com.pubnub.components.chat.provider.LocalMessageActionRepository
 import com.pubnub.components.chat.provider.LocalMessageRepository
 import com.pubnub.components.chat.service.channel.LocalOccupancyService
 import com.pubnub.components.chat.service.channel.OccupancyService
 import com.pubnub.components.chat.service.message.LocalMessageService
-import com.pubnub.components.chat.service.message.action.DefaultMessageReactionService
-import com.pubnub.components.chat.service.message.action.LocalMessageReactionService
 import com.pubnub.components.chat.ui.component.message.MessageUi
-import com.pubnub.components.chat.ui.component.message.reaction.SelectedReaction
 import com.pubnub.components.chat.ui.component.presence.Presence
 import com.pubnub.components.chat.ui.component.provider.LocalChannel
-import com.pubnub.components.chat.ui.component.provider.LocalPubNub
 import com.pubnub.components.chat.ui.mapper.message.DBMessageMapper
 import com.pubnub.components.chat.ui.mapper.message.DomainMessageMapper
 import com.pubnub.components.data.message.DBMessage
-import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.data.message.action.DBMessageWithActions
 import com.pubnub.components.repository.message.MessageRepository
-import com.pubnub.components.repository.message.action.MessageActionRepository
 import com.pubnub.components.repository.util.Sorted
 import com.pubnub.framework.data.ChannelId
-import com.pubnub.framework.data.UserId
+import com.pubnub.framework.data.MessageId
 import com.pubnub.framework.mapper.Mapper
 import com.pubnub.framework.util.Timetoken
 import com.pubnub.framework.util.isSameDate
@@ -110,6 +103,15 @@ class MessageViewModel constructor(
     private val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
     private fun Timetoken.formatDate(): String =
         dateFormat.format(this.seconds).lowercase(Locale.getDefault())
+
+    /**
+     * Get message with provided ID
+     *
+     * @param id Message ID
+     * @return Message UI Data
+     */
+    suspend fun get(id: MessageId): MessageUi.Data? =
+        messageRepository.get(id)?.toUi()
 
     /**
      * Get Messages for selected Channel

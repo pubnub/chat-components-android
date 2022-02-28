@@ -41,7 +41,7 @@ object Database {
             }
 
     // region Migrations
-    private val MESSAGE_REACTION_MIGRATION = Migration(1, 2){
+    private val MESSAGE_REACTION_MIGRATION = Migration(1, 2) {
         it.execSQL("CREATE TABLE IF NOT EXISTS `message_action` (`channel` TEXT NOT NULL, `user` TEXT NOT NULL, `messageTimestamp` INTEGER NOT NULL, `published` INTEGER NOT NULL, `type` TEXT NOT NULL, `value` TEXT NOT NULL, `id` TEXT NOT NULL, PRIMARY KEY(`id`))")
     }
     // endregion

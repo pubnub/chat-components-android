@@ -44,15 +44,19 @@ class ChatProviderTest : BaseTest() {
     }
 
     @Test
-    fun whenMessageInputThemeIsNotProvided_thenLocalCompositionReturnsTheDefaultInstance() = runTest {
-        // Given
-        composeTestRule.setContent {
-            ChatProvider(pubNub = pubNub!!) {
-                // Then
-                Assert.assertEquals(DefaultLocalMessageInputTheme, LocalMessageInputTheme.current)
+    fun whenMessageInputThemeIsNotProvided_thenLocalCompositionReturnsTheDefaultInstance() =
+        runTest {
+            // Given
+            composeTestRule.setContent {
+                ChatProvider(pubNub = pubNub!!) {
+                    // Then
+                    Assert.assertEquals(
+                        DefaultLocalMessageInputTheme,
+                        LocalMessageInputTheme.current
+                    )
+                }
             }
         }
-    }
 
     @Test
     fun whenMessageInputThemeIsProvided_thenLocalCompositionReturnsThePassedInstance() = runTest {
