@@ -5,14 +5,14 @@ object Versions {
 }
 
 object Libs {
-    const val androidGradlePlugin = "com.android.tools.build:gradle:7.2.0-alpha06"
+    const val androidGradlePlugin = "com.android.tools.build:gradle:7.1.0"
     const val ktLint = "com.pinterest:ktlint:${Versions.ktLint}"
     const val jdkDesugar = "com.android.tools:desugar_jdk_libs:1.1.5"
     const val gradleMavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.18.0"
     const val gradleVersionsPlugin = "com.github.ben-manes:gradle-versions-plugin:0.41.0"
 
     object Accompanist {
-        private const val version = "0.22.0-rc"
+        private const val version = "0.22.1-rc"
 
         const val swipeRefresh = "com.google.accompanist:accompanist-swiperefresh:$version"
         const val placeholder = "com.google.accompanist:accompanist-placeholder:$version"
@@ -21,7 +21,7 @@ object Libs {
     }
 
     object Coil {
-        private const val version = "2.0.0-alpha06"
+        private const val version = "1.4.0"
 
         const val coil = "io.coil-kt:coil-compose:$version"
         const val coilGif = "io.coil-kt:coil-gif:$version"
@@ -55,29 +55,28 @@ object Libs {
             const val activityCompose = "androidx.activity:activity-compose:1.4.0"
         }
 
-        const val appcompat = "androidx.appcompat:appcompat:1.4.0"
+        const val appcompat = "androidx.appcompat:appcompat:1.4.1"
 
-        const val navigation = "androidx.navigation:navigation-compose:2.4.0-alpha07"
+        const val navigation = "androidx.navigation:navigation-compose:2.4.0"
 
-        const val splashscreen = "androidx.core:core-splashscreen:1.0.0-alpha01"
+        const val splashscreen = "androidx.core:core-splashscreen:1.0.0"
 
-        const val datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.3.1"
+        const val datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.3.2"
 
         object Compose {
             const val snapshot = ""
-            private const val version = "1.1.0-rc02"
+            private const val version = "1.1.0-rc03"
 
             const val runtime = "androidx.compose.runtime:runtime:$version"
-            const val runtimeLivedata = "androidx.compose.runtime:runtime-livedata:1.1.0-rc01"
-            const val material = "androidx.compose.material:material:1.1.0-rc01"
-            const val iconsCore = "androidx.compose.material:material-icons-core:1.1.0-rc01"
-            const val iconsExtended = "androidx.compose.material:material-icons-extended:1.1.0-rc01"
+            const val runtimeLivedata = "androidx.compose.runtime:runtime-livedata:$version"
+            const val material = "androidx.compose.material:material:$version"
+            const val iconsCore = "androidx.compose.material:material-icons-core:$version"
+            const val iconsExtended = "androidx.compose.material:material-icons-extended:$version"
             const val foundation = "androidx.compose.foundation:foundation:$version"
             const val layout = "androidx.compose.foundation:foundation-layout:$version"
-            const val tooling = "androidx.compose.ui:ui-tooling:1.1.0-rc01"
+            const val tooling = "androidx.compose.ui:ui-tooling:$version"
             const val animation = "androidx.compose.animation:animation:$version"
-            const val uiTest = "androidx.compose.ui:ui-test-junit4:1.1.0-rc01"
-        }
+            const val uiTest = "androidx.compose.ui:ui-test-junit4:$version"
 
         object Emoji {
             private const val version = "1.0.1"
@@ -101,7 +100,7 @@ object Libs {
         }
 
         object Room {
-            private const val version = "2.4.0"
+            private const val version = "2.4.1"
             const val runtime = "androidx.room:room-runtime:$version"
             const val compiler = "androidx.room:room-compiler:$version"
             const val paging = "androidx.room:room-paging:$version"
@@ -113,16 +112,16 @@ object Libs {
         }
 
         object Test {
-            private const val version = "1.4.1-alpha03"
+            private const val version = "1.4.0"
             const val runner = "androidx.test:runner:$version"
             const val rules = "androidx.test:rules:$version"
             const val core = "androidx.test:core-ktx:$version"
 
             object Ext {
-                const val junit = "androidx.test.ext:junit-ktx:1.1.4-alpha03"
+                const val junit = "androidx.test.ext:junit-ktx:1.1.3"
             }
 
-            const val espressoCore = "androidx.test.espresso:espresso-core:3.5.0-alpha03"
+            const val espressoCore = "androidx.test.espresso:espresso-core:3.4.0"
         }
     }
 
@@ -136,7 +135,7 @@ object Libs {
     }
 
     object JUnit {
-        private const val version = "4.13"
+        private const val version = "4.13.2"
         const val junit = "junit:junit:$version"
     }
 

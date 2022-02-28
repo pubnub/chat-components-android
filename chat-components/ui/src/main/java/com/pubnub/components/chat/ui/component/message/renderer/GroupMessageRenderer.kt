@@ -26,7 +26,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
-import coil.compose.AsyncImage
+import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.google.accompanist.placeholder.placeholder
 import com.pubnub.components.chat.ui.R
@@ -226,10 +226,7 @@ object GroupMessageRenderer : MessageRenderer {
                 )
             }
 
-            Column(
-                modifier = Modifier
-
-            ) {
+            Column {
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(
                         text = title, theme = theme.title, modifier = theme.title.modifier.then(
@@ -295,20 +292,6 @@ object GroupMessageRenderer : MessageRenderer {
                 }
             }
         }
-
-//        if (reactionEnabled) {
-//            AnimatedVisibility(
-//                visible = reactionsVisible,
-//                enter = fadeIn(),
-//                exit = fadeOut(),
-//            ) {
-//                reactionsPicker.Dialog(
-//                    scope = this,
-//                    onSelected = onReaction!!,
-//                    onClose = { reactionsVisible = false }
-//                )
-//            }
-//        }
     }
 
     @Composable
@@ -442,13 +425,15 @@ object GroupMessageRenderer : MessageRenderer {
         imageUrl: String,
         modifier: Modifier = Modifier.defaultMinSize(200.dp, 200.dp)
     ) {
-        val model = ImageRequest.Builder(LocalContext.current)
-            .data(imageUrl)
-            .crossfade(true)
-            .build()
+        val painter = rememberImagePainter(
+            data = imageUrl,
+            builder = {
+                crossfade(true)
+            }
+        )
 
-        AsyncImage(
-            model = model,
+        Image(
+            painter = painter,
             contentDescription = imageUrl,
             alignment = Alignment.TopStart,
             modifier = modifier,
