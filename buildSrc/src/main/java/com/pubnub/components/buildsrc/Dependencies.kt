@@ -77,6 +77,7 @@ object Libs {
             const val tooling = "androidx.compose.ui:ui-tooling:$version"
             const val animation = "androidx.compose.animation:animation:$version"
             const val uiTest = "androidx.compose.ui:ui-test-junit4:$version"
+        }
 
         object Emoji {
             private const val version = "1.0.1"

@@ -8,7 +8,6 @@ import com.pubnub.components.chat.service.channel.OccupancyService
 import com.pubnub.components.chat.ui.component.member.MemberUi
 import com.pubnub.components.data.member.DBMember
 import com.pubnub.components.data.member.DBMemberWithChannels
-import com.pubnub.components.repository.member.DefaultMemberRepository
 import com.pubnub.components.repository.member.MemberRepository
 import com.pubnub.framework.mapper.Mapper
 import kotlinx.coroutines.FlowPreview

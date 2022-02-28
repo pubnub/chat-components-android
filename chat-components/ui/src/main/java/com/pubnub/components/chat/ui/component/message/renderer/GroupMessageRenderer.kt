@@ -1,10 +1,7 @@
 package com.pubnub.components.chat.ui.component.message.renderer
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -27,7 +24,6 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
-import coil.request.ImageRequest
 import com.google.accompanist.placeholder.placeholder
 import com.pubnub.components.chat.ui.R
 import com.pubnub.components.chat.ui.component.common.ShapeTheme

@@ -15,7 +15,6 @@ import com.pubnub.components.chat.ui.component.provider.LocalPubNub
 import com.pubnub.components.chat.ui.mapper.member.DBMemberMapper
 import com.pubnub.components.data.member.DBMember
 import com.pubnub.components.data.member.DBMemberWithChannels
-import com.pubnub.components.repository.member.DefaultMemberRepository
 import com.pubnub.components.repository.member.MemberRepository
 import com.pubnub.components.repository.util.Query
 import com.pubnub.components.repository.util.Sorted

@@ -14,7 +14,6 @@ import com.pubnub.components.chat.ui.mapper.channel.DBChannelMapper
 import com.pubnub.components.data.channel.DBChannel
 import com.pubnub.components.data.channel.DBChannelWithMembers
 import com.pubnub.components.repository.channel.ChannelRepository
-import com.pubnub.components.repository.channel.DefaultChannelRepository
 import com.pubnub.components.repository.util.Query
 import com.pubnub.components.repository.util.Sorted
 import com.pubnub.framework.data.ChannelId

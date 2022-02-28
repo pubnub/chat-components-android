@@ -216,7 +216,7 @@ object DefaultReactionsPickerRenderer : ReactionsRenderer {
                 val emoji = reaction.toEmoji()
                 PickedReactionButton(
                     emoji = emoji,
-                    text = if(reaction.members.size < 100) "${reaction.members.size}" else "99+",
+                    text = if (reaction.members.size < 100) "${reaction.members.size}" else "99+",
                     onSelected = { onSelected(emoji) },
                     theme = reactionTheme,
                 )
@@ -313,12 +313,12 @@ private fun PickedUnicodeReactionsCount() {
                 ReactionUi(
                     "\uD83D\uDC4D",
                     "reaction",
-                    List(99){ MemberUi.Data("member", "Member")}
+                    List(99) { MemberUi.Data("member", "Member") }
                 ),                         // 👍 thumbs up
                 ReactionUi(
                     "\u2764",
                     "reaction",
-                    List(100){ MemberUi.Data("member", "Member")}
+                    List(100) { MemberUi.Data("member", "Member") }
                 ),                      // ❤  red heart U+2764
             ),
         ) {}
