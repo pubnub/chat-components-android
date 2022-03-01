@@ -14,6 +14,7 @@ interface ChannelService<Data : Channel> {
         id: ChannelId,
         includeCustom: Boolean = false,
     )
+
     fun fetchAll(
         limit: Int? = null,
         page: PNPage? = null,
@@ -21,6 +22,7 @@ interface ChannelService<Data : Channel> {
         sort: Collection<PNSortKey> = listOf(),
         includeCustom: Boolean = true,
     )
+
     fun add(channel: Data, includeCustom: Boolean)
     fun remove(id: ChannelId)
 }
