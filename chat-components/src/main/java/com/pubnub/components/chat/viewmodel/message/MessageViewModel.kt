@@ -9,6 +9,7 @@ import com.pubnub.components.chat.network.paging.MessageRemoteMediator
 import com.pubnub.components.chat.provider.LocalMemberFormatter
 import com.pubnub.components.chat.provider.LocalMessageRepository
 import com.pubnub.components.chat.service.channel.LocalOccupancyService
+import com.pubnub.components.chat.service.channel.DefaultOccupancyService
 import com.pubnub.components.chat.service.channel.OccupancyService
 import com.pubnub.components.chat.service.message.LocalMessageService
 import com.pubnub.components.chat.ui.component.message.MessageUi

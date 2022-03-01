@@ -47,8 +47,6 @@ class ButtonTheme(
 
         other as ButtonTheme
 
-        // TODO: 4/21/21 cannot compare by elevation object yet.
-        //if (elevation != other.elevation) return false
         if (shape != other.shape) return false
         if (border != other.border) return false
         if (colors != other.colors) return false
@@ -60,8 +58,6 @@ class ButtonTheme(
     }
 
     override fun hashCode(): Int {
-        // TODO: 4/21/21 cannot compare by elevation object yet.
-        // var result = elevation?.hashCode() ?: 0
         var result = shape.hashCode()
         result = 31 * result + (border?.hashCode() ?: 0)
         result = 31 * result + colors.hashCode()

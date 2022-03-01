@@ -12,7 +12,7 @@ import com.pubnub.components.chat.network.mapper.*
 import com.pubnub.components.chat.service.channel.DefaultChannelService
 import com.pubnub.components.chat.service.channel.LocalChannelService
 import com.pubnub.components.chat.service.channel.LocalOccupancyService
-import com.pubnub.components.chat.service.channel.OccupancyService
+import com.pubnub.components.chat.service.channel.DefaultOccupancyService
 import com.pubnub.components.chat.service.error.TimberErrorHandler
 import com.pubnub.components.chat.service.member.DefaultMemberService
 import com.pubnub.components.chat.service.member.LocalMemberService
@@ -197,7 +197,7 @@ fun WithServices(
             usernameResolver,
             TypingIndicator(LocalPubNub.current),
         ),
-        LocalOccupancyService provides OccupancyService(
+        LocalOccupancyService provides DefaultOccupancyService(
             LocalPubNub.current,
             NetworkOccupancyMapper(),
         ),

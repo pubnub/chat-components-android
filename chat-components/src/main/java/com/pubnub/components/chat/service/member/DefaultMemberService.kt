@@ -57,7 +57,26 @@ class DefaultMemberService(
         pubNub.removeListener(_listener)
     }
 
-    override fun getAll(
+    override fun fetch(id: UserId, includeCustom: Boolean) {
+        coroutineScope.launch(dispatcher) {
+            try {
+                pubNub.getUUIDMetadata(
+                    uuid = id,
+                    includeCustom = includeCustom,
+                ).sync()!!.apply {
+                    data?.let {
+                        // repo
+                        val member = networkMapper.map(it)
+                        memberRepository.insertOrUpdate(member)
+                    }
+                }
+            } catch (e: PubNubException) {
+                errorHandler.onError(e)
+            }
+        }
+    }
+
+    override fun fetchAll(
         limit: Int?,
         page: PNPage?,
         filter: String?,
@@ -66,7 +85,7 @@ class DefaultMemberService(
     ) {
         coroutineScope.launch(dispatcher) {
             getMembers(limit, page, filter, sort, includeCustom) { _page, _ ->
-                getAll(limit, _page, filter, sort, includeCustom)
+                fetchAll(limit, _page, filter, sort, includeCustom)
             }
         }
     }

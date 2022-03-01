@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingConfig
 import com.pubnub.components.chat.network.paging.MessageRemoteMediator
+import com.pubnub.components.chat.service.channel.DefaultOccupancyService
 import com.pubnub.components.chat.service.channel.OccupancyService
 import com.pubnub.components.chat.ui.component.message.MessageUi
 import com.pubnub.components.data.message.DBMessage

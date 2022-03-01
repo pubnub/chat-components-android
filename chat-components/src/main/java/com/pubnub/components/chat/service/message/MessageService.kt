@@ -21,7 +21,7 @@ interface MessageService<Data : Message> {
         onError: (Exception) -> Unit = { Timber.i("Message sending error: $it") },
     )
 
-    suspend fun pullHistory(
+    suspend fun fetchAll(
         id: ChannelId,
         start: Long?,
         end: Long?,
