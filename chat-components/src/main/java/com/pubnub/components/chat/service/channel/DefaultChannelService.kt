@@ -58,13 +58,13 @@ class DefaultChannelService(
     }
 
     override fun fetch(id: ChannelId, includeCustom: Boolean) {
-       coroutineScope.launch(dispatcher){
-           try {
-               pubNub.getChannelMetadata(id, includeCustom)
-           } catch (e: PubNubException) {
-               errorHandler.onError(e)
-           }
-       }
+        coroutineScope.launch(dispatcher) {
+            try {
+                pubNub.getChannelMetadata(id, includeCustom)
+            } catch (e: PubNubException) {
+                errorHandler.onError(e)
+            }
+        }
     }
 
     override fun fetchAll(

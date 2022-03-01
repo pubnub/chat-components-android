@@ -2,10 +2,8 @@ package com.pubnub.components.data.message
 
 import androidx.annotation.Keep
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.pubnub.components.data.member.DBMember
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.util.Timetoken

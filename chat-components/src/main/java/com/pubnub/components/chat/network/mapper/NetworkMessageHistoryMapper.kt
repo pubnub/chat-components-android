@@ -9,11 +9,9 @@ import com.pubnub.api.models.consumer.history.PNFetchMessageItem
 import com.pubnub.components.chat.network.data.NetworkMessage
 import com.pubnub.components.data.message.DBMessage
 import com.pubnub.framework.data.ChannelId
-import com.pubnub.framework.mapper.Mapper
 import com.pubnub.framework.mapper.MapperWithId
 import com.pubnub.framework.util.toJson
 import java.lang.reflect.Type
-import java.nio.channels.Channel
 
 class NetworkMessageHistoryMapper(private val mapper: MapperManager) :
     MapperWithId<PNFetchMessageItem, DBMessage> {

@@ -1,6 +1,5 @@
 package com.pubnub.components.chat.service.channel
 
-import androidx.compose.runtime.staticCompositionLocalOf
 import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.SubscribeCallback
 import com.pubnub.api.models.consumer.PNStatus
@@ -32,7 +31,7 @@ class DefaultOccupancyService(
     private val occupancyMapper: OccupancyMapper,
     private val coroutineScope: CoroutineScope = GlobalScope,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-): OccupancyService {
+) : OccupancyService {
 
     private val _occupancy: MutableSharedFlow<OccupancyMap> = MutableSharedFlow(replay = 1)
     val occupancy: Flow<OccupancyMap>
@@ -99,7 +98,7 @@ class DefaultOccupancyService(
     }
 
     override fun isOnline(user: UserId): Flow<Boolean> =
-        online.map { it[user] ?:false }
+        online.map { it[user] ?: false }
 
     // region Binding
     override fun bind() {

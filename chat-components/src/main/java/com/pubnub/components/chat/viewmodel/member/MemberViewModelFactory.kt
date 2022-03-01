@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.paging.ExperimentalPagingApi
 import com.pubnub.api.PubNub
-import com.pubnub.components.chat.service.channel.DefaultOccupancyService
 import com.pubnub.components.chat.service.channel.OccupancyService
 import com.pubnub.components.chat.ui.component.member.MemberUi
 import com.pubnub.components.data.member.DBMember

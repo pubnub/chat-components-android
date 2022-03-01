@@ -3,7 +3,6 @@ package com.pubnub.components.chat.network.mapper
 import com.pubnub.api.models.consumer.history.PNFetchMessageItem
 import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.framework.data.ChannelId
-import com.pubnub.framework.mapper.Mapper
 import com.pubnub.framework.mapper.MapperWithId
 
 class NetworkMessageActionHistoryMapper : MapperWithId<PNFetchMessageItem, Array<DBMessageAction>> {

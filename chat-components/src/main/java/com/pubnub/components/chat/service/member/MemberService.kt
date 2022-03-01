@@ -14,6 +14,7 @@ interface MemberService<Data : Member> {
         id: UserId,
         includeCustom: Boolean = false,
     )
+
     fun fetchAll(
         limit: Int? = null,
         page: PNPage? = null,
