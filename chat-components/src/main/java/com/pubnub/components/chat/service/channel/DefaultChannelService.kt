@@ -57,7 +57,17 @@ class DefaultChannelService(
         pubNub.removeListener(_listener)
     }
 
-    override fun getAll(
+    override fun fetch(id: ChannelId, includeCustom: Boolean) {
+        coroutineScope.launch(dispatcher) {
+            try {
+                pubNub.getChannelMetadata(id, includeCustom)
+            } catch (e: PubNubException) {
+                errorHandler.onError(e)
+            }
+        }
+    }
+
+    override fun fetchAll(
         limit: Int?,
         page: PNPage?,
         filter: String?,
@@ -66,7 +76,7 @@ class DefaultChannelService(
     ) {
         coroutineScope.launch(dispatcher) {
             getChannels(limit, page, filter, sort, includeCustom) { _page, _ ->
-                getAll(limit, _page, filter, sort, includeCustom)
+                fetchAll(limit, _page, filter, sort, includeCustom)
             }
         }
     }

@@ -10,9 +10,9 @@ import com.pubnub.components.PubNubDatabase
 import com.pubnub.components.R
 import com.pubnub.components.chat.network.mapper.*
 import com.pubnub.components.chat.service.channel.DefaultChannelService
+import com.pubnub.components.chat.service.channel.DefaultOccupancyService
 import com.pubnub.components.chat.service.channel.LocalChannelService
 import com.pubnub.components.chat.service.channel.LocalOccupancyService
-import com.pubnub.components.chat.service.channel.OccupancyService
 import com.pubnub.components.chat.service.error.TimberErrorHandler
 import com.pubnub.components.chat.service.member.DefaultMemberService
 import com.pubnub.components.chat.service.member.LocalMemberService
@@ -56,7 +56,6 @@ import com.pubnub.components.repository.membership.DefaultMembershipRepository
 import com.pubnub.components.repository.message.DefaultMessageRepository
 import com.pubnub.components.repository.message.action.DefaultMessageActionRepository
 import com.pubnub.framework.data.ChannelId
-
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.service.ActionService
 import com.pubnub.framework.service.LocalTypingService
@@ -197,7 +196,7 @@ fun WithServices(
             usernameResolver,
             TypingIndicator(LocalPubNub.current),
         ),
-        LocalOccupancyService provides OccupancyService(
+        LocalOccupancyService provides DefaultOccupancyService(
             LocalPubNub.current,
             NetworkOccupancyMapper(),
         ),

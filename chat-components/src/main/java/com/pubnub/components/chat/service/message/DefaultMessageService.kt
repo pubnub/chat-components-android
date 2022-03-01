@@ -139,7 +139,7 @@ class DefaultMessageService(
      * @param end of time window, last known message timestamp + 1 (in microseconds)
      * @param count of messages, default and maximum is 100
      */
-    override suspend fun pullHistory(
+    override suspend fun fetchAll(
         id: ChannelId,
         start: Long?,
         end: Long?,
@@ -159,14 +159,11 @@ class DefaultMessageService(
                 onComplete = { result ->
                     // Store messages
                     result.channels.forEach { (channel, messages) ->
-                        // TODO: FIX that asap!
-                        networkHistoryMapper.channel = channel
-                        messageActionHistoryMapper.channel = channel
 
                         // Just in case of message mapper issue
                         messages.sortedByDescending { it.timetoken }.onEach {
                             try {
-                                val message = networkHistoryMapper.map(it)
+                                val message = networkHistoryMapper.map(channel, it)
                                 insertOrUpdate(message)
                             } catch (e: Exception) {
                                 errorHandler.onError(
@@ -175,7 +172,7 @@ class DefaultMessageService(
                                 )
                             }
                             try {
-                                val actions = messageActionHistoryMapper.map(it)
+                                val actions = messageActionHistoryMapper.map(id, it)
                                 insertMessageAction(*actions)
 
                             } catch (e: Exception) {

@@ -10,7 +10,12 @@ import com.pubnub.framework.data.UserId
 interface MemberService<Data : Member> {
     fun bind(vararg channels: String)
     fun unbind()
-    fun getAll(
+    fun fetch(
+        id: UserId,
+        includeCustom: Boolean = false,
+    )
+
+    fun fetchAll(
         limit: Int? = null,
         page: PNPage? = null,
         filter: String? = null,

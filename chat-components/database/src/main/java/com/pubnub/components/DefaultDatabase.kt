@@ -1,5 +1,6 @@
 package com.pubnub.components
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -29,7 +30,7 @@ import com.pubnub.components.data.message.action.DefaultMessageActionDao
     version = 3,
     exportSchema = true,
     autoMigrations = [
-        AutoMigration (from = 2, to = 3)
+        AutoMigration(from = 2, to = 3)
     ]
 )
 @TypeConverters(
