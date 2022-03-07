@@ -81,7 +81,7 @@ class ActionService(
     }
 
     /**
-     * Get message action
+     * Fetch message action
      *
      * @param channelId Channel to fetch message actions from.
      * @param start Message Action timetoken denoting the start of the range requested
@@ -89,7 +89,7 @@ class ActionService(
      * @param end Message Action timetoken denoting the end of the range requested
      *            (return values will be greater than or equal to end).
      */
-    suspend fun get(
+    suspend fun fetch(
         channelId: ChannelId,
         start: Long?,
         end: Long?,
@@ -116,7 +116,7 @@ class ActionService(
      * @param end Message Action timetoken denoting the end of the range requested
      *            (return values will be greater than or equal to end).
      */
-    suspend fun getAll(
+    suspend fun fetchAll(
         channelId: ChannelId,
         start: Long?,
         end: Long?,
@@ -132,7 +132,7 @@ class ActionService(
         results: MutableList<PNMessageAction>,
     ): List<PNMessageAction> {
 
-        val result = get(channelId, start, end, limit)
+        val result = fetch(channelId, start, end, limit)
         val newActions = result.actions
         results.addAll(newActions)
 
