@@ -65,7 +65,7 @@ class DefaultMessageReactionService(
         coroutineScope.launch(dispatcher) {
             val lastActionTimestamp =
                 lastTimetoken ?: messageActionRepository.getLastTimetoken(channel)
-            val actions = actionService.getAll(
+            val actions = actionService.fetchAll(
                 channelId = channel,
                 end = lastActionTimestamp + 1,
                 start = null,
