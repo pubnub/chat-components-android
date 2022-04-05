@@ -3,7 +3,6 @@ package com.pubnub.components
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.paging.PagingData
-import androidx.test.platform.app.InstrumentationRegistry
 import com.pubnub.components.chat.provider.ChatProvider
 import com.pubnub.components.chat.ui.component.member.MemberList
 import com.pubnub.components.chat.ui.component.member.MemberUi
@@ -42,7 +41,7 @@ class MemberListTest : BaseTest() {
     }
 
     @Test(expected = MissingPubNubException::class)
-    fun whenPubNubProviderIsNotUsed_thenAnExceptionIsThrown() = runTest{
+    fun whenPubNubProviderIsNotUsed_thenAnExceptionIsThrown() = runTest {
         // Given
         composeTestRule.setContent {
             MemberList(members = emptyList())
@@ -50,7 +49,7 @@ class MemberListTest : BaseTest() {
     }
 
     @Test
-    fun whenMemberListWillBePassed_thenItWillBeShown() = runTest{
+    fun whenMemberListWillBePassed_thenItWillBeShown() = runTest {
         // Given
         val members = FAKE_MEMBERS
         val memberList = context.getString(R.string.member_list)
@@ -106,7 +105,7 @@ class MemberListTest : BaseTest() {
     }
 
     @Test
-    fun whenMemberWillBePressed_thenOnSelectedWillBeCalled() = runTest{
+    fun whenMemberWillBePressed_thenOnSelectedWillBeCalled() = runTest {
         // Given
         val members = FAKE_MEMBERS
         val memberList = context.getString(R.string.member_list)
@@ -131,33 +130,34 @@ class MemberListTest : BaseTest() {
 
     // region Presence
     @Test
-    fun whenMemberListWillBePassedWithoutPresenceObject_thenPresenceIndicatorWillNotBeShown() = runTest{
-        // Given
-        val members = FAKE_MEMBERS
-        val memberList = context.getString(R.string.member_list)
-        val online = context.getString(R.string.online_presence_indicator_member_list)
-        val offline = context.getString(R.string.offline_presence_indicator_member_list)
-        composeTestRule.setContent {
-            ChatProvider(pubNub = pubNub!!) {
-                MemberList(members = members, presence = null)
+    fun whenMemberListWillBePassedWithoutPresenceObject_thenPresenceIndicatorWillNotBeShown() =
+        runTest {
+            // Given
+            val members = FAKE_MEMBERS
+            val memberList = context.getString(R.string.member_list)
+            val online = context.getString(R.string.online_presence_indicator_member_list)
+            val offline = context.getString(R.string.offline_presence_indicator_member_list)
+            composeTestRule.setContent {
+                ChatProvider(pubNub = pubNub!!) {
+                    MemberList(members = members, presence = null)
+                }
             }
-        }
 
-        // Then
-        composeTestRule.onNodeWithContentDescription(memberList, useUnmergedTree = true).apply {
-            members.forEachIndexed { index, _ ->
-                onChildAt(index).apply {
-                    onChildren().apply {
-                        assert(!hasContentDescription(online))
-                        assert(!hasContentDescription(offline))
+            // Then
+            composeTestRule.onNodeWithContentDescription(memberList, useUnmergedTree = true).apply {
+                members.forEachIndexed { index, _ ->
+                    onChildAt(index).apply {
+                        onChildren().apply {
+                            assert(!hasContentDescription(online))
+                            assert(!hasContentDescription(offline))
+                        }
                     }
                 }
             }
         }
-    }
 
     @Test
-    fun whenMemberListWillBePassedWithPresenceObject_thenPresenceIndicatorWillBeShown() = runTest{
+    fun whenMemberListWillBePassedWithPresenceObject_thenPresenceIndicatorWillBeShown() = runTest {
         // Given
         val members = FAKE_MEMBERS
         val memberList = context.getString(R.string.member_list)

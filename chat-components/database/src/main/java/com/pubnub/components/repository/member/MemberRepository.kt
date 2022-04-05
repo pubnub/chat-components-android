@@ -7,16 +7,16 @@ import com.pubnub.components.repository.util.Sorted
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
 
-interface MemberRepository<DB : Member, Data : Member> {
-    suspend fun get(id: UserId): Data?
+interface MemberRepository<in IN : Member, OUT : Member> {
+    suspend fun get(id: UserId): OUT?
     fun getAll(
         id: ChannelId? = null,
         filter: Query? = null,
         vararg sorted: Sorted = emptyArray(),
-    ): PagingSource<Int, Data>
+    ): PagingSource<Int, OUT>
 
-    suspend fun getList(id: ChannelId? = null): List<Data>
-    suspend fun add(vararg member: DB)
+    suspend fun getList(id: ChannelId? = null): List<OUT>
+    suspend fun insertOrUpdate(vararg member: IN)
     suspend fun remove(id: UserId)
     suspend fun size(): Long
 }

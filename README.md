@@ -1,12 +1,18 @@
 # PubNub Chat Components for Android
 
-Chat components provide easy-to-use building blocks to create Android chat applications, for use cases like live event messaging, telemedicine, and service desk support.
+Chat components provide easy-to-use building blocks to create Android chat applications, for use
+cases like live event messaging, telemedicine, and service desk support.
 
-Our Android component library provides chat features like direct and group messaging, typing indicators, presence, and reactions. You don't need to implement a data source by yourself and go through the complexity of designing the architecture of a realtime network. Instead, use our components, predefined repositories, and view models to create custom apps for a wide range of use cases.
+Our Android component library provides chat features like direct and group messaging, typing
+indicators, presence, and reactions. You don't need to implement a data source by yourself and go
+through the complexity of designing the architecture of a realtime network. Instead, use our
+components, predefined repositories, and view models to create custom apps for a wide range of use
+cases.
 
 ## Features
 
-* **User and Channel Metadata**: Add additional information about the users, channels, and their memberships (and store it locally for offline use)
+* **User and Channel Metadata**: Add additional information about the users, channels, and their
+  memberships (and store it locally for offline use)
 * **Subscriptions**: Subscribe to user channels automatically
 * **Messages**: Publish and display new and historical text messages
 * **Presence**: Get currently active users, observe their state, and notify about changes
@@ -26,30 +32,35 @@ Our Android component library provides chat features like direct and group messa
 
 | Name | Requirement |
 | :--- | :------ |
-| [Android Studio](https://developer.android.com/studio/preview) | >= Bumblebee 2021.1.1 |
+| [Android Studio](https://developer.android.com/studio/preview) | > = Bumblebee 2021.1.1 |
 | Platform | Android |
 | Language | Kotlin |
 | UI Toolkit | Jetpack Compose |
-| [PubNub Kotlin SDK](https://github.com/pubnub/kotlin) | >= 7.0.0 |
+| [PubNub Kotlin SDK](https://github.com/pubnub/kotlin) | > = 7.0.0 |
 
 ## Usage
 
 ### Install chat components
 
-1. Inside your Android Studio project, open the module's `build.gradle` module and add both Kotlin SDK and PubNub Chat Components for Android implementations:
+1. Inside your Android Studio project, open the module's `build.gradle` module and add both Kotlin
+   SDK and PubNub Chat Components for Android implementations:
 
     ```kotlin
     implementation "com.pubnub:pubnub-kotlin:7.0.0"
-    implementation "com.pubnub.components:chat-android:0.2.0"
+    implementation "com.pubnub.components:chat-android:0.3.0"
     ```
 
-2. Click **Sync Now** or **Sync Project with Gradle Files** to build dependencies for your Android project.
+2. Click **Sync Now** or **Sync Project with Gradle Files** to build dependencies for your Android
+   project.
 
 ### Test sample apps
 
-Explore [sample apps](https://github.com/pubnub/chat-components-android-examples/blob/master/README.md) that are built using chat components.
+Explore [sample apps](https://github.com/pubnub/chat-components-android-examples/blob/master/README.md)
+that are built using chat components.
 
-Follow the steps in the [Getting Started guide](https://www.pubnub.com/docs/chat/components/android/get-started-android) to set up a sample chat app and send your first message.
+Follow the steps in
+the [Getting Started guide](https://www.pubnub.com/docs/chat/components/android/get-started-android)
+to set up a sample chat app and send your first message.
 
 ## Related documentation
 

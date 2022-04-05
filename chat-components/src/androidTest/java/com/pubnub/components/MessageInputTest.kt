@@ -3,7 +3,6 @@ package com.pubnub.components
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.test.platform.app.InstrumentationRegistry
 import com.pubnub.api.PubNubError
 import com.pubnub.api.PubNubException
 import com.pubnub.api.enums.PNOperationType
@@ -11,7 +10,7 @@ import com.pubnub.api.enums.PNStatusCategory
 import com.pubnub.api.models.consumer.PNPublishResult
 import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.components.chat.provider.ChatProvider
-import com.pubnub.components.chat.service.message.DefaultMessageServiceImpl
+import com.pubnub.components.chat.service.message.DefaultMessageService
 import com.pubnub.components.chat.service.message.LocalMessageService
 import com.pubnub.components.chat.service.message.MessageServiceNotInitializedException
 import com.pubnub.components.chat.ui.component.common.ThemeDefaults
@@ -57,7 +56,7 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test(expected = MessageServiceNotInitializedException::class)
-    fun whenMessageServiceIsNotInitialized_thenAnExceptionIsThrown() = runTest{
+    fun whenMessageServiceIsNotInitialized_thenAnExceptionIsThrown() = runTest {
         // Given
         composeTestRule.setContent {
             CompositionLocalProvider(
@@ -71,31 +70,33 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test(expected = TypingServiceNotInitializedException::class)
-    fun whenTypingServiceIsNotProvided_andTypingIndicatorIsTrue_thenAnExceptionIsThrown() = runTest{
-        // Given
-        composeTestRule.setContent {
-            CompositionLocalProvider(
-                LocalChannel provides "channel",
-                LocalPubNub provides pubNub!!,
-                LocalMessageService provides mockk(),
-            ) {
-                MessageInput(typingIndicator = true)
+    fun whenTypingServiceIsNotProvided_andTypingIndicatorIsTrue_thenAnExceptionIsThrown() =
+        runTest {
+            // Given
+            composeTestRule.setContent {
+                CompositionLocalProvider(
+                    LocalChannel provides "channel",
+                    LocalPubNub provides pubNub!!,
+                    LocalMessageService provides mockk(),
+                ) {
+                    MessageInput(typingIndicator = true)
+                }
             }
         }
-    }
 
     @Test
-    fun whenTypingServiceIsNotProvided_andTypingIndicatorIsFalse_thenNoExceptionIsThrown() = runTest{
-        // Given
-        composeTestRule.setContent {
-            ChatProvider(pubNub = pubNub!!) {
-                MessageInput(typingIndicator = true)
+    fun whenTypingServiceIsNotProvided_andTypingIndicatorIsFalse_thenNoExceptionIsThrown() =
+        runTest {
+            // Given
+            composeTestRule.setContent {
+                ChatProvider(pubNub = pubNub!!) {
+                    MessageInput(typingIndicator = true)
+                }
             }
         }
-    }
 
     @Test(expected = MessageServiceNotInitializedException::class)
-    fun whenMessageServiceIsNotProvided_thenAnExceptionIsThrown() = runTest{
+    fun whenMessageServiceIsNotProvided_thenAnExceptionIsThrown() = runTest {
         // Given
         composeTestRule.setContent {
             CompositionLocalProvider(
@@ -109,7 +110,7 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test(expected = MissingChannelException::class)
-    fun whenChannelIsNotProvided_thenAnExceptionIsThrown() = runTest{
+    fun whenChannelIsNotProvided_thenAnExceptionIsThrown() = runTest {
         // Given
         composeTestRule.setContent {
             CompositionLocalProvider(
@@ -122,7 +123,7 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test(expected = MissingPubNubException::class)
-    fun whenPubNubProviderIsNotUsed_thenAnExceptionIsThrown() = runTest{
+    fun whenPubNubProviderIsNotUsed_thenAnExceptionIsThrown() = runTest {
         // Given
         composeTestRule.setContent {
             CompositionLocalProvider(
@@ -136,7 +137,7 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test
-    fun whenPlaceholderWillBePassed_thenItWillBeShown() = runTest{
+    fun whenPlaceholderWillBePassed_thenItWillBeShown() = runTest {
         // Given
         val placeholder = "Text Placeholder"
         composeTestRule.setContent {
@@ -150,7 +151,7 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test
-    fun whenInitialTextWillBePassed_thenItWillBeShown() = runTest{
+    fun whenInitialTextWillBePassed_thenItWillBeShown() = runTest {
         // Given
         val text = "Initial text"
         composeTestRule.setContent {
@@ -164,43 +165,44 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test
-    fun whenSendButtonWillBePressed_thenOnSendWithMessageAsParameterWillBeInvokedAndFieldWillBeCleared() = runTest{
-        // Given
-        val inputDescription = context.getString(R.string.message_input_text)
-        val buttonDescription = context.getString(R.string.message_input_button)
-        val text = "Initial text"
-        val sentMessage = AtomicReference<String>()//mutableStateOf("")
-        val onSend: (String, Timetoken) -> Unit = { message, _ -> sentMessage.set(message) }
+    fun whenSendButtonWillBePressed_thenOnSendWithMessageAsParameterWillBeInvokedAndFieldWillBeCleared() =
+        runTest {
+            // Given
+            val inputDescription = context.getString(R.string.message_input_text)
+            val buttonDescription = context.getString(R.string.message_input_button)
+            val text = "Initial text"
+            val sentMessage = AtomicReference<String>()//mutableStateOf("")
+            val onSend: (String, Timetoken) -> Unit = { message, _ -> sentMessage.set(message) }
 
-        every {
-            pubNub!!.publish(allAny(), allAny()).async(allAny())
-        } answers {
-            firstArg<(PNPublishResult, PNStatus) -> Unit>().invoke(
-                pnPublishResult,
-                pnStatusSuccess
-            )
-        }
-
-        composeTestRule.setContent {
-            ChatProvider(pubNub = pubNub!!) {
-                MessageInput(initialText = text, onSuccess = onSend)
+            every {
+                pubNub!!.publish(allAny(), allAny()).async(allAny())
+            } answers {
+                firstArg<(PNPublishResult, PNStatus) -> Unit>().invoke(
+                    pnPublishResult,
+                    pnStatusSuccess
+                )
             }
+
+            composeTestRule.setContent {
+                ChatProvider(pubNub = pubNub!!) {
+                    MessageInput(initialText = text, onSuccess = onSend)
+                }
+            }
+
+            // When
+            composeTestRule.onNodeWithContentDescription(inputDescription).assertTextEquals(text)
+            composeTestRule.onNodeWithContentDescription(buttonDescription).performClick()
+
+            Awaitility.await().untilAtomic(sentMessage, Matchers.equalTo(text))
+
+            // Then
+            Assert.assertEquals(text, sentMessage.get())
+            composeTestRule.onNodeWithContentDescription(inputDescription, useUnmergedTree = true)
+                .assertTextEquals("")
         }
-
-        // When
-        composeTestRule.onNodeWithContentDescription(inputDescription).assertTextEquals(text)
-        composeTestRule.onNodeWithContentDescription(buttonDescription).performClick()
-
-        Awaitility.await().untilAtomic(sentMessage, Matchers.equalTo(text))
-
-        // Then
-        Assert.assertEquals(text, sentMessage.get())
-        composeTestRule.onNodeWithContentDescription(inputDescription, useUnmergedTree = true)
-            .assertTextEquals("")
-    }
 
     @Test
-    fun whenSendButtonWillBePressedAndMessageIsNotEmpty_thenMessageWillBeSent() = runTest{
+    fun whenSendButtonWillBePressedAndMessageIsNotEmpty_thenMessageWillBeSent() = runTest {
         // Given
         val buttonDescription = context.getString(R.string.message_input_button)
         val text = "Initial text"
@@ -218,7 +220,7 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test
-    fun whenSendButtonWillBePressedAndMessageIsEmpty_thenMessageWillNotBeSent() = runTest{
+    fun whenSendButtonWillBePressedAndMessageIsEmpty_thenMessageWillNotBeSent() = runTest {
         // Given
         val buttonDescription = context.getString(R.string.message_input_button)
         val text = ""
@@ -236,9 +238,9 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test
-    fun whenMessageWillBeSent_thenMessageServiceSendWillBeCalled() = runTest{
+    fun whenMessageWillBeSent_thenMessageServiceSendWillBeCalled() = runTest {
         // Given
-        val messageService = mockk<DefaultMessageServiceImpl>(relaxed = true)
+        val messageService = mockk<DefaultMessageService>(relaxed = true)
         val buttonDescription = context.getString(R.string.message_input_button)
         val text = "Initial text"
         composeTestRule.setContent {
@@ -257,7 +259,7 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test
-    fun whenMessageWillBeSent_andResultWillBeSuccess_thenOnMessageWillBeInvoked() = runTest{
+    fun whenMessageWillBeSent_andResultWillBeSuccess_thenOnMessageWillBeInvoked() = runTest {
         // Given
         val inputDescription = context.getString(R.string.message_input_text)
         val buttonDescription = context.getString(R.string.message_input_button)
@@ -289,7 +291,7 @@ class MessageInputTest : BaseTest() {
     }
 
     @Test
-    fun whenMessageWillBeSent_andResultWillBeFailure_thenOnErrorWillBeInvoked() = runTest{
+    fun whenMessageWillBeSent_andResultWillBeFailure_thenOnErrorWillBeInvoked() = runTest {
         // Given
         val inputDescription = context.getString(R.string.message_input_text)
         val buttonDescription = context.getString(R.string.message_input_button)

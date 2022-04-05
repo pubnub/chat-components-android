@@ -2,10 +2,8 @@ package com.pubnub.components.data.message
 
 import androidx.annotation.Keep
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.pubnub.components.data.member.DBMember
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.util.Timetoken
@@ -14,21 +12,6 @@ import com.pubnub.framework.util.timetoken
 @Keep
 @Entity(
     tableName = "message",
-    foreignKeys = [
-        ForeignKey(
-            entity = DBMember::class,
-            parentColumns = arrayOf("memberId"),
-            childColumns = arrayOf("publisher"),
-            onDelete = ForeignKey.NO_ACTION,
-        ),
-//        Warning: Entity must exists in db! So Channel must exists in db before Message will be saved
-//        ForeignKey(
-//            entity = DBChannel::class,
-//            parentColumns = arrayOf("id"),
-//            childColumns = arrayOf("channel"),
-//            onDelete = ForeignKey.NO_ACTION,
-//        ),
-    ],
     indices = [Index("publisher")]
 )
 data class DBMessage(

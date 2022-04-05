@@ -2,11 +2,15 @@ package com.pubnub.components.chat.ui.component.message.renderer
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.*
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,21 +23,23 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
-import coil.compose.AsyncImage
 import coil.compose.rememberImagePainter
-import coil.request.ImageRequest
 import com.google.accompanist.placeholder.placeholder
 import com.pubnub.components.chat.ui.R
 import com.pubnub.components.chat.ui.component.common.ShapeTheme
 import com.pubnub.components.chat.ui.component.common.TextTheme
 import com.pubnub.components.chat.ui.component.member.ProfileImage
 import com.pubnub.components.chat.ui.component.message.*
+import com.pubnub.components.chat.ui.component.message.reaction.Emoji
+import com.pubnub.components.chat.ui.component.message.reaction.PickedReaction
+import com.pubnub.components.chat.ui.component.message.reaction.ReactionUi
+import com.pubnub.components.chat.ui.component.message.reaction.renderer.DefaultReactionsPickerRenderer
+import com.pubnub.components.chat.ui.component.message.reaction.renderer.ReactionsRenderer
 import com.pubnub.framework.data.MessageId
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.util.Timetoken
 import com.pubnub.framework.util.seconds
 import kotlinx.coroutines.*
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
@@ -59,7 +65,26 @@ object GroupMessageRenderer : MessageRenderer {
         attachments: List<Attachment>?,
         timetoken: Timetoken,
         navigateToProfile: (UserId) -> Unit,
+        reactions: List<ReactionUi>,
+        onShowMenu: ((MessageId) -> Unit)?,
+        onReactionSelected: ((PickedReaction) -> Unit)?,
+        reactionsPickerRenderer: ReactionsRenderer,
     ) {
+        val onReaction: ((Emoji) -> Unit)? = onReactionSelected?.let {
+            { reaction ->
+                onReactionSelected(
+                    PickedReaction(
+                        currentUserId,
+                        timetoken,
+                        reaction.type,
+                        reaction.value
+                    )
+                )
+            }
+        }
+        val onMenu: (() -> Unit)? = onShowMenu?.let {
+            { it(messageId) }
+        }
         GroupChatMessage(
             currentUserId = currentUserId,
             userId = userId,
@@ -70,6 +95,10 @@ object GroupMessageRenderer : MessageRenderer {
             attachments = attachments,
             timetoken = timetoken,
             navigateToProfile = navigateToProfile,
+            reactions = reactions,
+            onShowMenu = onMenu,
+            onReactionSelected = onReaction,
+            reactionsPicker = reactionsPickerRenderer,
         )
     }
 
@@ -117,11 +146,16 @@ object GroupMessageRenderer : MessageRenderer {
         timetoken: Timetoken,
         navigateToProfile: (UserId) -> Unit,
         placeholder: Boolean = false,
+        reactions: List<ReactionUi> = emptyList(),
+        onShowMenu: (() -> Unit)? = null,
+        onReactionSelected: ((Emoji) -> Unit)? = null,
+        reactionsPicker: ReactionsRenderer = DefaultReactionsPickerRenderer,
     ) {
         val context = LocalContext.current
         val theme = LocalMessageListTheme.current.message
 
         val date = timetoken.formatDate()
+        val reactionEnabled = onReactionSelected != null
 
         // region Placeholders
         val messagePlaceholder = Modifier.placeholder(
@@ -164,7 +198,13 @@ object GroupMessageRenderer : MessageRenderer {
         // endregion
 
         Row(
-            modifier = theme.modifier,
+            modifier = theme.modifier.combinedClickable(
+                enabled = onShowMenu != null,
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(),
+                onLongClick = { onShowMenu?.let { onShowMenu() } },
+                onClick = { },
+            ),
             verticalAlignment = theme.verticalAlignment,
         ) {
             Box(modifier = theme.profileImage.modifier) {
@@ -237,8 +277,16 @@ object GroupMessageRenderer : MessageRenderer {
                     shape = theme.shape.shape,
                     modifier = theme.shape.modifier
                 ) { body() }
-            }
 
+                if (reactionEnabled && reactions.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    reactionsPicker.PickedList(
+                        currentUserId,
+                        reactions,
+                        onReactionSelected!!
+                    )
+                }
+            }
         }
     }
 
@@ -256,6 +304,7 @@ object GroupMessageRenderer : MessageRenderer {
             timetoken = 0L,
             placeholder = true,
             navigateToProfile = {},
+            reactionsPicker = DefaultReactionsPickerRenderer,
         )
     }
 
@@ -283,25 +332,10 @@ object GroupMessageRenderer : MessageRenderer {
         modifier: Modifier = Modifier,
     ) {
 
-        val uriHandler = LocalUriHandler.current
-        ClickableText(
+        Text(
             text = message,
             modifier = modifier.then(placeholder),
             style = theme.asStyle(),
-            onClick = {
-                message
-                    .getStringAnnotations(start = it, end = it)
-                    .firstOrNull()
-                    ?.let { annotation ->
-                        Timber.e("Annotation $annotation")
-                        when (annotation.tag) {
-                            SymbolAnnotationType.LINK.name -> {
-                                uriHandler.openUri(annotation.item)
-                            }
-                            else -> Unit
-                        }
-                    }
-            }
         )
     }
 
@@ -387,13 +421,15 @@ object GroupMessageRenderer : MessageRenderer {
         imageUrl: String,
         modifier: Modifier = Modifier.defaultMinSize(200.dp, 200.dp)
     ) {
-        val model = ImageRequest.Builder(LocalContext.current)
-            .data(imageUrl)
-            .crossfade(true)
-            .build()
+        val painter = rememberImagePainter(
+            data = imageUrl,
+            builder = {
+                crossfade(true)
+            }
+        )
 
-        AsyncImage(
-            model = model,
+        Image(
+            painter = painter,
             contentDescription = imageUrl,
             alignment = Alignment.TopStart,
             modifier = modifier,

@@ -4,23 +4,27 @@ import com.pubnub.components.chat.ui.component.message.Attachment
 import com.pubnub.components.chat.ui.component.message.MessageUi
 import com.pubnub.components.data.message.DBAttachment
 import com.pubnub.components.data.message.DBMessage
+import com.pubnub.components.data.message.action.DBMessageWithActions
 import com.pubnub.framework.mapper.Mapper
 
-class DomainMessageMapper : Mapper<MessageUi.Data, DBMessage> {
-    override fun map(input: MessageUi.Data): DBMessage =
+class DomainMessageMapper : Mapper<MessageUi.Data, DBMessageWithActions> {
+    override fun map(input: MessageUi.Data): DBMessageWithActions =
 
-        DBMessage(
-            id = input.uuid,
-            type = input.type,
-            text = input.text,
-            attachment = input.attachment.toDb(),
-            custom = null,
+        DBMessageWithActions(
+            DBMessage(
+                id = input.uuid,
+                type = input.type,
+                text = input.text,
+                attachment = input.attachment.toDb(),
+                custom = null,
 
-            publisher = input.publisher.id,
-            channel = input.channel,
-            timetoken = input.timetoken,
-            isSent = !input.isSending && input.isDelivered,
-            exception = null,
+                publisher = input.publisher.id,
+                channel = input.channel,
+                timetoken = input.timetoken,
+                isSent = !input.isSending && input.isDelivered,
+                exception = null,
+            ),
+            actions = emptyList(),
         )
 
     fun List<Attachment>?.toDb(): List<DBAttachment>? =

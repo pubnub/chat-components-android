@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 
 class TextTheme(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     color: Color,
     fontSize: TextUnit,
     fontStyle: FontStyle?,
@@ -29,7 +29,6 @@ class TextTheme(
     overflow: TextOverflow,
     softWrap: Boolean,
     maxLines: Int,
-    // TODO: 5/25/21 remove text style!
     style: TextStyle,
 ) {
     var modifier by mutableStateOf(modifier, structuralEqualityPolicy())

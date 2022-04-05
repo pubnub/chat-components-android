@@ -22,16 +22,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
-import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
-import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.google.accompanist.placeholder.placeholder
 import com.pubnub.components.chat.ui.R
 import com.pubnub.components.chat.ui.component.channel.LocalChannelListTheme
 import com.pubnub.components.chat.util.CenterInside
-import org.jetbrains.annotations.Async
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalCoilApi::class)
 object DefaultChannelRenderer : ChannelRenderer {
@@ -89,16 +85,18 @@ object DefaultChannelRenderer : ChannelRenderer {
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = modifier.apply{ clickAction?.let { action -> clickable { action() } } },
+            modifier = modifier.apply { clickAction?.let { action -> clickable { action() } } },
         ) {
             // icon
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(iconUrl)
-                    .placeholder(drawableResId = R.drawable.ic_baseline_account_circle_24)
-                    .crossfade(false)
-                    .transformations(CircleCropTransformation())
-                    .build(),
+            Image(
+                painter = rememberImagePainter(
+                    data = iconUrl,
+                    builder = {
+                        crossfade(false)
+                        placeholder(drawableResId = R.drawable.ic_baseline_account_circle_24)
+                        transformations(CircleCropTransformation())
+                    }
+                ),
                 contentDescription = LocalContext.current.resources.getString(R.string.thumbnail),
                 contentScale = CenterInside,
                 modifier = theme.image.placeholder(visible = placeholder, color = Color.Gray),

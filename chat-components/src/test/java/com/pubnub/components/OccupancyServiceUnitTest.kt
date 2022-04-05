@@ -1,7 +1,7 @@
 package com.pubnub.components
 
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
-import com.pubnub.components.chat.service.channel.OccupancyService
+import com.pubnub.components.chat.service.channel.DefaultOccupancyService
 import com.pubnub.framework.data.OccupancyMap
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,7 +30,7 @@ class OccupancyServiceUnitTest {
         }
     }
 
-    lateinit var service: OccupancyService
+    lateinit var service: DefaultOccupancyService
 
     private val testCoroutineDispatcher = StandardTestDispatcher()
 
@@ -45,7 +45,7 @@ class OccupancyServiceUnitTest {
             overrideRecordPrivateCalls = true
         )
         service = spyk(
-            OccupancyService(
+            DefaultOccupancyService(
                 mockk(relaxUnitFun = true, relaxed = true),
                 mockk(),
                 testCoroutineScope

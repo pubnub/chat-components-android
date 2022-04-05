@@ -1,5 +1,6 @@
 package com.pubnub.framework.service
 
+import androidx.annotation.StringDef
 import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.SubscribeCallback
 import com.pubnub.api.models.consumer.PNBoundedPage
@@ -12,6 +13,7 @@ import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResu
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.util.Framework
 import com.pubnub.framework.util.flow.single
+import com.pubnub.framework.util.toJson
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
@@ -51,7 +53,7 @@ class ActionService(
         channelId: ChannelId,
         messageAction: PNMessageAction,
     ): PNAddMessageActionResult {
-        Timber.i("Send message action to channel '$channelId': $messageAction")
+        Timber.i("Send message action to channel '$channelId': ${messageAction.toJson(pubNub.mapper)}")
         return pubNub.addMessageAction(
             channel = channelId,
             messageAction = messageAction,
@@ -79,7 +81,7 @@ class ActionService(
     }
 
     /**
-     * Get message action
+     * Fetch message action
      *
      * @param channelId Channel to fetch message actions from.
      * @param start Message Action timetoken denoting the start of the range requested
@@ -87,7 +89,7 @@ class ActionService(
      * @param end Message Action timetoken denoting the end of the range requested
      *            (return values will be greater than or equal to end).
      */
-    suspend fun get(
+    suspend fun fetch(
         channelId: ChannelId,
         start: Long?,
         end: Long?,
@@ -114,7 +116,7 @@ class ActionService(
      * @param end Message Action timetoken denoting the end of the range requested
      *            (return values will be greater than or equal to end).
      */
-    suspend fun getAll(
+    suspend fun fetchAll(
         channelId: ChannelId,
         start: Long?,
         end: Long?,
@@ -130,7 +132,7 @@ class ActionService(
         results: MutableList<PNMessageAction>,
     ): List<PNMessageAction> {
 
-        val result = get(channelId, start, end, limit)
+        val result = fetch(channelId, start, end, limit)
         val newActions = result.actions
         results.addAll(newActions)
 
@@ -219,8 +221,12 @@ class ActionService(
         _actions.emit(this@processAction)
     }
 
-    enum class Type(val value: String) {
-        EVENT_ADDED("added"),
-        EVENT_REMOVED("removed"),
+    @Retention(AnnotationRetention.SOURCE)
+    @StringDef(EVENT_ADDED, EVENT_REMOVED)
+    annotation class Type
+
+    companion object {
+        const val EVENT_ADDED = "added"
+        const val EVENT_REMOVED = "removed"
     }
 }

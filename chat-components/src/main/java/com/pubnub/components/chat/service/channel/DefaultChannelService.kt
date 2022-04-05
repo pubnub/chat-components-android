@@ -1,4 +1,4 @@
-package com.pubnub.components.chat.service.member
+package com.pubnub.components.chat.service.channel
 
 import com.pubnub.api.PubNub
 import com.pubnub.api.PubNubException
@@ -6,27 +6,27 @@ import com.pubnub.api.callbacks.SubscribeCallback
 import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.objects.PNPage
 import com.pubnub.api.models.consumer.objects.PNSortKey
-import com.pubnub.api.models.consumer.pubsub.objects.PNDeleteUUIDMetadataEventMessage
+import com.pubnub.api.models.consumer.pubsub.objects.PNDeleteChannelMetadataEventMessage
 import com.pubnub.api.models.consumer.pubsub.objects.PNObjectEventResult
-import com.pubnub.api.models.consumer.pubsub.objects.PNSetUUIDMetadataEventMessage
-import com.pubnub.components.chat.network.mapper.NetworkMemberMapper
+import com.pubnub.api.models.consumer.pubsub.objects.PNSetChannelMetadataEventMessage
+import com.pubnub.components.chat.network.mapper.NetworkChannelMapper
 import com.pubnub.components.chat.service.error.ErrorHandler
-import com.pubnub.components.data.member.DBMember
-import com.pubnub.components.data.member.DBMemberWithChannels
-import com.pubnub.components.repository.member.MemberRepository
-import com.pubnub.framework.data.UserId
+import com.pubnub.components.data.channel.DBChannel
+import com.pubnub.components.data.channel.DBChannelWithMembers
+import com.pubnub.components.repository.channel.ChannelRepository
+import com.pubnub.framework.data.ChannelId
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @OptIn(DelicateCoroutinesApi::class)
-class DefaultMemberServiceImpl(
-    private val pubNub: PubNub,
-    private val memberRepository: MemberRepository<DBMember, DBMemberWithChannels>,
-    private val networkMapper: NetworkMemberMapper,
+class DefaultChannelService(
+    val pubNub: PubNub,
+    private val channelRepository: ChannelRepository<DBChannel, DBChannelWithMembers>,
+    private val networkMapper: NetworkChannelMapper,
     private val errorHandler: ErrorHandler,
     private val coroutineScope: CoroutineScope = GlobalScope,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-) : MemberService<DBMember> {
+) : ChannelService<DBChannel> {
 
     // region Private mutable flows
     private var _totalCount: MutableStateFlow<Int> = MutableStateFlow(-1)
@@ -57,7 +57,17 @@ class DefaultMemberServiceImpl(
         pubNub.removeListener(_listener)
     }
 
-    override fun getAll(
+    override fun fetch(id: ChannelId, includeCustom: Boolean) {
+        coroutineScope.launch(dispatcher) {
+            try {
+                pubNub.getChannelMetadata(id, includeCustom)
+            } catch (e: PubNubException) {
+                errorHandler.onError(e)
+            }
+        }
+    }
+
+    override fun fetchAll(
         limit: Int?,
         page: PNPage?,
         filter: String?,
@@ -65,13 +75,13 @@ class DefaultMemberServiceImpl(
         includeCustom: Boolean,
     ) {
         coroutineScope.launch(dispatcher) {
-            getMembers(limit, page, filter, sort, includeCustom) { _page, _ ->
-                getAll(limit, _page, filter, sort, includeCustom)
+            getChannels(limit, page, filter, sort, includeCustom) { _page, _ ->
+                fetchAll(limit, _page, filter, sort, includeCustom)
             }
         }
     }
 
-    private suspend fun getMembers(
+    private suspend fun getChannels(
         limit: Int? = null,
         page: PNPage? = null,
         filter: String? = null,
@@ -80,9 +90,9 @@ class DefaultMemberServiceImpl(
         onNext: (PNPage?, Int) -> Unit = { _, _ -> },
     ) {
         try {
-            if (_totalCount.value >= 0 && memberRepository.size() >= _totalCount.value) return
+            if (_totalCount.value >= 0 && channelRepository.size() >= _totalCount.value) return
 
-            pubNub.getAllUUIDMetadata(
+            pubNub.getAllChannelMetadata(
                 limit = limit,
                 page = page,
                 filter = filter,
@@ -94,8 +104,8 @@ class DefaultMemberServiceImpl(
                 _totalCount.emit(totalCount!!)
 
                 // repo
-                val membersList = data.toList().map { networkMapper.map(it) }.toTypedArray()
-                memberRepository.add(*membersList)
+                val channelsList = data.toList().map { networkMapper.map(it) }.toTypedArray()
+                channelRepository.insertOrUpdate(*channelsList)
 
                 onNext(obtainedPage, totalCount!!)
             }
@@ -105,16 +115,14 @@ class DefaultMemberServiceImpl(
         }
     }
 
-    override fun add(member: DBMember, includeCustom: Boolean) {
+    override fun add(channel: DBChannel, includeCustom: Boolean) {
         coroutineScope.launch(dispatcher) {
             try {
-                pubNub.setUUIDMetadata(
-                    uuid = member.id,
-                    name = member.name,
-                    externalId = member.externalId,
-                    profileUrl = member.profileUrl,
-                    email = member.email,
-                    custom = member.custom,
+                pubNub.setChannelMetadata(
+                    channel = channel.id,
+                    name = channel.name,
+                    description = channel.description,
+                    custom = channel.custom,
                     includeCustom = includeCustom,
                 ).sync()!!
             } catch (e: PubNubException) {
@@ -123,14 +131,12 @@ class DefaultMemberServiceImpl(
         }
     }
 
-    override fun remove(id: UserId?) {
+    override fun remove(id: ChannelId) {
         coroutineScope.launch(dispatcher) {
-            id?.let { memberId ->
-                try {
-                    pubNub.removeUUIDMetadata(memberId).sync()!!
-                } catch (e: PubNubException) {
-                    errorHandler.onError(e)
-                }
+            try {
+                pubNub.removeChannelMetadata(id).sync()!!
+            } catch (e: PubNubException) {
+                errorHandler.onError(e)
             }
         }
     }
@@ -138,13 +144,14 @@ class DefaultMemberServiceImpl(
     private fun handleObject(event: PNObjectEventResult) {
         coroutineScope.launch(dispatcher) {
             when (event.extractedMessage) {
-                is PNSetUUIDMetadataEventMessage -> {
-                    val member = (event.extractedMessage as PNSetUUIDMetadataEventMessage).data
-                    memberRepository.add(networkMapper.map(member))
+                is PNSetChannelMetadataEventMessage -> {
+                    val channel = (event.extractedMessage as PNSetChannelMetadataEventMessage).data
+                    channelRepository.insertOrUpdate(networkMapper.map(channel))
                 }
-                is PNDeleteUUIDMetadataEventMessage -> {
-                    val member = (event.extractedMessage as PNDeleteUUIDMetadataEventMessage).uuid
-                    memberRepository.remove(member)
+                is PNDeleteChannelMetadataEventMessage -> {
+                    val channel =
+                        (event.extractedMessage as PNDeleteChannelMetadataEventMessage).channel
+                    channelRepository.remove(channel)
                 }
                 else -> {
                 }
