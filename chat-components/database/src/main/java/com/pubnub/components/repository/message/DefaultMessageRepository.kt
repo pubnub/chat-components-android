@@ -5,6 +5,7 @@ import androidx.paging.PagingSource
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.pubnub.components.data.message.DBMessage
 import com.pubnub.components.data.message.MessageDao
+import com.pubnub.components.data.message.action.DBMessageWithActions
 import com.pubnub.components.repository.util.Query
 import com.pubnub.components.repository.util.Sorted
 import com.pubnub.framework.data.ChannelId
@@ -21,16 +22,16 @@ import kotlinx.coroutines.flow.firstOrNull
  */
 @OptIn(ExperimentalPagingApi::class)
 class DefaultMessageRepository(
-    private val messageDao: MessageDao<DBMessage, DBMessage>,
-) : MessageRepository<DBMessage, DBMessage> {
+    private val messageDao: MessageDao<DBMessage, DBMessageWithActions>,
+) : MessageRepository<DBMessage, DBMessageWithActions> {
 
     /**
      * Returns Message with Channel list
      *
      * @param id Message ID to match
-     * @return DBMessage if exists, null otherwise
+     * @return DBMessageWithActions if exists, null otherwise
      */
-    override suspend fun get(id: MessageId): DBMessage? =
+    override suspend fun get(id: MessageId): DBMessageWithActions? =
         messageDao.get(id)
 
     /**
@@ -40,14 +41,14 @@ class DefaultMessageRepository(
      * @param count Count of Messages to return
      * @param before If true, returns the Messages before passed Timestamp. Otherwise returns messages after Timestamp
      * @param timestamp Timestamp to get Messages before or after
-     * @return List of DBMessage
+     * @return List of DBMessageWithActions
      */
     override suspend fun getList(
         id: ChannelId,
         count: Int,
         before: Boolean,
         timestamp: Timetoken,
-    ): List<DBMessage> =
+    ): List<DBMessageWithActions> =
         if (before) messageDao.getBefore(
             id = id,
             count = count,
@@ -78,7 +79,7 @@ class DefaultMessageRepository(
         id: ChannelId?,
         filter: Query?,
         vararg sorted: Sorted,
-    ): PagingSource<Int, DBMessage> {
+    ): PagingSource<Int, DBMessageWithActions> {
         val stringQuery: MutableList<String> = mutableListOf("SELECT * FROM `message`")
         val arguments: MutableList<Any> = mutableListOf()
 
@@ -111,9 +112,9 @@ class DefaultMessageRepository(
      * Returns last Message for passed Channel ID
      *
      * @param id ID of Channel to get last Message from
-     * @return DBMessage or null
+     * @return DBMessageWithActions or null
      */
-    override suspend fun getLast(id: ChannelId): DBMessage? =
+    override suspend fun getLast(id: ChannelId): DBMessageWithActions? =
         messageDao.getLast(id).firstOrNull()
 
     /**
@@ -121,12 +122,12 @@ class DefaultMessageRepository(
      *
      * @param id ID of Channel to get last Message from
      * @param count Count of Messages to return
-     * @return Flow of List<DBMessage>
+     * @return Flow of List<DBMessageWithActions>
      */
     override fun getLastByChannel(
         id: ChannelId,
         count: Long,
-    ): Flow<List<DBMessage>> =
+    ): Flow<List<DBMessageWithActions>> =
         messageDao.getLastByChannel(id, count)
 
     /**
@@ -150,15 +151,6 @@ class DefaultMessageRepository(
         messageDao.getAfter(id, 1, timestamp).isNotEmpty()
 
     /**
-     * Adds passed Message to database
-     *
-     * @param message DBMessage object do add
-     */
-    override suspend fun add(vararg message: DBMessage) {
-        messageDao.insert(*message)
-    }
-
-    /**
      * Removes passed Message from database
      *
      * @param message DBMessage object do remove
@@ -177,12 +169,12 @@ class DefaultMessageRepository(
     }
 
     /**
-     * Updates passed Message
+     * Inserts the new message, or updates if it's already exists
      *
      * @param message DBMessage object to update
      */
-    override suspend fun update(message: DBMessage) {
-        messageDao.update(message)
+    override suspend fun insertOrUpdate(vararg message: DBMessage) {
+        messageDao.insertOrUpdate(*message)
     }
 
     /**
@@ -244,11 +236,11 @@ class DefaultMessageRepository(
         timestamp: Timetoken?,
     ) {
         val message = get(id) ?: throw Exception("Message not found exception")
-        val updatedMessage = message.copy(
+        val updatedMessage = message.message.copy(
             isSent = isSent,
             exception = exception,
             timetoken = timestamp ?: message.timetoken,
         )
-        messageDao.update(updatedMessage)
+        messageDao.insertOrUpdate(updatedMessage)
     }
 }

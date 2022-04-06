@@ -43,12 +43,12 @@ class DefaultMembershipRepository(
         membershipDao.getList()
 
     /**
-     * Adds passed Membership to database
+     * Inserts passed Memberships to database, or updates them if they exists
      *
      * @param membership Membership object to add, connecting the User to the Channel
      */
-    override suspend fun add(vararg membership: DBMembership) {
-        membershipDao.insert(*membership)
+    override suspend fun insertOrUpdate(vararg membership: DBMembership) {
+        membershipDao.insertOrUpdate(*membership)
     }
 
     /**

@@ -38,9 +38,20 @@ allprojects {
             jvmTarget = "1.8"
 
             // Use experimental APIs
-            freeCompilerArgs += '-Xopt-in=kotlin.RequiresOptIn'
-            freeCompilerArgs += '-Xopt-in=kotlin.time.ExperimentalTime'
+            freeCompilerArgs += '-opt-in=kotlin.RequiresOptIn'
+            freeCompilerArgs += '-opt-in=kotlin.time.ExperimentalTime'
         }
     }
 }
 
+// https://github.com/ben-manes/gradle-versions-plugin
+def isUnstable = { String version ->
+    def unstableKeyword = ['ALPHA', 'BETA'].any { it -> version.toUpperCase().contains(it) }
+    return unstableKeyword
+}
+
+tasks.named("dependencyUpdates").configure {
+    rejectVersionIf {
+        isUnstable(it.candidate.version)
+    }
+}

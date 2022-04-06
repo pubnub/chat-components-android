@@ -3,7 +3,6 @@ package com.pubnub.components
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.test.platform.app.InstrumentationRegistry
 import com.pubnub.components.chat.provider.ChatProvider
 import com.pubnub.components.chat.ui.component.input.renderer.DefaultTypingIndicatorRenderer
 import com.pubnub.framework.data.Typing
@@ -35,7 +34,7 @@ class TypingIndicatorTest : BaseTest() {
     }
 
     @Test
-    fun whenTypingDataWillBePassed_andTypingWillBeTrue_thenTypingIndicatorWillBeShown() = runTest{
+    fun whenTypingDataWillBePassed_andTypingWillBeTrue_thenTypingIndicatorWillBeShown() = runTest {
         // Given
         val typingIndicator = context.getString(R.string.typing_indicator)
         val typingData = listOf(Typing("userId", "channelId", true))
@@ -60,31 +59,32 @@ class TypingIndicatorTest : BaseTest() {
 
 
     @Test
-    fun whenTypingDataWillBePassed_andTypingWillBeFalse_thenTypingIndicatorWillNotBeShown() = runTest{
-        // Given
-        val typingIndicator = context.getString(R.string.typing_indicator)
-        val typingData = listOf(Typing("userId", "channelId", false))
+    fun whenTypingDataWillBePassed_andTypingWillBeFalse_thenTypingIndicatorWillNotBeShown() =
+        runTest {
+            // Given
+            val typingIndicator = context.getString(R.string.typing_indicator)
+            val typingData = listOf(Typing("userId", "channelId", false))
 
-        val expectedText = context.getString(
-            R.string.is_typing,
-            "userId"
-        )
-        composeTestRule.setContent {
-            ChatProvider(pubNub = pubNub!!) {
-                DefaultTypingIndicatorRenderer.TypingIndicator(data = typingData)
+            val expectedText = context.getString(
+                R.string.is_typing,
+                "userId"
+            )
+            composeTestRule.setContent {
+                ChatProvider(pubNub = pubNub!!) {
+                    DefaultTypingIndicatorRenderer.TypingIndicator(data = typingData)
+                }
             }
+
+            // Then
+            composeTestRule.onNodeWithContentDescription(typingIndicator, useUnmergedTree = true)
+                .apply {
+                    assertIsNotDisplayed()
+                    onChildren().assertAll(!hasText(expectedText))
+                }
         }
 
-        // Then
-        composeTestRule.onNodeWithContentDescription(typingIndicator, useUnmergedTree = true)
-            .apply {
-                assertIsNotDisplayed()
-                onChildren().assertAll(!hasText(expectedText))
-            }
-    }
-
     @Test
-    fun whenTypingIsShowing_andTypingFalseIsReceived_thenTypingIndicatorWillBeHide() = runTest{
+    fun whenTypingIsShowing_andTypingFalseIsReceived_thenTypingIndicatorWillBeHide() = runTest {
         // Given
         val typingIndicator = context.getString(R.string.typing_indicator)
         val typingData = listOf(Typing("userId", "channelId", true))
@@ -118,7 +118,7 @@ class TypingIndicatorTest : BaseTest() {
     }
 
     @Test
-    fun whenTypingIsNotShowing_andTypingTrueIsReceived_thenTypingIndicatorWillBeShown() = runTest{
+    fun whenTypingIsNotShowing_andTypingTrueIsReceived_thenTypingIndicatorWillBeShown() = runTest {
         // Given
         val typingIndicator = context.getString(R.string.typing_indicator)
         val typingData = listOf(Typing("userId", "channelId", true))

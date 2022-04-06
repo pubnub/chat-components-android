@@ -4,6 +4,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.pubnub.components.chat.ui.component.common.ButtonTheme
 import com.pubnub.components.chat.ui.component.common.InputTheme
+import com.pubnub.components.chat.ui.component.common.InputThemeDefaults
 import com.pubnub.components.chat.ui.component.common.ThemeDefaults
 import com.pubnub.components.chat.ui.component.provider.MissingThemeException
 
@@ -52,5 +53,5 @@ fun MessageInputTheme(
     }
 }
 
-val DefaultLocalMessageInputTheme @Composable get() = ThemeDefaults.messageInput(input = ThemeDefaults.input())
+val DefaultLocalMessageInputTheme @Composable get() = ThemeDefaults.messageInput(input = InputThemeDefaults.input())
 val LocalMessageInputTheme = compositionLocalOf<MessageInputTheme> { throw MissingThemeException() }

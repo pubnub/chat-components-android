@@ -10,7 +10,12 @@ import com.pubnub.framework.data.ChannelId
 interface ChannelService<Data : Channel> {
     fun bind(vararg channels: String)
     fun unbind()
-    fun getAll(
+    fun fetch(
+        id: ChannelId,
+        includeCustom: Boolean = false,
+    )
+
+    fun fetchAll(
         limit: Int? = null,
         page: PNPage? = null,
         filter: String? = null,

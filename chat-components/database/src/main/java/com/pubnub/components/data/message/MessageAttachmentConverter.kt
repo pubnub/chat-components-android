@@ -52,8 +52,6 @@ class MessageAttachmentConverter {
 
     @TypeConverter
     fun attachmentListToString(custom: List<DBAttachment>?): String? {
-        println("Custom $custom")
-
         return gson.toJson(custom)
 
     }

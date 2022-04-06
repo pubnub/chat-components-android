@@ -1,5 +1,6 @@
 package com.pubnub.components
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -15,16 +16,22 @@ import com.pubnub.components.data.membership.DefaultMembershipDao
 import com.pubnub.components.data.message.DBMessage
 import com.pubnub.components.data.message.DefaultMessageDao
 import com.pubnub.components.data.message.MessageAttachmentConverter
+import com.pubnub.components.data.message.action.DBMessageAction
+import com.pubnub.components.data.message.action.DefaultMessageActionDao
 
 @Database(
     entities = [
         DBMessage::class,
+        DBMessageAction::class,
         DBMember::class,
         DBMembership::class,
         DBChannel::class,
     ],
-    version = 1,
-    exportSchema = false,
+    version = 3,
+    exportSchema = true,
+    autoMigrations = [
+        AutoMigration(from = 2, to = 3)
+    ]
 )
 @TypeConverters(
     MessageAttachmentConverter::class,
@@ -33,8 +40,9 @@ import com.pubnub.components.data.message.MessageAttachmentConverter
     MemberDataCustomConverter::class,
 )
 abstract class DefaultDatabase : RoomDatabase(),
-    PubNubDatabase<DefaultMessageDao, DefaultChannelDao, DefaultMemberDao, DefaultMembershipDao> {
+    PubNubDatabase<DefaultMessageDao, DefaultMessageActionDao, DefaultChannelDao, DefaultMemberDao, DefaultMembershipDao> {
     abstract override fun messageDao(): DefaultMessageDao
+    abstract override fun actionDao(): DefaultMessageActionDao
     abstract override fun channelDao(): DefaultChannelDao
     abstract override fun memberDao(): DefaultMemberDao
     abstract override fun membershipDao(): DefaultMembershipDao

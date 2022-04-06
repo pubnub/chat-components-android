@@ -156,7 +156,7 @@ class TypingServiceUnitTest {
 
     // region Timeout
     @Test
-    fun whenStartTimeoutTimerIsCalled_thenRemoveOutdatedIsCalledEverySecond() = runTest{
+    fun whenStartTimeoutTimerIsCalled_thenRemoveOutdatedIsCalledEverySecond() = runTest {
         val channelId: ChannelId = "fakeChannel"
         service.bind(channelId)
 
@@ -177,23 +177,24 @@ class TypingServiceUnitTest {
     // region Outdated
 
     @Test
-    fun whenRemoveOutdatedIsCalled_andTypingItemTimestampIsOlderThan5SecondsAgo_thenTypingIsSetToFalse() = runTest {
-        val channelId: ChannelId = "fakeChannel"
-        val fakeTyping = Typing("userId", channelId, true)
+    fun whenRemoveOutdatedIsCalled_andTypingItemTimestampIsOlderThan5SecondsAgo_thenTypingIsSetToFalse() =
+        runTest {
+            val channelId: ChannelId = "fakeChannel"
+            val fakeTyping = Typing("userId", channelId, true)
 
-        every { service["getTypingMap"]() } answers { hashMapOf(fakeTyping.userId to fakeTyping) }
-        service.bind(channelId)
+            every { service["getTypingMap"]() } answers { hashMapOf(fakeTyping.userId to fakeTyping) }
+            service.bind(channelId)
 
-        val typing: CapturingSlot<Typing> = CapturingSlot()
-        verify(exactly = 1, timeout = 6_000L) { service["setTypingData"](capture(typing)) }
+            val typing: CapturingSlot<Typing> = CapturingSlot()
+            verify(exactly = 1, timeout = 6_000L) { service["setTypingData"](capture(typing)) }
 
-        with(typing.captured) {
-            Assert.assertEquals(fakeTyping.userId, userId)
-            Assert.assertEquals(fakeTyping.channelId, channelId)
-            Assert.assertFalse(isTyping)
-            Assert.assertTrue(fakeTyping.timestamp + 50_000L < timestamp)
+            with(typing.captured) {
+                Assert.assertEquals(fakeTyping.userId, userId)
+                Assert.assertEquals(fakeTyping.channelId, channelId)
+                Assert.assertFalse(isTyping)
+                Assert.assertTrue(fakeTyping.timestamp + 50_000L < timestamp)
+            }
         }
-    }
 
     @Test
     fun whenSetTypingDataIsCalled_andUserIsNotOnList_thenEmitNewDataIsExecuted() = runTest {
@@ -227,78 +228,81 @@ class TypingServiceUnitTest {
     }
 
     @Test
-    fun whenSetTypingDataIsCalled_andUserIsOnList_thenEmitNewDataIsExecuted_andPreviousUserDataIsReplaced() = runTest {
-        val channelId: ChannelId = "fakeChannel"
-        val fakeTyping = Typing("userId", channelId, false)
-        val fakeTyping2 = Typing("userId", channelId, true)
+    fun whenSetTypingDataIsCalled_andUserIsOnList_thenEmitNewDataIsExecuted_andPreviousUserDataIsReplaced() =
+        runTest {
+            val channelId: ChannelId = "fakeChannel"
+            val fakeTyping = Typing("userId", channelId, false)
+            val fakeTyping2 = Typing("userId", channelId, true)
 
-        coEvery { typingIndicator.setTyping(any(), any(), any(), any()) } just Runs
+            coEvery { typingIndicator.setTyping(any(), any(), any(), any()) } just Runs
 
-        service.bind(channelId)
-        runBlocking {
-            service.setTyping(
-                fakeTyping.userId,
-                fakeTyping.channelId,
-                fakeTyping.isTyping,
-                fakeTyping.timestamp
-            )
-            service.setTyping(
-                fakeTyping2.userId,
-                fakeTyping2.channelId,
-                fakeTyping2.isTyping,
-                fakeTyping2.timestamp
-            )
+            service.bind(channelId)
+            runBlocking {
+                service.setTyping(
+                    fakeTyping.userId,
+                    fakeTyping.channelId,
+                    fakeTyping.isTyping,
+                    fakeTyping.timestamp
+                )
+                service.setTyping(
+                    fakeTyping2.userId,
+                    fakeTyping2.channelId,
+                    fakeTyping2.isTyping,
+                    fakeTyping2.timestamp
+                )
+            }
+
+            val map2: TypingMap = hashMapOf(fakeTyping2.userId to fakeTyping2)
+            verify {
+                service["emitNewData"](eq(map2))
+            }
         }
-
-        val map2: TypingMap = hashMapOf(fakeTyping2.userId to fakeTyping2)
-        verify {
-            service["emitNewData"](eq(map2))
-        }
-    }
 
     @Test
-    fun whenSetTypingIsCalled_andShouldSendTypingEventReturnsTrue_thenTypingIndicatorSetTypingIsCalled() = runTest {
-        val channelId: ChannelId = "fakeChannel"
-        val fakeTyping = Typing("userId", channelId, false)
+    fun whenSetTypingIsCalled_andShouldSendTypingEventReturnsTrue_thenTypingIndicatorSetTypingIsCalled() =
+        runTest {
+            val channelId: ChannelId = "fakeChannel"
+            val fakeTyping = Typing("userId", channelId, false)
 
-        coEvery { typingIndicator.setTyping(any(), any(), any(), any()) } just Runs
-        every { service["shouldSendTypingEvent"](eq(fakeTyping)) } returns true
-        service.bind(channelId)
-        runBlocking {
-            service.setTyping(
-                fakeTyping.userId,
-                fakeTyping.channelId,
-                fakeTyping.isTyping,
-                fakeTyping.timestamp
-            )
-        }
+            coEvery { typingIndicator.setTyping(any(), any(), any(), any()) } just Runs
+            every { service["shouldSendTypingEvent"](eq(fakeTyping)) } returns true
+            service.bind(channelId)
+            runBlocking {
+                service.setTyping(
+                    fakeTyping.userId,
+                    fakeTyping.channelId,
+                    fakeTyping.isTyping,
+                    fakeTyping.timestamp
+                )
+            }
 
-        coVerify {
-            typingIndicator.setTyping(fakeTyping.channelId, fakeTyping.isTyping, any(), any())
+            coVerify {
+                typingIndicator.setTyping(fakeTyping.channelId, fakeTyping.isTyping, any(), any())
+            }
         }
-    }
 
     @Test
-    fun whenSetTypingIsCalled_andShouldSendTypingEventReturnsFalse_thenTypingIndicatorSetTypingIsNotCalled() = runTest {
-        val channelId: ChannelId = "fakeChannel"
-        val fakeTyping = Typing("userId", channelId, false)
+    fun whenSetTypingIsCalled_andShouldSendTypingEventReturnsFalse_thenTypingIndicatorSetTypingIsNotCalled() =
+        runTest {
+            val channelId: ChannelId = "fakeChannel"
+            val fakeTyping = Typing("userId", channelId, false)
 
-        coEvery { typingIndicator.setTyping(any(), any(), any(), any()) } just Runs
-        every { service["shouldSendTypingEvent"](eq(fakeTyping)) } returns false
-        service.bind(channelId)
-        runBlocking {
-            service.setTyping(
-                fakeTyping.userId,
-                fakeTyping.channelId,
-                fakeTyping.isTyping,
-                fakeTyping.timestamp
-            )
-        }
+            coEvery { typingIndicator.setTyping(any(), any(), any(), any()) } just Runs
+            every { service["shouldSendTypingEvent"](eq(fakeTyping)) } returns false
+            service.bind(channelId)
+            runBlocking {
+                service.setTyping(
+                    fakeTyping.userId,
+                    fakeTyping.channelId,
+                    fakeTyping.isTyping,
+                    fakeTyping.timestamp
+                )
+            }
 
-        coVerify(exactly = 0) {
-            typingIndicator.setTyping(fakeTyping.channelId, fakeTyping.isTyping, any(), any())
+            coVerify(exactly = 0) {
+                typingIndicator.setTyping(fakeTyping.channelId, fakeTyping.isTyping, any(), any())
+            }
         }
-    }
 
 
 }

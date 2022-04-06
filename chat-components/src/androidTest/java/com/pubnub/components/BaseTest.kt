@@ -28,7 +28,7 @@ open class BaseTest {
     private val userId: UserId = "fakeUser"
 
     internal val context: Context
-    get() = InstrumentationRegistry.getInstrumentation().context
+        get() = InstrumentationRegistry.getInstrumentation().context
 
     @Before
     @CallSuper
