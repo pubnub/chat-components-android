@@ -1,11 +1,14 @@
 package com.pubnub.components.chat.ui.component.message.renderer
 
+import android.util.Patterns.EMAIL_ADDRESS
+import android.webkit.URLUtil
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.Surface
@@ -332,10 +335,34 @@ object GroupMessageRenderer : MessageRenderer {
         modifier: Modifier = Modifier,
     ) {
 
-        Text(
+        val uriHandler = LocalUriHandler.current
+        ClickableText(
             text = message,
             modifier = modifier.then(placeholder),
             style = theme.asStyle(),
+            onClick = {
+                message
+                    .getStringAnnotations(start = it, end = it)
+                    .firstOrNull()
+                    ?.let { annotation ->
+                        when (annotation.tag) {
+                            SymbolAnnotationType.LINK.name -> {
+                                val url = when {
+                                    annotation.item.startsWith("mailto:") -> annotation.item
+                                    EMAIL_ADDRESS.matcher(annotation.item).matches() -> "mailto:${annotation.item}"
+                                    else -> URLUtil.guessUrl(annotation.item)
+                                }
+
+                                try {
+                                    uriHandler.openUri(url)
+                                } catch (e: Exception) {
+                                    // todo: add error handler
+                                }
+                            }
+                            else -> Unit
+                        }
+                    }
+            }
         )
     }
 
