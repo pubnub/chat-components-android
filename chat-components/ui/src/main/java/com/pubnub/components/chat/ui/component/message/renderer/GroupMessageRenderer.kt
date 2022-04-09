@@ -227,13 +227,13 @@ object GroupMessageRenderer : MessageRenderer {
 
             Column {
                 Row(verticalAlignment = Alignment.Bottom) {
-                    Text(
+                    ThemedText(
                         text = title, theme = theme.title, modifier = theme.title.modifier.then(
                             titlePlaceholder
                         )
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(
+                    ThemedText(
                         text = date, theme = theme.date, modifier = theme.date.modifier.then(
                             datePlaceholder
                         )
@@ -312,7 +312,7 @@ object GroupMessageRenderer : MessageRenderer {
     }
 
     @Composable
-    private fun Text(text: String, theme: TextTheme, modifier: Modifier = theme.modifier) {
+    fun ThemedText(text: String, theme: TextTheme, modifier: Modifier = theme.modifier) {
         Text(
             text = text,
             fontWeight = theme.fontWeight,
@@ -433,8 +433,8 @@ object GroupMessageRenderer : MessageRenderer {
                         .background(color = shape.tint, shape.shape)
                         .padding(shape.padding)
                 ) {
-                    Text(text = title, theme = titleTheme)
-                    if (!description.isNullOrBlank()) Text(
+                    ThemedText(text = title, theme = titleTheme)
+                    if (!description.isNullOrBlank()) ThemedText(
                         text = description,
                         theme = descriptionTheme
                     )
