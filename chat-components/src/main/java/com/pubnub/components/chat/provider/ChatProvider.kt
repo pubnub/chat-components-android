@@ -30,6 +30,8 @@ import com.pubnub.components.chat.ui.component.input.LocalTypingIndicatorTheme
 import com.pubnub.components.chat.ui.component.member.DefaultMemberListTheme
 import com.pubnub.components.chat.ui.component.member.LocalMemberListTheme
 import com.pubnub.components.chat.ui.component.member.MemberUi
+import com.pubnub.components.chat.ui.component.menu.DefaultMenuItemTheme
+import com.pubnub.components.chat.ui.component.menu.LocalMenuItemTheme
 import com.pubnub.components.chat.ui.component.message.*
 import com.pubnub.components.chat.ui.component.message.reaction.DefaultReactionTheme
 import com.pubnub.components.chat.ui.component.message.reaction.LocalReactionTheme
@@ -126,6 +128,7 @@ fun ChatProvider(
         LocalReactionTheme provides DefaultReactionTheme,
         LocalIndicatorTheme provides DefaultIndicatorTheme,
         LocalProfileImageTheme provides DefaultProfileImageTheme,
+        LocalMenuItemTheme provides DefaultMenuItemTheme,
 
         // Repositories
         LocalChannelRepository provides channelRepository,
