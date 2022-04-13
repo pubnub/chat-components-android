@@ -35,6 +35,7 @@ import com.pubnub.components.chat.ui.component.member.ProfileImage
 import com.pubnub.components.chat.ui.component.message.*
 import com.pubnub.components.chat.ui.component.message.reaction.Emoji
 import com.pubnub.components.chat.ui.component.message.reaction.PickedReaction
+import com.pubnub.components.chat.ui.component.message.reaction.Reaction
 import com.pubnub.components.chat.ui.component.message.reaction.ReactionUi
 import com.pubnub.components.chat.ui.component.message.reaction.renderer.DefaultReactionsPickerRenderer
 import com.pubnub.components.chat.ui.component.message.reaction.renderer.ReactionsRenderer
@@ -73,7 +74,7 @@ object GroupMessageRenderer : MessageRenderer {
         onReactionSelected: ((PickedReaction) -> Unit)?,
         reactionsPickerRenderer: ReactionsRenderer,
     ) {
-        val onReaction: ((Emoji) -> Unit)? = onReactionSelected?.let {
+        val onReaction: ((Reaction) -> Unit)? = onReactionSelected?.let {
             { reaction ->
                 onReactionSelected(
                     PickedReaction(
@@ -151,7 +152,7 @@ object GroupMessageRenderer : MessageRenderer {
         placeholder: Boolean = false,
         reactions: List<ReactionUi> = emptyList(),
         onShowMenu: (() -> Unit)? = null,
-        onReactionSelected: ((Emoji) -> Unit)? = null,
+        onReactionSelected: ((Reaction) -> Unit)? = null,
         reactionsPicker: ReactionsRenderer = DefaultReactionsPickerRenderer,
     ) {
         val context = LocalContext.current

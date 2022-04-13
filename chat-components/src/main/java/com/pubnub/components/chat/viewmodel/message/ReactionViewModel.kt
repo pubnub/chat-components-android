@@ -1,6 +1,9 @@
 package com.pubnub.components.chat.viewmodel.message
 
+import android.content.ClipData
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel

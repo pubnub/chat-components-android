@@ -1,6 +1,9 @@
 package com.pubnub.components.chat.ui.component.input
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -30,8 +33,8 @@ import java.util.*
  * error received.
  */
 class MessageInputViewModel(
-    private val messageService: MessageService<DBMessage>,
     private val id: UserId,
+    private val messageService: MessageService<DBMessage>,
     private val typingService: TypingService? = null,
 ) : ViewModel() {
 
@@ -48,12 +51,12 @@ class MessageInputViewModel(
          */
         @Composable
         fun default(
-            messageService: MessageService<DBMessage> = LocalMessageService.current,
             id: UserId = LocalPubNub.current.configuration.uuid,
+            messageService: MessageService<DBMessage> = LocalMessageService.current,
             typingService: TypingService? = null,
         ): MessageInputViewModel =
             viewModel(
-                factory = MessageInputViewModelFactory(messageService, id, typingService)
+                factory = MessageInputViewModelFactory(id, messageService, typingService)
             )
 
         /**
@@ -66,10 +69,10 @@ class MessageInputViewModel(
          */
         @Composable
         fun defaultWithTypingService(
-            messageService: MessageService<DBMessage> = LocalMessageService.current,
             id: UserId = LocalPubNub.current.configuration.uuid,
+            messageService: MessageService<DBMessage> = LocalMessageService.current,
         ): MessageInputViewModel =
-            default(messageService, id, LocalTypingService.current)
+            default(id, messageService, LocalTypingService.current)
     }
 
     private val time: Timetoken get() = System.currentTimeMillis().timetoken
@@ -138,14 +141,14 @@ class MessageInputViewModel(
 }
 
 class MessageInputViewModelFactory(
-    private val messageService: MessageService<DBMessage>,
     private val id: UserId,
+    private val messageService: MessageService<DBMessage>,
     private val typingService: TypingService? = null,
 ) :
     ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return MessageInputViewModel(messageService, id, typingService) as T
+        return MessageInputViewModel(id, messageService, typingService) as T
     }
 }
 

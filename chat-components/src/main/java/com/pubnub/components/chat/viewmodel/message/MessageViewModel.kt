@@ -1,6 +1,9 @@
 package com.pubnub.components.chat.viewmodel.message
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -46,6 +49,7 @@ class MessageViewModel constructor(
     private val messageRepository: MessageRepository<DBMessage, DBMessageWithActions>,
     private val remoteMediator: MessageRemoteMediator?,
     private val presenceService: OccupancyService?,
+    private val clipboard: ClipboardManager,
     private val config: PagingConfig = PagingConfig(pageSize = 10, enablePlaceholders = true),
     private val dbMapper: Mapper<DBMessageWithActions, MessageUi.Data>,
     private val uiMapper: Mapper<MessageUi.Data, DBMessageWithActions>,
@@ -72,6 +76,7 @@ class MessageViewModel constructor(
                 messageRepository = LocalMessageRepository.current,
                 remoteMediator = mediator,
                 presenceService = LocalOccupancyService.current,
+                clipboardManager = LocalClipboardManager.current,
                 dbMapper = DBMessageMapper(LocalMemberFormatter.current),
                 uiMapper = DomainMessageMapper(),
             )
@@ -162,6 +167,13 @@ class MessageViewModel constructor(
      * Removes all the messages from repository
      */
     fun removeAll() = viewModelScope.launch { messageRepository.removeAll(channelId) }
+
+    /**
+     * Copy the content of the message to the clipboard
+     */
+    fun copy(content: AnnotatedString){
+        clipboard.setText(content)
+    }
 
     private fun MessageUi.toDb(): DBMessageWithActions = uiMapper.map(this as MessageUi.Data)
     private fun DBMessageWithActions.toUi(): MessageUi.Data = dbMapper.map(this)

@@ -34,11 +34,11 @@ fun MenuItem(
     theme: MenuItemTheme = LocalMenuItemTheme.current,
 ) {
     Row(
-        modifier = theme.modifier.clickable(
+        modifier = Modifier.clickable(
             onClick = { onClick?.invoke(state.action) },
             interactionSource = remember { MutableInteractionSource() },
             indication = rememberRipple(),
-        ),
+        ).then(theme.modifier),
         horizontalArrangement = theme.horizontalArrangement,
         verticalAlignment = theme.verticalAlignment,
     ) {

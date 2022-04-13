@@ -161,7 +161,7 @@ object ThemeDefaults {
     @Composable
     fun menuItem(
         modifier: Modifier = Modifier.fillMaxWidth(),
-        text: TextTheme = TextThemeDefaults.subtitle(),
+        text: TextTheme = TextThemeDefaults.menuItemTitle(),
         icon: IconTheme = IconThemeDefaults.menuIcon(),
         horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
         verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
