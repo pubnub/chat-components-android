@@ -20,11 +20,9 @@ interface MessageRenderer {
         online: Boolean?,
         title: String,
         message: AnnotatedString?,
-        attachments: List<Attachment>?,
         timetoken: Timetoken,
-        navigateToProfile: (UserId) -> Unit,
         reactions: List<ReactionUi>,
-        onShowMenu: ((MessageId) -> Unit)?,
+        onMessageSelected: (() -> Unit)?,
         onReactionSelected: ((PickedReaction) -> Unit)?,
         reactionsPickerRenderer: ReactionsRenderer,
     )

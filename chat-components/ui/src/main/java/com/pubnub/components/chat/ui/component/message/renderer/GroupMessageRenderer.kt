@@ -33,7 +33,6 @@ import com.pubnub.components.chat.ui.component.common.ShapeTheme
 import com.pubnub.components.chat.ui.component.common.TextTheme
 import com.pubnub.components.chat.ui.component.member.ProfileImage
 import com.pubnub.components.chat.ui.component.message.*
-import com.pubnub.components.chat.ui.component.message.reaction.Emoji
 import com.pubnub.components.chat.ui.component.message.reaction.PickedReaction
 import com.pubnub.components.chat.ui.component.message.reaction.Reaction
 import com.pubnub.components.chat.ui.component.message.reaction.ReactionUi
@@ -66,11 +65,9 @@ object GroupMessageRenderer : MessageRenderer {
         online: Boolean?,
         title: String,
         message: AnnotatedString?,
-        attachments: List<Attachment>?,
         timetoken: Timetoken,
-        navigateToProfile: (UserId) -> Unit,
         reactions: List<ReactionUi>,
-        onShowMenu: ((MessageId) -> Unit)?,
+        onMessageSelected: (() -> Unit)?,
         onReactionSelected: ((PickedReaction) -> Unit)?,
         reactionsPickerRenderer: ReactionsRenderer,
     ) {
@@ -86,9 +83,6 @@ object GroupMessageRenderer : MessageRenderer {
                 )
             }
         }
-        val onMenu: (() -> Unit)? = onShowMenu?.let {
-            { it(messageId) }
-        }
         GroupChatMessage(
             currentUserId = currentUserId,
             userId = userId,
@@ -96,11 +90,9 @@ object GroupMessageRenderer : MessageRenderer {
             online = online,
             title = title,
             message = message,
-            attachments = attachments,
             timetoken = timetoken,
-            navigateToProfile = navigateToProfile,
             reactions = reactions,
-            onShowMenu = onMenu,
+            onMessageSelected = onMessageSelected?.let { { it() } },
             onReactionSelected = onReaction,
             reactionsPicker = reactionsPickerRenderer,
         )
@@ -141,21 +133,18 @@ object GroupMessageRenderer : MessageRenderer {
     @Composable
     fun GroupChatMessage(
         @Suppress("UNUSED_PARAMETER") currentUserId: UserId,
-        userId: UserId,
+        @Suppress("UNUSED_PARAMETER") userId: UserId,
         profileUrl: String?,
         online: Boolean?,
         title: String,
         message: AnnotatedString?,
-        attachments: List<Attachment>?,
         timetoken: Timetoken,
-        navigateToProfile: (UserId) -> Unit,
         placeholder: Boolean = false,
         reactions: List<ReactionUi> = emptyList(),
-        onShowMenu: (() -> Unit)? = null,
+        onMessageSelected: (() -> Unit)? = null,
         onReactionSelected: ((Reaction) -> Unit)? = null,
         reactionsPicker: ReactionsRenderer = DefaultReactionsPickerRenderer,
     ) {
-        val context = LocalContext.current
         val theme = LocalMessageListTheme.current.message
 
         val date = timetoken.formatDate()
@@ -202,25 +191,18 @@ object GroupMessageRenderer : MessageRenderer {
         // endregion
 
         Row(
-            modifier = theme.modifier.combinedClickable(
-                enabled = onShowMenu != null,
+            modifier = Modifier.combinedClickable(
+                enabled = onMessageSelected != null,
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(),
-                onLongClick = { onShowMenu?.let { onShowMenu() } },
+                onLongClick = { onMessageSelected?.let { onMessageSelected() } },
                 onClick = { },
-            ),
+            ).then(theme.modifier),
             verticalAlignment = theme.verticalAlignment,
         ) {
             Box(modifier = theme.profileImage.modifier) {
                 ProfileImage(
-                    modifier = imagePlaceholder.then(
-                        Modifier
-                            .clickable(onClick = { navigateToProfile(userId) })
-                            .semantics {
-                                contentDescription = context.getString(
-                                    R.string.profile_image
-                                )
-                            }),
+                    modifier = imagePlaceholder,
                     imageUrl = profileUrl,
                     isOnline = online,
                 )
@@ -258,18 +240,6 @@ object GroupMessageRenderer : MessageRenderer {
                                     ),
                                 )
                             }
-                            attachments?.images?.forEach { image ->
-                                ChatImage(image.imageUrl)
-                            }
-                            attachments?.links?.forEach { link ->
-                                LinkPreview(
-                                    link.link,
-                                    theme.text,
-                                    theme.date,
-                                    theme.previewShape,
-                                    theme.previewImageShape
-                                )
-                            }
                         }
                     }
                 }
@@ -304,10 +274,8 @@ object GroupMessageRenderer : MessageRenderer {
             online = false,
             title = "Lorem ipsum dolor",
             message = messageFormatter(text = "Test message"),
-            attachments = null,
             timetoken = 0L,
             placeholder = true,
-            navigateToProfile = {},
             reactionsPicker = DefaultReactionsPickerRenderer,
         )
     }
@@ -364,103 +332,6 @@ object GroupMessageRenderer : MessageRenderer {
                         }
                     }
             }
-        )
-    }
-
-    @Composable
-    fun LinkPreview(
-        link: String,
-        titleTheme: TextTheme,
-        descriptionTheme: TextTheme,
-        shape: ShapeTheme,
-        imageShape: ShapeTheme,
-        coroutineScope: CoroutineScope = GlobalScope,
-        dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    ) {
-        // TODO: 5/25/21 this part should be moved - metadata should be stored in db!
-        var content by remember { mutableStateOf<LinkPreview.Content?>(null) }
-
-        DisposableEffect(key1 = link) {
-            val job = coroutineScope.async(dispatcher) {
-                content = LinkPreview.getContent(link)
-            }
-            onDispose { job.cancel() }
-        }
-
-        if (content != null) {
-            LinkPreview(
-                url = link,
-                imageUrl = content!!.imageUrl,
-                title = content!!.title ?: link,
-                description = content!!.description,
-                titleTheme = titleTheme,
-                descriptionTheme = descriptionTheme,
-                shape = shape,
-                imageShape = imageShape,
-            )
-        }
-    }
-
-    @Composable
-    private fun LinkPreview(
-        url: String,
-        imageUrl: String?,
-        title: String?,
-        description: String?,
-        titleTheme: TextTheme,
-        descriptionTheme: TextTheme,
-        shape: ShapeTheme,
-        imageShape: ShapeTheme,
-    ) {
-        val uriHandler = LocalUriHandler.current
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .padding(1.dp)
-                .combinedClickable(onClick = { uriHandler.openUri(url) })
-        ) {
-            if (!imageUrl.isNullOrBlank())
-                ChatImage(
-                    imageUrl = imageUrl,
-                    modifier = imageShape.modifier
-                        .clip(imageShape.shape)
-                        .padding(imageShape.padding)
-                )
-            if (!title.isNullOrBlank()) {
-                Column(
-                    shape.modifier
-                        .fillMaxWidth()
-                        .background(color = shape.tint, shape.shape)
-                        .padding(shape.padding)
-                ) {
-                    ThemedText(text = title, theme = titleTheme)
-                    if (!description.isNullOrBlank()) ThemedText(
-                        text = description,
-                        theme = descriptionTheme
-                    )
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun ChatImage(
-        imageUrl: String,
-        modifier: Modifier = Modifier.defaultMinSize(200.dp, 200.dp)
-    ) {
-        val painter = rememberImagePainter(
-            data = imageUrl,
-            builder = {
-                crossfade(true)
-            }
-        )
-
-        Image(
-            painter = painter,
-            contentDescription = imageUrl,
-            alignment = Alignment.TopStart,
-            modifier = modifier,
         )
     }
 }

@@ -31,8 +31,7 @@ import kotlinx.coroutines.flow.Flow
 fun MessageList(
     messages: Flow<PagingData<MessageUi>>,
     modifier: Modifier = Modifier,
-    onMemberSelected: (UserId) -> Unit = { _: UserId -> },
-    onShowMenu: ((MessageId) -> Unit)? = null,
+    onMessageSelected: ((MessageUi.Data) -> Unit)? = null,
     onReactionSelected: ((PickedReaction) -> Unit)? = null,
     presence: Presence? = null,
     renderer: MessageRenderer = GroupMessageRenderer,
@@ -76,11 +75,9 @@ fun MessageList(
                                 online = presence?.get(message.publisher.id)?.value,
                                 title = message.publisher.name,
                                 message = styledMessage,
-                                attachments = message.attachment,
                                 timetoken = message.timetoken,
-                                navigateToProfile = onMemberSelected,
                                 reactions = message.reactions,
-                                onShowMenu = onShowMenu,
+                                onMessageSelected = onMessageSelected?.let { { onMessageSelected(message) } },
                                 onReactionSelected = onReactionSelected,
                                 reactionsPickerRenderer = reactionsPickerRenderer,
                             )

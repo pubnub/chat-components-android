@@ -38,12 +38,7 @@ fun LinkInput(
 
     val channel = LocalChannel.current
 
-    val viewModel: MessageInputViewModel = viewModel(
-        factory = MessageInputViewModelFactory(
-            LocalMessageService.current,
-            LocalPubNub.current.configuration.uuid
-        )
-    )
+    val viewModel: MessageInputViewModel = MessageInputViewModel.default()
 
     // region actions
     val sendAction: (String) -> Unit = { message ->
@@ -86,12 +81,7 @@ fun ImageInput(
 
     val channel = LocalChannel.current
 
-    val viewModel: MessageInputViewModel = viewModel(
-        factory = MessageInputViewModelFactory(
-            LocalMessageService.current,
-            LocalPubNub.current.configuration.uuid
-        )
-    )
+    val viewModel: MessageInputViewModel = MessageInputViewModel.default()
 
     // region actions
     val sendAction: (String) -> Unit = { message ->
@@ -131,13 +121,7 @@ fun MessageInput(
 
     val channel = LocalChannel.current
 
-    val viewModel: MessageInputViewModel = viewModel(
-        factory = MessageInputViewModelFactory(
-            LocalMessageService.current,
-            LocalPubNub.current.configuration.uuid,
-            if (typingIndicator) LocalTypingService.current else null
-        )
-    )
+    val viewModel: MessageInputViewModel = MessageInputViewModel.default(typingService = if (typingIndicator) LocalTypingService.current else null)
 
     // region actions
     val typingAction: (String) -> Unit = { message ->
