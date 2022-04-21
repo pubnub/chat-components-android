@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.Delete
@@ -30,9 +29,7 @@ fun BottomMenu(
     onAction: (MenuAction) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
-    header: @Composable ColumnScope.() -> Unit = {
-        DefaultReactionsPickerRenderer.ReactionsPicker { reaction -> onAction(React(reaction, message)) }
-    },
+    header: @Composable ColumnScope.() -> Unit = {},
     content: @Composable ColumnScope.() -> Unit = {
         MessageMenu(items = states, onClick = { onAction(it) })
     },
