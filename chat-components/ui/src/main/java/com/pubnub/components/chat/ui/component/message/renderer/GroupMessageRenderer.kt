@@ -3,7 +3,8 @@ package com.pubnub.components.chat.ui.component.message.renderer
 import android.util.Patterns.EMAIL_ADDRESS
 import android.webkit.URLUtil
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -14,25 +15,22 @@ import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
-import coil.compose.rememberImagePainter
 import com.google.accompanist.placeholder.placeholder
-import com.pubnub.components.chat.ui.R
-import com.pubnub.components.chat.ui.component.common.ShapeTheme
 import com.pubnub.components.chat.ui.component.common.TextTheme
 import com.pubnub.components.chat.ui.component.member.ProfileImage
-import com.pubnub.components.chat.ui.component.message.*
+import com.pubnub.components.chat.ui.component.message.LocalMessageListTheme
+import com.pubnub.components.chat.ui.component.message.SymbolAnnotationType
+import com.pubnub.components.chat.ui.component.message.messageFormatter
 import com.pubnub.components.chat.ui.component.message.reaction.PickedReaction
 import com.pubnub.components.chat.ui.component.message.reaction.Reaction
 import com.pubnub.components.chat.ui.component.message.reaction.ReactionUi
@@ -42,7 +40,7 @@ import com.pubnub.framework.data.MessageId
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.util.Timetoken
 import com.pubnub.framework.util.seconds
-import kotlinx.coroutines.*
+import kotlinx.coroutines.DelicateCoroutinesApi
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
@@ -191,13 +189,15 @@ object GroupMessageRenderer : MessageRenderer {
         // endregion
 
         Row(
-            modifier = Modifier.combinedClickable(
-                enabled = onMessageSelected != null,
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(),
-                onLongClick = { onMessageSelected?.let { onMessageSelected() } },
-                onClick = { },
-            ).then(theme.modifier),
+            modifier = Modifier
+                .combinedClickable(
+                    enabled = onMessageSelected != null,
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = rememberRipple(),
+                    onLongClick = { onMessageSelected?.let { onMessageSelected() } },
+                    onClick = { },
+                )
+                .then(theme.modifier),
             verticalAlignment = theme.verticalAlignment,
         ) {
             Box(modifier = theme.profileImage.modifier) {
@@ -318,7 +318,8 @@ object GroupMessageRenderer : MessageRenderer {
                             SymbolAnnotationType.LINK.name -> {
                                 val url = when {
                                     annotation.item.startsWith("mailto:") -> annotation.item
-                                    EMAIL_ADDRESS.matcher(annotation.item).matches() -> "mailto:${annotation.item}"
+                                    EMAIL_ADDRESS.matcher(annotation.item)
+                                        .matches() -> "mailto:${annotation.item}"
                                     else -> URLUtil.guessUrl(annotation.item)
                                 }
 

@@ -21,7 +21,6 @@ import com.pubnub.components.chat.ui.component.common.ButtonTheme
 import com.pubnub.components.chat.ui.component.common.TextTheme
 import com.pubnub.components.chat.ui.component.member.MemberUi
 import com.pubnub.components.chat.ui.component.menu.MenuDefaults
-import com.pubnub.components.chat.ui.component.menu.React
 import com.pubnub.components.chat.ui.component.message.reaction.*
 import com.pubnub.components.chat.util.AutoSizeText
 import com.pubnub.framework.data.UserId
@@ -34,7 +33,7 @@ import kotlin.math.floor
     ExperimentalMaterialApi::class,
     ExperimentalFoundationApi::class
 )
-object DefaultReactionsPickerRenderer: ReactionsRenderer {
+object DefaultReactionsPickerRenderer : ReactionsRenderer {
 
     var visibleItemsCount: Int = 6
 

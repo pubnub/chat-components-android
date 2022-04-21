@@ -171,7 +171,7 @@ class MessageViewModel constructor(
     /**
      * Copy the content of the message to the clipboard
      */
-    fun copy(content: AnnotatedString){
+    fun copy(content: AnnotatedString) {
         clipboard.setText(content)
     }
 

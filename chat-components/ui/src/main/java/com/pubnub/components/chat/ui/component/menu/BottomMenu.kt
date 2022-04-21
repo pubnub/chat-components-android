@@ -29,16 +29,24 @@ fun BottomMenu(
     onAction: (MenuAction) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
-    header: @Composable ColumnScope.() -> Unit = {},
-    content: @Composable ColumnScope.() -> Unit = {
+    headerContent: @Composable ColumnScope.() -> Unit = {},
+    bodyContent: @Composable ColumnScope.() -> Unit = {
         MessageMenu(items = states, onClick = { onAction(it) })
     },
-){
+) {
     Dialog(
         onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth=false)
-    ){
-        BottomMenuContent(message, states, onAction, onDismiss, modifier, header, content)
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        BottomMenuContent(
+            message,
+            states,
+            onAction,
+            onDismiss,
+            modifier,
+            headerContent,
+            bodyContent
+        )
     }
 }
 
@@ -49,22 +57,33 @@ private fun BottomMenuContent(
     onAction: (MenuAction) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
-    header: @Composable ColumnScope.() -> Unit = {
-        DefaultReactionsPickerRenderer.ReactionsPicker { reaction -> onAction(React(reaction, message)) }
+    headerContent: @Composable ColumnScope.() -> Unit = {
+        DefaultReactionsPickerRenderer.ReactionsPicker { reaction ->
+            onAction(
+                React(
+                    reaction,
+                    message
+                )
+            )
+        }
     },
-    content: @Composable ColumnScope.() -> Unit = {
+    bodyContent: @Composable ColumnScope.() -> Unit = {
         MessageMenu(items = states, onClick = { onAction(it) })
     },
-){
-    Box(Modifier.fillMaxSize().clickable(
-        interactionSource = remember { MutableInteractionSource() },
-        indication = null,
-        onClick = onDismiss,
-    )) {
+) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onDismiss,
+            )
+    ) {
         Card(modifier = modifier) {
             Column {
-                header()
-                content()
+                headerContent()
+                bodyContent()
             }
         }
     }
@@ -72,7 +91,7 @@ private fun BottomMenuContent(
 
 @Preview(showBackground = true)
 @Composable
-private fun BottomMenuPreview(){
+private fun BottomMenuPreview() {
     val items = listOf(
         MenuItemState(
             title = R.string.menu_copy,

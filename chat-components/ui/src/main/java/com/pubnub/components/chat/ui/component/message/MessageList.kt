@@ -22,8 +22,6 @@ import com.pubnub.components.chat.ui.component.message.renderer.GroupMessageRend
 import com.pubnub.components.chat.ui.component.message.renderer.MessageRenderer
 import com.pubnub.components.chat.ui.component.presence.Presence
 import com.pubnub.components.chat.ui.component.provider.LocalPubNub
-import com.pubnub.framework.data.MessageId
-import com.pubnub.framework.data.UserId
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -77,7 +75,13 @@ fun MessageList(
                                 message = styledMessage,
                                 timetoken = message.timetoken,
                                 reactions = message.reactions,
-                                onMessageSelected = onMessageSelected?.let { { onMessageSelected(message) } },
+                                onMessageSelected = onMessageSelected?.let {
+                                    {
+                                        onMessageSelected(
+                                            message
+                                        )
+                                    }
+                                },
                                 onReactionSelected = onReactionSelected,
                                 reactionsPickerRenderer = reactionsPickerRenderer,
                             )

@@ -1,13 +1,12 @@
 package com.pubnub.components.chat.ui.component.menu
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.pubnub.components.chat.ui.component.common.*
-import com.pubnub.components.chat.ui.component.message.ProfileImageTheme
+import com.pubnub.components.chat.ui.component.common.IconTheme
+import com.pubnub.components.chat.ui.component.common.TextTheme
+import com.pubnub.components.chat.ui.component.common.ThemeDefaults
 import com.pubnub.components.chat.ui.component.provider.MissingThemeException
 
 class MenuItemTheme(

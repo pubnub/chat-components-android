@@ -1,9 +1,6 @@
 package com.pubnub.components.chat.ui.component.input
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.ClipboardManager
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -15,7 +12,6 @@ import com.pubnub.components.chat.service.message.LocalMessageService
 import com.pubnub.components.chat.service.message.MessageService
 import com.pubnub.components.chat.ui.component.provider.LocalPubNub
 import com.pubnub.components.data.message.DBMessage
-
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.service.LocalTypingService

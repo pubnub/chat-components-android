@@ -22,7 +22,7 @@ fun MessageMenu(
             onClick = onClick,
         )
     }
-){
+) {
     Column(modifier) {
         items.forEach { state ->
             content(state)
@@ -32,20 +32,20 @@ fun MessageMenu(
 
 @Preview(showBackground = true)
 @Composable
-private fun MessageMenuPreview(){
+private fun MessageMenuPreview() {
     val items = listOf(
-            MenuItemState(
-                title = R.string.menu_copy,
-                iconPainter = rememberVectorPainter(image = Icons.Rounded.ContentCopy),
-                action = Copy(dummyMessageData()),
-            ),
-            MenuItemState(
-                title = R.string.menu_delete,
-                iconPainter = rememberVectorPainter(image = Icons.Rounded.Delete),
-                action = Delete(dummyMessageData()),
-            ),
+        MenuItemState(
+            title = R.string.menu_copy,
+            iconPainter = rememberVectorPainter(image = Icons.Rounded.ContentCopy),
+            action = Copy(dummyMessageData()),
+        ),
+        MenuItemState(
+            title = R.string.menu_delete,
+            iconPainter = rememberVectorPainter(image = Icons.Rounded.Delete),
+            action = Delete(dummyMessageData()),
+        ),
     )
-    MenuItemTheme(DefaultMenuItemTheme){
+    MenuItemTheme(DefaultMenuItemTheme) {
         MessageMenu(items = items, onClick = {})
     }
 }
