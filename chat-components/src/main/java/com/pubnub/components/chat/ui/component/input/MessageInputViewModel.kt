@@ -10,7 +10,6 @@ import com.pubnub.components.chat.network.data.NetworkMessageType
 import com.pubnub.components.chat.network.mapper.toDb
 import com.pubnub.components.chat.service.message.LocalMessageService
 import com.pubnub.components.chat.service.message.MessageService
-import com.pubnub.components.chat.ui.component.provider.LocalPubNub
 import com.pubnub.components.chat.ui.component.provider.LocalUser
 import com.pubnub.components.data.message.DBMessage
 import com.pubnub.framework.data.ChannelId

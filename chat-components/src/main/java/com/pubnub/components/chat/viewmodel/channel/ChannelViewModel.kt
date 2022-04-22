@@ -9,7 +9,6 @@ import androidx.paging.*
 import com.pubnub.components.R
 import com.pubnub.components.chat.provider.LocalChannelRepository
 import com.pubnub.components.chat.ui.component.channel.ChannelUi
-import com.pubnub.components.chat.ui.component.provider.LocalPubNub
 import com.pubnub.components.chat.ui.component.provider.LocalUser
 import com.pubnub.components.chat.ui.mapper.channel.DBChannelMapper
 import com.pubnub.components.data.channel.DBChannel

@@ -4,11 +4,9 @@ import android.util.Patterns.EMAIL_ADDRESS
 import android.webkit.URLUtil
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Indication
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.PressGestureScope
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
@@ -42,7 +40,6 @@ import com.pubnub.components.chat.ui.component.member.ProfileImage
 import com.pubnub.components.chat.ui.component.message.LocalMessageListTheme
 import com.pubnub.components.chat.ui.component.message.SymbolAnnotationType
 import com.pubnub.components.chat.ui.component.message.messageFormatter
-import com.pubnub.components.chat.ui.component.message.reaction.PickedReaction
 import com.pubnub.components.chat.ui.component.message.reaction.Reaction
 import com.pubnub.components.chat.ui.component.message.reaction.ReactionUi
 import com.pubnub.components.chat.ui.component.message.reaction.renderer.DefaultReactionsPickerRenderer
@@ -255,8 +252,14 @@ object GroupMessageRenderer : MessageRenderer {
                                     modifier = theme.text.modifier,
                                     onLongPress = { offset ->
                                         onMessageSelected?.let { onMessageSelected() }
-                                        GlobalScope.launch { interactionSource.emit(PressInteraction.Release(PressInteraction.Press(offset))) }
-                                                  },
+                                        GlobalScope.launch {
+                                            interactionSource.emit(
+                                                PressInteraction.Release(
+                                                    PressInteraction.Press(offset)
+                                                )
+                                            )
+                                        }
+                                    },
                                     onPress = { offset ->
 
                                         val press = PressInteraction.Press(offset)
@@ -392,7 +395,7 @@ fun ClickableText(
             onDoubleTap = onDoubleTap,
             onLongPress = onLongPress,
             onPress = onPress,
-            onTap =  { pos ->
+            onTap = { pos ->
                 layoutResult.value?.let { layoutResult ->
                     onClick(layoutResult.getOffsetForPosition(pos))
                 }

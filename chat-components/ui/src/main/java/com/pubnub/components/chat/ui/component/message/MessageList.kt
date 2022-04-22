@@ -16,14 +16,11 @@ import androidx.paging.compose.items
 import com.pubnub.components.chat.ui.R
 import com.pubnub.components.chat.ui.component.member.getRandomProfileUrl
 import com.pubnub.components.chat.ui.component.menu.React
-import com.pubnub.components.chat.ui.component.message.reaction.PickedReaction
-import com.pubnub.components.chat.ui.component.message.reaction.Reaction
 import com.pubnub.components.chat.ui.component.message.reaction.renderer.DefaultReactionsPickerRenderer
 import com.pubnub.components.chat.ui.component.message.reaction.renderer.ReactionsRenderer
 import com.pubnub.components.chat.ui.component.message.renderer.GroupMessageRenderer
 import com.pubnub.components.chat.ui.component.message.renderer.MessageRenderer
 import com.pubnub.components.chat.ui.component.presence.Presence
-import com.pubnub.components.chat.ui.component.provider.LocalPubNub
 import com.pubnub.components.chat.ui.component.provider.LocalUser
 import kotlinx.coroutines.flow.Flow
 
@@ -79,7 +76,14 @@ fun MessageList(
                                 timetoken = message.timetoken,
                                 reactions = message.reactions,
                                 onMessageSelected = { onMessageSelected?.invoke(message) },
-                                onReactionSelected = { reaction -> onReactionSelected?.invoke(React(reaction, message)) },
+                                onReactionSelected = { reaction ->
+                                    onReactionSelected?.invoke(
+                                        React(
+                                            reaction,
+                                            message
+                                        )
+                                    )
+                                },
                                 reactionsPickerRenderer = reactionsPickerRenderer,
                             )
                         }

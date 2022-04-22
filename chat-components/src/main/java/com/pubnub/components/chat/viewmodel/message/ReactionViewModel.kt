@@ -9,7 +9,6 @@ import com.pubnub.components.chat.provider.LocalMessageActionRepository
 import com.pubnub.components.chat.service.message.action.DefaultMessageReactionService
 import com.pubnub.components.chat.service.message.action.LocalMessageReactionService
 import com.pubnub.components.chat.ui.component.menu.React
-import com.pubnub.components.chat.ui.component.message.reaction.PickedReaction
 import com.pubnub.components.chat.ui.component.provider.LocalChannel
 import com.pubnub.components.chat.ui.component.provider.LocalUser
 import com.pubnub.components.data.message.action.DBMessageAction
