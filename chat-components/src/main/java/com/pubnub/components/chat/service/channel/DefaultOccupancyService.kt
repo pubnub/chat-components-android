@@ -28,6 +28,7 @@ import timber.log.Timber
 )
 class DefaultOccupancyService(
     private val pubNub: PubNub,
+    private val userId: UserId,
     private val occupancyMapper: OccupancyMapper,
     private val coroutineScope: CoroutineScope = GlobalScope,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
@@ -45,7 +46,7 @@ class DefaultOccupancyService(
                 .associateBy({ it }, { true })
         ).apply {
             // workaround - add current member as online
-            val currentUserId = pubNub.configuration.uuid
+            val currentUserId = userId
             this[currentUserId] = true
         }
     }
@@ -70,7 +71,6 @@ class DefaultOccupancyService(
         occupancy.map { it[channel] ?: Occupancy(channel, 0, emptyList()) }
 
     override suspend fun getPresence(presence: Presence): Presence {
-        val currentUserId = pubNub.configuration.uuid
 
         coroutineScope {
             // Add new occupants
@@ -83,7 +83,7 @@ class DefaultOccupancyService(
                     // Remove old occupants
                     presence.filter { member, state ->
                         state // was online
-                                && member != currentUserId // is not current user
+                                && member != userId // is not current user
                                 && (!map.containsKey(member) || !map[member]!!) // is not in latest occupancy map
                     }
                         .map { (member, _) ->

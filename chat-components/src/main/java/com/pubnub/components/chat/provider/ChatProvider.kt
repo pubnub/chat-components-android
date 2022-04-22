@@ -37,6 +37,7 @@ import com.pubnub.components.chat.ui.component.message.reaction.DefaultReactionT
 import com.pubnub.components.chat.ui.component.message.reaction.LocalReactionTheme
 import com.pubnub.components.chat.ui.component.provider.LocalChannel
 import com.pubnub.components.chat.ui.component.provider.LocalPubNub
+import com.pubnub.components.chat.ui.component.provider.LocalUser
 import com.pubnub.components.chat.ui.mapper.member.DBMemberMapper
 import com.pubnub.components.data.Database
 import com.pubnub.components.data.channel.ChannelDao
@@ -116,6 +117,7 @@ fun ChatProvider(
 
     CompositionLocalProvider(
         LocalPubNub provides pubNub,
+        LocalUser provides pubNub.configuration.uuid,
         LocalChannel provides channel,
 
         // Themes
@@ -176,7 +178,7 @@ fun WithServices(
         ),
         LocalActionService provides actionService,
         LocalMessageReactionService provides DefaultMessageReactionService(
-            LocalPubNub.current.configuration.uuid,
+            LocalUser.current,
             actionService,
             LocalMessageActionRepository.current,
             NetworkMessageActionMapper(),
@@ -195,12 +197,13 @@ fun WithServices(
             LocalErrorHandler.current,
         ),
         LocalTypingService provides TypingService(
-            LocalPubNub.current.configuration.uuid,
+            LocalUser.current,
             usernameResolver,
-            TypingIndicator(LocalPubNub.current),
+            TypingIndicator(LocalPubNub.current, LocalUser.current),
         ),
         LocalOccupancyService provides DefaultOccupancyService(
             LocalPubNub.current,
+            LocalUser.current,
             NetworkOccupancyMapper(),
         ),
     ) {
@@ -225,7 +228,7 @@ fun PubNubPreview(
 @OptIn(FlowPreview::class)
 @Composable
 fun Synchronize() {
-    val currentUser = LocalPubNub.current.configuration.uuid
+    val currentUser = LocalUser.current
 
     val channelService = LocalChannelService.current
     val messageService = LocalMessageService.current

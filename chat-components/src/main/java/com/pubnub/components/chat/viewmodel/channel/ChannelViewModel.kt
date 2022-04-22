@@ -10,6 +10,7 @@ import com.pubnub.components.R
 import com.pubnub.components.chat.provider.LocalChannelRepository
 import com.pubnub.components.chat.ui.component.channel.ChannelUi
 import com.pubnub.components.chat.ui.component.provider.LocalPubNub
+import com.pubnub.components.chat.ui.component.provider.LocalUser
 import com.pubnub.components.chat.ui.mapper.channel.DBChannelMapper
 import com.pubnub.components.data.channel.DBChannel
 import com.pubnub.components.data.channel.DBChannelWithMembers
@@ -52,7 +53,7 @@ class ChannelViewModel constructor(
         @Composable
         fun default(
             resources: Resources,
-            id: UserId = LocalPubNub.current.configuration.uuid,
+            id: UserId = LocalUser.current,
             repository: ChannelRepository<DBChannel, DBChannelWithMembers> = LocalChannelRepository.current,
             dbMapper: Mapper<DBChannelWithMembers, ChannelUi.Data> = DBChannelMapper(),
         ): ChannelViewModel {

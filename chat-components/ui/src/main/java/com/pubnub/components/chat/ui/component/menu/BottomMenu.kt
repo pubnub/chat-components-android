@@ -25,10 +25,10 @@ import com.pubnub.components.chat.ui.component.message.reaction.renderer.Default
 @Composable
 fun BottomMenu(
     message: MessageUi.Data,
-    states: List<MenuItemState>,
     onAction: (MenuAction) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
+    states: List<MenuItemState> = MenuDefaults.items(message),
     headerContent: @Composable ColumnScope.() -> Unit = {},
     bodyContent: @Composable ColumnScope.() -> Unit = {
         MessageMenu(items = states, onClick = { onAction(it) })

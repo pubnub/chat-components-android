@@ -4,12 +4,17 @@ import android.util.Patterns.EMAIL_ADDRESS
 import android.webkit.URLUtil
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Indication
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.PressGestureScope
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.Surface
@@ -17,12 +22,18 @@ import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import com.google.accompanist.placeholder.placeholder
@@ -41,6 +52,8 @@ import com.pubnub.framework.data.UserId
 import com.pubnub.framework.util.Timetoken
 import com.pubnub.framework.util.seconds
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
@@ -66,21 +79,21 @@ object GroupMessageRenderer : MessageRenderer {
         timetoken: Timetoken,
         reactions: List<ReactionUi>,
         onMessageSelected: (() -> Unit)?,
-        onReactionSelected: ((PickedReaction) -> Unit)?,
+        onReactionSelected: ((Reaction) -> Unit)?,
         reactionsPickerRenderer: ReactionsRenderer,
     ) {
-        val onReaction: ((Reaction) -> Unit)? = onReactionSelected?.let {
-            { reaction ->
-                onReactionSelected(
-                    PickedReaction(
-                        currentUserId,
-                        timetoken,
-                        reaction.type,
-                        reaction.value
-                    )
-                )
-            }
-        }
+//        val onReaction: ((Reaction) -> Unit)? = onReactionSelected?.let {
+//            { reaction ->
+//                onReactionSelected(
+//                    PickedReaction(
+//                        currentUserId,
+//                        timetoken,
+//                        reaction.type,
+//                        reaction.value
+//                    )
+//                )
+//            }
+//        }
         GroupChatMessage(
             currentUserId = currentUserId,
             userId = userId,
@@ -91,7 +104,7 @@ object GroupMessageRenderer : MessageRenderer {
             timetoken = timetoken,
             reactions = reactions,
             onMessageSelected = onMessageSelected?.let { { it() } },
-            onReactionSelected = onReaction,
+            onReactionSelected = onReactionSelected,
             reactionsPicker = reactionsPickerRenderer,
         )
     }
@@ -188,12 +201,14 @@ object GroupMessageRenderer : MessageRenderer {
                 )
         // endregion
 
+        val interactionSource = remember { MutableInteractionSource() }
+        val ripple = rememberRipple()
         Row(
             modifier = Modifier
                 .combinedClickable(
                     enabled = onMessageSelected != null,
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = rememberRipple(),
+                    interactionSource = interactionSource,
+                    indication = ripple,
                     onLongClick = { onMessageSelected?.let { onMessageSelected() } },
                     onClick = { },
                 )
@@ -228,16 +243,32 @@ object GroupMessageRenderer : MessageRenderer {
                         Column {
                             if (message != null && message.isNotBlank()) {
                                 ChatText(
-                                    message,
-                                    theme.text,
-//                                    navigateToProfile,
-                                    theme.text.modifier.then(
+                                    message = message,
+                                    theme = theme.text,
+                                    placeholder = theme.text.modifier.then(
                                         messagePlaceholder.then(
                                             Modifier.padding(
                                                 theme.shape.padding
                                             )
                                         )
                                     ),
+                                    modifier = theme.text.modifier,
+                                    onLongPress = { offset ->
+                                        onMessageSelected?.let { onMessageSelected() }
+                                        GlobalScope.launch { interactionSource.emit(PressInteraction.Release(PressInteraction.Press(offset))) }
+                                                  },
+                                    onPress = { offset ->
+
+                                        val press = PressInteraction.Press(offset)
+                                        interactionSource.emit(press)
+                                        // Waits for the press to be released before returning.
+                                        // If the press was released, true is returned, or if the gesture
+                                        // was canceled by motion being consumed by another gesture, false is returned.
+                                        tryAwaitRelease()
+                                        // We emit a release press interaction here
+                                        interactionSource.emit(PressInteraction.Release(press))
+
+                                    }
                                 )
                             }
                         }
@@ -302,6 +333,8 @@ object GroupMessageRenderer : MessageRenderer {
         theme: TextTheme,
         placeholder: Modifier = Modifier,
         modifier: Modifier = Modifier,
+        onLongPress: ((Offset) -> Unit)? = null,
+        onPress: suspend PressGestureScope.(Offset) -> Unit = {},
     ) {
 
         val uriHandler = LocalUriHandler.current
@@ -332,7 +365,51 @@ object GroupMessageRenderer : MessageRenderer {
                             else -> Unit
                         }
                     }
-            }
+            },
+            onLongPress = onLongPress,
+            onPress = onPress,
         )
     }
+}
+
+@Composable
+fun ClickableText(
+    text: AnnotatedString,
+    modifier: Modifier = Modifier,
+    style: TextStyle = TextStyle.Default,
+    softWrap: Boolean = true,
+    overflow: TextOverflow = TextOverflow.Clip,
+    maxLines: Int = Int.MAX_VALUE,
+    onTextLayout: (TextLayoutResult) -> Unit = {},
+    onDoubleTap: ((Offset) -> Unit)? = null,
+    onLongPress: ((Offset) -> Unit)? = null,
+    onPress: suspend PressGestureScope.(Offset) -> Unit = {},
+    onClick: (Int) -> Unit = {}
+) {
+    val layoutResult = remember { mutableStateOf<TextLayoutResult?>(null) }
+    val gesturesIndicator = Modifier.pointerInput(onClick) {
+        detectTapGestures(
+            onDoubleTap = onDoubleTap,
+            onLongPress = onLongPress,
+            onPress = onPress,
+            onTap =  { pos ->
+                layoutResult.value?.let { layoutResult ->
+                    onClick(layoutResult.getOffsetForPosition(pos))
+                }
+            },
+        )
+    }
+
+    BasicText(
+        text = text,
+        modifier = modifier.then(gesturesIndicator),
+        style = style,
+        softWrap = softWrap,
+        overflow = overflow,
+        maxLines = maxLines,
+        onTextLayout = {
+            layoutResult.value = it
+            onTextLayout(it)
+        }
+    )
 }

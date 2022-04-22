@@ -11,6 +11,7 @@ import com.pubnub.components.chat.network.mapper.toDb
 import com.pubnub.components.chat.service.message.LocalMessageService
 import com.pubnub.components.chat.service.message.MessageService
 import com.pubnub.components.chat.ui.component.provider.LocalPubNub
+import com.pubnub.components.chat.ui.component.provider.LocalUser
 import com.pubnub.components.data.message.DBMessage
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
@@ -47,7 +48,7 @@ class MessageInputViewModel(
          */
         @Composable
         fun default(
-            id: UserId = LocalPubNub.current.configuration.uuid,
+            id: UserId = LocalUser.current,
             messageService: MessageService<DBMessage> = LocalMessageService.current,
             typingService: TypingService? = null,
         ): MessageInputViewModel =
@@ -65,7 +66,7 @@ class MessageInputViewModel(
          */
         @Composable
         fun defaultWithTypingService(
-            id: UserId = LocalPubNub.current.configuration.uuid,
+            id: UserId = LocalUser.current,
             messageService: MessageService<DBMessage> = LocalMessageService.current,
         ): MessageInputViewModel =
             default(id, messageService, LocalTypingService.current)

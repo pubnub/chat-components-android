@@ -8,11 +8,14 @@ import androidx.paging.ExperimentalPagingApi
 import com.pubnub.components.chat.provider.LocalMessageActionRepository
 import com.pubnub.components.chat.service.message.action.DefaultMessageReactionService
 import com.pubnub.components.chat.service.message.action.LocalMessageReactionService
+import com.pubnub.components.chat.ui.component.menu.React
 import com.pubnub.components.chat.ui.component.message.reaction.PickedReaction
 import com.pubnub.components.chat.ui.component.provider.LocalChannel
+import com.pubnub.components.chat.ui.component.provider.LocalUser
 import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.repository.message.action.MessageActionRepository
 import com.pubnub.framework.data.ChannelId
+import com.pubnub.framework.data.UserId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
@@ -23,6 +26,7 @@ import timber.log.Timber
  */
 @OptIn(ExperimentalPagingApi::class, FlowPreview::class)
 class ReactionViewModel constructor(
+    private val userId: UserId,
     private val channelId: ChannelId,
     private val messageActionRepository: MessageActionRepository<DBMessageAction>,
     private val messageReactionService: DefaultMessageReactionService?,
@@ -41,6 +45,7 @@ class ReactionViewModel constructor(
             id: ChannelId = LocalChannel.current,
         ): ReactionViewModel {
             val factory = ReactionViewModelFactory(
+                userId = LocalUser.current,
                 channelId = id,
                 messageActionRepository = LocalMessageActionRepository.current,
                 messageReactionService = LocalMessageReactionService.current as DefaultMessageReactionService,
@@ -57,22 +62,22 @@ class ReactionViewModel constructor(
      * Adds or removes the selected reaction
      * Will update state in PubNub and local repository
      *
-     * @param reaction Selected reaction for the message
+     * @param react Selected reaction for the message
      */
-    fun reactionSelected(reaction: PickedReaction) {
-        Timber.e("On Reaction: $reaction")
+    fun reactionSelected(react: React) {
+        Timber.e("On Reaction: $react")
         viewModelScope.launch {
-            Timber.e("Looking for reaction '$reaction' ")
+            Timber.e("Looking for reaction '$react' ")
             val storedReaction = messageActionRepository.get(
-                reaction.userId,
+                userId,
                 channelId,
-                reaction.messageTimetoken,
-                reaction.type,
-                reaction.value,
+                react.message.timetoken,
+                react.reaction.type,
+                react.reaction.value,
             )
 
             Timber.e("Stored action: $storedReaction")
-            if (storedReaction?.user == reaction.userId)
+            if (storedReaction?.user == userId)
                 messageReactionService?.remove(
                     storedReaction.channel,
                     storedReaction.messageTimestamp,
@@ -83,9 +88,9 @@ class ReactionViewModel constructor(
             else
                 messageReactionService?.add(
                     channelId,
-                    reaction.messageTimetoken,
-                    reaction.type,
-                    reaction.value,
+                    react.message.timetoken,
+                    react.reaction.type,
+                    react.reaction.value,
                 )
         }
     }
