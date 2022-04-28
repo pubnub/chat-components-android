@@ -18,9 +18,7 @@ private fun GroupChatMessageOnlinePreview() {
             online = true,
             title = "Lorem ipsum",
             message = messageFormatter(text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."),
-            attachments = null,
             timetoken = 0L,
-            navigateToProfile = { },
         )
     }
 }
@@ -36,9 +34,7 @@ private fun GroupChatMessageOfflinePreview() {
             online = false,
             title = "Lorem ipsum",
             message = messageFormatter(text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."),
-            attachments = null,
             timetoken = 0L,
-            navigateToProfile = { },
         )
     }
 }

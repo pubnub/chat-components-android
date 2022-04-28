@@ -4,7 +4,7 @@ import java.util.*
 
 data class NetworkMessage(
     val id: String = UUID.randomUUID().toString(),
-    @NetworkMessageType val type: String = Type.DEFAULT,
+    @NetworkMessageType val type: String? = Type.DEFAULT,
     val text: String?,
     val attachment: List<Attachment>? = null,
     val custom: Any? = null,

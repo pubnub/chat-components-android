@@ -20,6 +20,7 @@ import com.google.accompanist.flowlayout.FlowRow
 import com.pubnub.components.chat.ui.component.common.ButtonTheme
 import com.pubnub.components.chat.ui.component.common.TextTheme
 import com.pubnub.components.chat.ui.component.member.MemberUi
+import com.pubnub.components.chat.ui.component.menu.MenuDefaults
 import com.pubnub.components.chat.ui.component.message.reaction.*
 import com.pubnub.components.chat.util.AutoSizeText
 import com.pubnub.framework.data.UserId
@@ -34,20 +35,13 @@ import kotlin.math.floor
 )
 object DefaultReactionsPickerRenderer : ReactionsRenderer {
 
-    var visibleItemsCount = 6
+    var visibleItemsCount: Int = 6
 
-    var emojis: List<Emoji> = listOf(
-        UnicodeEmoji("\uD83D\uDC4D"),    // 👍 thumbs up
-        UnicodeEmoji("\u2764"),          // ❤ red heart U+2764
-        UnicodeEmoji("\uD83D\uDE02"),    // 😂 face with tears of joy U+1F602
-        UnicodeEmoji("\uD83D\uDE32"),    // 😲 astonished face U+1F632
-        UnicodeEmoji("\uD83D\uDE22"),    // 😢 crying face U+1F622
-        UnicodeEmoji("\uD83D\uDD25"),    // 🔥 fire U+1F525
-    )
+    var emojis: List<Emoji> = MenuDefaults.reactions()
 
     @Composable
     override fun Picker(
-        onSelected: (Emoji) -> Unit,
+        onSelected: (Reaction) -> Unit,
     ) {
         ReactionsPicker(
             onSelected = onSelected,
@@ -58,7 +52,7 @@ object DefaultReactionsPickerRenderer : ReactionsRenderer {
     override fun PickedList(
         currentUserId: UserId,
         reactions: List<ReactionUi>,
-        onSelected: (Emoji) -> Unit,
+        onSelected: (Reaction) -> Unit,
     ) {
         PickedReactions(
             currentUserId = currentUserId,
@@ -72,12 +66,12 @@ object DefaultReactionsPickerRenderer : ReactionsRenderer {
     @Composable
     fun ReactionsBottomSheetLayout(
         sheetState: ModalBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden),
-        onSelected: (Emoji) -> Unit,
+        onSelected: (Reaction) -> Unit,
         content: @Composable () -> Unit
     ) {
         val theme = LocalReactionTheme.current
         val coroutineScope = rememberCoroutineScope()
-        val action: (Emoji) -> Unit = {
+        val action: (Reaction) -> Unit = {
             onSelected(it)
 
             coroutineScope.launch { sheetState.hide() }
@@ -98,7 +92,7 @@ object DefaultReactionsPickerRenderer : ReactionsRenderer {
     @OptIn(ExperimentalAnimationApi::class)
     @Composable
     fun ReactionsPicker(
-        onSelected: (Emoji) -> Unit,
+        onSelected: (Reaction) -> Unit,
     ) {
         val theme = LocalReactionTheme.current
 

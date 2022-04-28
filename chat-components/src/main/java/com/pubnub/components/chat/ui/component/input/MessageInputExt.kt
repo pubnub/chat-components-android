@@ -10,10 +10,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pubnub.components.R
 import com.pubnub.components.chat.network.data.NetworkMessage
-import com.pubnub.components.chat.service.message.LocalMessageService
 import com.pubnub.components.chat.ui.component.input.renderer.DefaultTypingIndicatorRenderer
 import com.pubnub.components.chat.ui.component.input.renderer.TypingIndicatorRenderer
 import com.pubnub.components.chat.ui.component.provider.LocalChannel
@@ -38,12 +36,7 @@ fun LinkInput(
 
     val channel = LocalChannel.current
 
-    val viewModel: MessageInputViewModel = viewModel(
-        factory = MessageInputViewModelFactory(
-            LocalMessageService.current,
-            LocalPubNub.current.configuration.uuid
-        )
-    )
+    val viewModel: MessageInputViewModel = MessageInputViewModel.default()
 
     // region actions
     val sendAction: (String) -> Unit = { message ->
@@ -86,12 +79,7 @@ fun ImageInput(
 
     val channel = LocalChannel.current
 
-    val viewModel: MessageInputViewModel = viewModel(
-        factory = MessageInputViewModelFactory(
-            LocalMessageService.current,
-            LocalPubNub.current.configuration.uuid
-        )
-    )
+    val viewModel: MessageInputViewModel = MessageInputViewModel.default()
 
     // region actions
     val sendAction: (String) -> Unit = { message ->
@@ -131,13 +119,8 @@ fun MessageInput(
 
     val channel = LocalChannel.current
 
-    val viewModel: MessageInputViewModel = viewModel(
-        factory = MessageInputViewModelFactory(
-            LocalMessageService.current,
-            LocalPubNub.current.configuration.uuid,
-            if (typingIndicator) LocalTypingService.current else null
-        )
-    )
+    val viewModel: MessageInputViewModel =
+        MessageInputViewModel.default(typingService = if (typingIndicator) LocalTypingService.current else null)
 
     // region actions
     val typingAction: (String) -> Unit = { message ->

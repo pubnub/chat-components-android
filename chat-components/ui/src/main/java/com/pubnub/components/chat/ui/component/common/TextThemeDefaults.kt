@@ -223,4 +223,37 @@ object TextThemeDefaults {
         maxLines = maxLines,
         style = style,
     )
+
+    @Composable
+    fun menuItemTitle(
+        modifier: Modifier = Modifier,
+        color: Color = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.high),
+        fontSize: TextUnit = 16.sp,
+        fontStyle: FontStyle? = null,
+        fontWeight: FontWeight? = FontWeight.Normal,
+        fontFamily: FontFamily? = null,
+        letterSpacing: TextUnit = TextUnit.Unspecified,
+        textDecoration: TextDecoration? = null,
+        textAlign: TextAlign? = null,
+        lineHeight: TextUnit = TextUnit.Unspecified,
+        overflow: TextOverflow = TextOverflow.Ellipsis,
+        softWrap: Boolean = true,
+        maxLines: Int = 1,
+        style: TextStyle = LocalTextStyle.current,
+    ) = TextTheme(
+        modifier,
+        color,
+        fontSize,
+        fontStyle,
+        fontWeight,
+        fontFamily,
+        letterSpacing,
+        textDecoration,
+        textAlign,
+        lineHeight,
+        overflow,
+        softWrap,
+        maxLines,
+        style
+    )
 }

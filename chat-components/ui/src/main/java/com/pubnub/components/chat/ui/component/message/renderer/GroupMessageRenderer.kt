@@ -3,38 +3,44 @@ package com.pubnub.components.chat.ui.component.message.renderer
 import android.util.Patterns.EMAIL_ADDRESS
 import android.webkit.URLUtil
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.PressGestureScope
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
-import coil.compose.rememberImagePainter
 import com.google.accompanist.placeholder.placeholder
-import com.pubnub.components.chat.ui.R
-import com.pubnub.components.chat.ui.component.common.ShapeTheme
 import com.pubnub.components.chat.ui.component.common.TextTheme
 import com.pubnub.components.chat.ui.component.member.ProfileImage
-import com.pubnub.components.chat.ui.component.message.*
-import com.pubnub.components.chat.ui.component.message.reaction.Emoji
-import com.pubnub.components.chat.ui.component.message.reaction.PickedReaction
+import com.pubnub.components.chat.ui.component.message.LocalMessageListTheme
+import com.pubnub.components.chat.ui.component.message.SymbolAnnotationType
+import com.pubnub.components.chat.ui.component.message.messageFormatter
+import com.pubnub.components.chat.ui.component.message.reaction.Reaction
 import com.pubnub.components.chat.ui.component.message.reaction.ReactionUi
 import com.pubnub.components.chat.ui.component.message.reaction.renderer.DefaultReactionsPickerRenderer
 import com.pubnub.components.chat.ui.component.message.reaction.renderer.ReactionsRenderer
@@ -42,7 +48,9 @@ import com.pubnub.framework.data.MessageId
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.util.Timetoken
 import com.pubnub.framework.util.seconds
-import kotlinx.coroutines.*
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
@@ -65,29 +73,24 @@ object GroupMessageRenderer : MessageRenderer {
         online: Boolean?,
         title: String,
         message: AnnotatedString?,
-        attachments: List<Attachment>?,
         timetoken: Timetoken,
-        navigateToProfile: (UserId) -> Unit,
         reactions: List<ReactionUi>,
-        onShowMenu: ((MessageId) -> Unit)?,
-        onReactionSelected: ((PickedReaction) -> Unit)?,
+        onMessageSelected: (() -> Unit)?,
+        onReactionSelected: ((Reaction) -> Unit)?,
         reactionsPickerRenderer: ReactionsRenderer,
     ) {
-        val onReaction: ((Emoji) -> Unit)? = onReactionSelected?.let {
-            { reaction ->
-                onReactionSelected(
-                    PickedReaction(
-                        currentUserId,
-                        timetoken,
-                        reaction.type,
-                        reaction.value
-                    )
-                )
-            }
-        }
-        val onMenu: (() -> Unit)? = onShowMenu?.let {
-            { it(messageId) }
-        }
+//        val onReaction: ((Reaction) -> Unit)? = onReactionSelected?.let {
+//            { reaction ->
+//                onReactionSelected(
+//                    PickedReaction(
+//                        currentUserId,
+//                        timetoken,
+//                        reaction.type,
+//                        reaction.value
+//                    )
+//                )
+//            }
+//        }
         GroupChatMessage(
             currentUserId = currentUserId,
             userId = userId,
@@ -95,12 +98,10 @@ object GroupMessageRenderer : MessageRenderer {
             online = online,
             title = title,
             message = message,
-            attachments = attachments,
             timetoken = timetoken,
-            navigateToProfile = navigateToProfile,
             reactions = reactions,
-            onShowMenu = onMenu,
-            onReactionSelected = onReaction,
+            onMessageSelected = onMessageSelected?.let { { it() } },
+            onReactionSelected = onReactionSelected,
             reactionsPicker = reactionsPickerRenderer,
         )
     }
@@ -140,21 +141,18 @@ object GroupMessageRenderer : MessageRenderer {
     @Composable
     fun GroupChatMessage(
         @Suppress("UNUSED_PARAMETER") currentUserId: UserId,
-        userId: UserId,
+        @Suppress("UNUSED_PARAMETER") userId: UserId,
         profileUrl: String?,
         online: Boolean?,
         title: String,
         message: AnnotatedString?,
-        attachments: List<Attachment>?,
         timetoken: Timetoken,
-        navigateToProfile: (UserId) -> Unit,
         placeholder: Boolean = false,
         reactions: List<ReactionUi> = emptyList(),
-        onShowMenu: (() -> Unit)? = null,
-        onReactionSelected: ((Emoji) -> Unit)? = null,
+        onMessageSelected: (() -> Unit)? = null,
+        onReactionSelected: ((Reaction) -> Unit)? = null,
         reactionsPicker: ReactionsRenderer = DefaultReactionsPickerRenderer,
     ) {
-        val context = LocalContext.current
         val theme = LocalMessageListTheme.current.message
 
         val date = timetoken.formatDate()
@@ -200,26 +198,23 @@ object GroupMessageRenderer : MessageRenderer {
                 )
         // endregion
 
+        val interactionSource = remember { MutableInteractionSource() }
+        val ripple = rememberRipple()
         Row(
-            modifier = theme.modifier.combinedClickable(
-                enabled = onShowMenu != null,
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(),
-                onLongClick = { onShowMenu?.let { onShowMenu() } },
-                onClick = { },
-            ),
+            modifier = Modifier
+                .combinedClickable(
+                    enabled = onMessageSelected != null,
+                    interactionSource = interactionSource,
+                    indication = ripple,
+                    onLongClick = { onMessageSelected?.let { onMessageSelected() } },
+                    onClick = { },
+                )
+                .then(theme.modifier),
             verticalAlignment = theme.verticalAlignment,
         ) {
             Box(modifier = theme.profileImage.modifier) {
                 ProfileImage(
-                    modifier = imagePlaceholder.then(
-                        Modifier
-                            .clickable(onClick = { navigateToProfile(userId) })
-                            .semantics {
-                                contentDescription = context.getString(
-                                    R.string.profile_image
-                                )
-                            }),
+                    modifier = imagePlaceholder,
                     imageUrl = profileUrl,
                     isOnline = online,
                 )
@@ -227,13 +222,13 @@ object GroupMessageRenderer : MessageRenderer {
 
             Column {
                 Row(verticalAlignment = Alignment.Bottom) {
-                    Text(
+                    ThemedText(
                         text = title, theme = theme.title, modifier = theme.title.modifier.then(
                             titlePlaceholder
                         )
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(
+                    ThemedText(
                         text = date, theme = theme.date, modifier = theme.date.modifier.then(
                             datePlaceholder
                         )
@@ -245,28 +240,38 @@ object GroupMessageRenderer : MessageRenderer {
                         Column {
                             if (message != null && message.isNotBlank()) {
                                 ChatText(
-                                    message,
-                                    theme.text,
-//                                    navigateToProfile,
-                                    theme.text.modifier.then(
+                                    message = message,
+                                    theme = theme.text,
+                                    placeholder = theme.text.modifier.then(
                                         messagePlaceholder.then(
                                             Modifier.padding(
                                                 theme.shape.padding
                                             )
                                         )
                                     ),
-                                )
-                            }
-                            attachments?.images?.forEach { image ->
-                                ChatImage(image.imageUrl)
-                            }
-                            attachments?.links?.forEach { link ->
-                                LinkPreview(
-                                    link.link,
-                                    theme.text,
-                                    theme.date,
-                                    theme.previewShape,
-                                    theme.previewImageShape
+                                    modifier = theme.text.modifier,
+                                    onLongPress = { offset ->
+                                        onMessageSelected?.let { onMessageSelected() }
+                                        GlobalScope.launch {
+                                            interactionSource.emit(
+                                                PressInteraction.Release(
+                                                    PressInteraction.Press(offset)
+                                                )
+                                            )
+                                        }
+                                    },
+                                    onPress = { offset ->
+
+                                        val press = PressInteraction.Press(offset)
+                                        interactionSource.emit(press)
+                                        // Waits for the press to be released before returning.
+                                        // If the press was released, true is returned, or if the gesture
+                                        // was canceled by motion being consumed by another gesture, false is returned.
+                                        tryAwaitRelease()
+                                        // We emit a release press interaction here
+                                        interactionSource.emit(PressInteraction.Release(press))
+
+                                    }
                                 )
                             }
                         }
@@ -303,16 +308,14 @@ object GroupMessageRenderer : MessageRenderer {
             online = false,
             title = "Lorem ipsum dolor",
             message = messageFormatter(text = "Test message"),
-            attachments = null,
             timetoken = 0L,
             placeholder = true,
-            navigateToProfile = {},
             reactionsPicker = DefaultReactionsPickerRenderer,
         )
     }
 
     @Composable
-    private fun Text(text: String, theme: TextTheme, modifier: Modifier = theme.modifier) {
+    fun ThemedText(text: String, theme: TextTheme, modifier: Modifier = theme.modifier) {
         Text(
             text = text,
             fontWeight = theme.fontWeight,
@@ -333,6 +336,8 @@ object GroupMessageRenderer : MessageRenderer {
         theme: TextTheme,
         placeholder: Modifier = Modifier,
         modifier: Modifier = Modifier,
+        onLongPress: ((Offset) -> Unit)? = null,
+        onPress: suspend PressGestureScope.(Offset) -> Unit = {},
     ) {
 
         val uriHandler = LocalUriHandler.current
@@ -349,7 +354,8 @@ object GroupMessageRenderer : MessageRenderer {
                             SymbolAnnotationType.LINK.name -> {
                                 val url = when {
                                     annotation.item.startsWith("mailto:") -> annotation.item
-                                    EMAIL_ADDRESS.matcher(annotation.item).matches() -> "mailto:${annotation.item}"
+                                    EMAIL_ADDRESS.matcher(annotation.item)
+                                        .matches() -> "mailto:${annotation.item}"
                                     else -> URLUtil.guessUrl(annotation.item)
                                 }
 
@@ -362,104 +368,51 @@ object GroupMessageRenderer : MessageRenderer {
                             else -> Unit
                         }
                     }
-            }
+            },
+            onLongPress = onLongPress,
+            onPress = onPress,
         )
     }
+}
 
-    @Composable
-    fun LinkPreview(
-        link: String,
-        titleTheme: TextTheme,
-        descriptionTheme: TextTheme,
-        shape: ShapeTheme,
-        imageShape: ShapeTheme,
-        coroutineScope: CoroutineScope = GlobalScope,
-        dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    ) {
-        // TODO: 5/25/21 this part should be moved - metadata should be stored in db!
-        var content by remember { mutableStateOf<LinkPreview.Content?>(null) }
-
-        DisposableEffect(key1 = link) {
-            val job = coroutineScope.async(dispatcher) {
-                content = LinkPreview.getContent(link)
-            }
-            onDispose { job.cancel() }
-        }
-
-        if (content != null) {
-            LinkPreview(
-                url = link,
-                imageUrl = content!!.imageUrl,
-                title = content!!.title ?: link,
-                description = content!!.description,
-                titleTheme = titleTheme,
-                descriptionTheme = descriptionTheme,
-                shape = shape,
-                imageShape = imageShape,
-            )
-        }
-    }
-
-    @Composable
-    private fun LinkPreview(
-        url: String,
-        imageUrl: String?,
-        title: String?,
-        description: String?,
-        titleTheme: TextTheme,
-        descriptionTheme: TextTheme,
-        shape: ShapeTheme,
-        imageShape: ShapeTheme,
-    ) {
-        val uriHandler = LocalUriHandler.current
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .padding(1.dp)
-                .combinedClickable(onClick = { uriHandler.openUri(url) })
-        ) {
-            if (!imageUrl.isNullOrBlank())
-                ChatImage(
-                    imageUrl = imageUrl,
-                    modifier = imageShape.modifier
-                        .clip(imageShape.shape)
-                        .padding(imageShape.padding)
-                )
-            if (!title.isNullOrBlank()) {
-                Column(
-                    shape.modifier
-                        .fillMaxWidth()
-                        .background(color = shape.tint, shape.shape)
-                        .padding(shape.padding)
-                ) {
-                    Text(text = title, theme = titleTheme)
-                    if (!description.isNullOrBlank()) Text(
-                        text = description,
-                        theme = descriptionTheme
-                    )
+@Composable
+fun ClickableText(
+    text: AnnotatedString,
+    modifier: Modifier = Modifier,
+    style: TextStyle = TextStyle.Default,
+    softWrap: Boolean = true,
+    overflow: TextOverflow = TextOverflow.Clip,
+    maxLines: Int = Int.MAX_VALUE,
+    onTextLayout: (TextLayoutResult) -> Unit = {},
+    onDoubleTap: ((Offset) -> Unit)? = null,
+    onLongPress: ((Offset) -> Unit)? = null,
+    onPress: suspend PressGestureScope.(Offset) -> Unit = {},
+    onClick: (Int) -> Unit = {}
+) {
+    val layoutResult = remember { mutableStateOf<TextLayoutResult?>(null) }
+    val gesturesIndicator = Modifier.pointerInput(onClick) {
+        detectTapGestures(
+            onDoubleTap = onDoubleTap,
+            onLongPress = onLongPress,
+            onPress = onPress,
+            onTap = { pos ->
+                layoutResult.value?.let { layoutResult ->
+                    onClick(layoutResult.getOffsetForPosition(pos))
                 }
-            }
+            },
+        )
+    }
+
+    BasicText(
+        text = text,
+        modifier = modifier.then(gesturesIndicator),
+        style = style,
+        softWrap = softWrap,
+        overflow = overflow,
+        maxLines = maxLines,
+        onTextLayout = {
+            layoutResult.value = it
+            onTextLayout(it)
         }
-    }
-
-    @Composable
-    fun ChatImage(
-        imageUrl: String,
-        modifier: Modifier = Modifier.defaultMinSize(200.dp, 200.dp)
-    ) {
-        val painter = rememberImagePainter(
-            data = imageUrl,
-            builder = {
-                crossfade(true)
-            }
-        )
-
-        Image(
-            painter = painter,
-            contentDescription = imageUrl,
-            alignment = Alignment.TopStart,
-            modifier = modifier,
-        )
-    }
+    )
 }
