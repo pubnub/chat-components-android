@@ -61,34 +61,6 @@ object DefaultReactionsPickerRenderer : ReactionsRenderer {
         )
     }
 
-    // region ReactionsPicker
-    @OptIn(ExperimentalAnimationApi::class)
-    @Composable
-    fun ReactionsBottomSheetLayout(
-        sheetState: ModalBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden),
-        onSelected: (Reaction) -> Unit,
-        content: @Composable () -> Unit
-    ) {
-        val theme = LocalReactionTheme.current
-        val coroutineScope = rememberCoroutineScope()
-        val action: (Reaction) -> Unit = {
-            onSelected(it)
-
-            coroutineScope.launch { sheetState.hide() }
-        }
-        ModalBottomSheetLayout(
-            sheetState = sheetState,
-            sheetContent = { ReactionsPicker(onSelected = action) },
-            sheetShape = theme.dialog.sheetShape,
-            sheetElevation = theme.dialog.sheetElevation,
-            sheetBackgroundColor = theme.dialog.sheetBackgroundColor,
-            sheetContentColor = theme.dialog.sheetContentColor,
-            scrimColor = theme.dialog.scrimColor,
-        ) {
-            content()
-        }
-    }
-
     @OptIn(ExperimentalAnimationApi::class)
     @Composable
     fun ReactionsPicker(
