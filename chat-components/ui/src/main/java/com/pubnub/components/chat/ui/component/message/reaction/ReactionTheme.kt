@@ -13,7 +13,6 @@ class ReactionTheme(
     listFlowRow: FlowRowTheme,
     selectedReaction: ButtonTheme,
     notSelectedReaction: ButtonTheme,
-    dialog: ModalBottomSheetLayoutTheme,
 ) {
     var pickerModifier by mutableStateOf(pickerModifier, structuralEqualityPolicy())
         internal set
@@ -25,9 +24,6 @@ class ReactionTheme(
         internal set
 
     var notSelectedReaction by mutableStateOf(notSelectedReaction, structuralEqualityPolicy())
-        internal set
-
-    var dialog by mutableStateOf(dialog, structuralEqualityPolicy())
         internal set
 }
 

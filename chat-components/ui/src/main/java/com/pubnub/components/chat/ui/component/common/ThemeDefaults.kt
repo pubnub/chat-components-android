@@ -62,7 +62,6 @@ object ThemeDefaults {
             .fillMaxWidth()
             .horizontalScroll(rememberScrollState()),
         listFlowRow: FlowRowTheme = FlowRowThemeDefaults.reactionList(),
-        dialog: ModalBottomSheetLayoutTheme = ModalBottomSheetLayoutThemeDefaults.reaction(),
         selectedReaction: ButtonTheme = ButtonThemeDefaults.selectedReaction(),
         notSelectedReaction: ButtonTheme = ButtonThemeDefaults.notSelectedReaction(),
     ) = ReactionTheme(
@@ -70,7 +69,6 @@ object ThemeDefaults {
         listFlowRow,
         selectedReaction,
         notSelectedReaction,
-        dialog,
     )
 
     @Composable
