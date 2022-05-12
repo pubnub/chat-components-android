@@ -122,8 +122,6 @@ object ThemeDefaults {
         text: TextTheme = TextThemeDefaults.messageText(),
         profileImage: ProfileImageTheme = profileImage(),
         shape: ShapeTheme = ShapeThemeDefaults.messageBackground(),
-        previewShape: ShapeTheme = ShapeThemeDefaults.linkPreview(),
-        previewImageShape: ShapeTheme = ShapeThemeDefaults.linkPreviewImage(),
         verticalAlignment: Alignment.Vertical = Alignment.Top,
     ) = MessageTheme(
         modifier,
@@ -132,8 +130,6 @@ object ThemeDefaults {
         text,
         profileImage,
         shape,
-        previewShape,
-        previewImageShape,
         verticalAlignment
     )
 

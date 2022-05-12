@@ -5,7 +5,9 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -24,7 +26,6 @@ import com.pubnub.components.chat.ui.component.menu.MenuDefaults
 import com.pubnub.components.chat.ui.component.message.reaction.*
 import com.pubnub.components.chat.util.AutoSizeText
 import com.pubnub.framework.data.UserId
-import kotlinx.coroutines.launch
 import kotlin.math.floor
 
 @OptIn(

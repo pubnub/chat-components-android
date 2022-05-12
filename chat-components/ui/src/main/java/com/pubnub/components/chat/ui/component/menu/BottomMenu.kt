@@ -70,44 +70,44 @@ private fun AnimatedVisibilityScope.BottomMenuContent(
     modifier: Modifier = Modifier,
     headerContent: @Composable ColumnScope.() -> Unit = {
         DefaultReactionsPickerRenderer.ReactionsPicker { reaction ->
-            message?.let { onAction(React(reaction,message)) }
+            message?.let { onAction(React(reaction, message)) }
         }
     },
     bodyContent: @Composable ColumnScope.() -> Unit = {
         MessageMenu(items = states, onClick = { onAction(it) })
     },
 ) {
-        Box(
-            Modifier
-                .fillMaxSize()
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = onDismiss,
-                )
-        ) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-                    .animateEnterExit(
-                        enter = slideInVertically(
-                            animationSpec = tween(),
-                            initialOffsetY = { it },
-                        ),
-                        exit = slideOutVertically(
-                            animationSpec = tween(),
-                            targetOffsetY = { it },
-                        )
+    Box(
+        Modifier
+            .fillMaxSize()
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onDismiss,
+            )
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .animateEnterExit(
+                    enter = slideInVertically(
+                        animationSpec = tween(),
+                        initialOffsetY = { it },
+                    ),
+                    exit = slideOutVertically(
+                        animationSpec = tween(),
+                        targetOffsetY = { it },
                     )
-                    .composed { modifier },
-            ) {
-                Column {
-                    headerContent()
-                    bodyContent()
-                }
+                )
+                .composed { modifier },
+        ) {
+            Column {
+                headerContent()
+                bodyContent()
             }
         }
+    }
 }
 
 @Preview(showBackground = true)
