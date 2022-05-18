@@ -1,27 +1,21 @@
 package com.pubnub.components.chat.ui.component.message
 
-import androidx.compose.material.Colors
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 
 // Regex containing the syntax tokens
-val symbolPattern by lazy {
-    Regex("""(https?://[^\s\t\n]+)|(`[^`]+`)|(@\w+)|(\*[\w\s.,]+\*)|(_[\w]+_)|(~[\w]+~)""")
+val urlPattern by lazy {
+    Regex("((http|https)://)?(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)")
 }
 
 // Accepted annotations for the ClickableTextWrapper
 enum class SymbolAnnotationType {
-    PERSON, LINK
+    LINK
 }
 
 typealias StringAnnotation = AnnotatedString.Range<String>
@@ -29,13 +23,8 @@ typealias StringAnnotation = AnnotatedString.Range<String>
 typealias SymbolAnnotation = Pair<AnnotatedString, StringAnnotation?>
 
 /**
- * Format a message following Markdown-lite syntax
- * | @username -> bold, primary color and clickable element
- * | http(s)://... -> clickable link, opening it into the browser
- * | *bold* -> bold
- * | _italic_ -> italic
- * | ~strikethrough~ -> strikethrough
- * | `MyClass.myMethod` -> inline code styling
+ * Format a message
+ * | matching urlPattern... -> clickable link, opening it into the browser
  *
  * @param text contains message to be parsed
  * @return AnnotatedString with annotations used inside the ClickableText wrapper
@@ -44,26 +33,17 @@ typealias SymbolAnnotation = Pair<AnnotatedString, StringAnnotation?>
 fun messageFormatter(
     text: String,
 ): AnnotatedString {
-    val tokens = symbolPattern.findAll(text)
+    val tokens = urlPattern.findAll(text)
 
     return buildAnnotatedString {
 
         var cursorPosition = 0
-
-        val codeSnippetBackground =
-            if (MaterialTheme.colors.isLight) {
-                Color(0xFFDEDEDE)
-            } else {
-                Color(0xFF424242)
-            }
 
         for (token in tokens) {
             append(text.slice(cursorPosition until token.range.first))
 
             val (annotatedString, stringAnnotation) = getSymbolAnnotation(
                 matchResult = token,
-                colors = MaterialTheme.colors,
-                codeSnippetBackground = codeSnippetBackground
             )
             append(annotatedString)
 
@@ -91,72 +71,41 @@ fun messageFormatter(
  */
 private fun getSymbolAnnotation(
     matchResult: MatchResult,
-    colors: Colors,
-    codeSnippetBackground: Color,
 ): SymbolAnnotation {
-    return when (matchResult.value.first()) {
-        '@' -> SymbolAnnotation(
-            AnnotatedString(
-                text = matchResult.value,
-                spanStyle = SpanStyle(
-                    color = colors.primary,
-                    fontWeight = FontWeight.Bold
-                )
-            ),
-            StringAnnotation(
-                item = matchResult.value.substring(1),
-                start = matchResult.range.first,
-                end = matchResult.range.last,
-                tag = SymbolAnnotationType.PERSON.name
-            )
+    return SymbolAnnotation(
+        AnnotatedString(
+            text = matchResult.value,
+            spanStyle = SpanStyle(textDecoration = TextDecoration.Underline)
+        ),
+        StringAnnotation(
+            item = matchResult.value,
+            start = matchResult.range.first,
+            end = matchResult.range.last,
+            tag = SymbolAnnotationType.LINK.name
         )
-        '*' -> SymbolAnnotation(
-            AnnotatedString(
-                text = matchResult.value.trim('*'),
-                spanStyle = SpanStyle(fontWeight = FontWeight.Bold)
-            ),
-            null
-        )
-        '_' -> SymbolAnnotation(
-            AnnotatedString(
-                text = matchResult.value.trim('_'),
-                spanStyle = SpanStyle(fontStyle = FontStyle.Italic)
-            ),
-            null
-        )
-        '~' -> SymbolAnnotation(
-            AnnotatedString(
-                text = matchResult.value.trim('~'),
-                spanStyle = SpanStyle(textDecoration = TextDecoration.LineThrough)
-            ),
-            null
-        )
-        '`' -> SymbolAnnotation(
-            AnnotatedString(
-                text = matchResult.value.trim('`'),
-                spanStyle = SpanStyle(
-                    fontFamily = FontFamily.Monospace,
-                    fontSize = 12.sp,
-                    background = codeSnippetBackground,
-                    baselineShift = BaselineShift(0.2f)
-                )
-            ),
-            null
-        )
-        'h' -> SymbolAnnotation(
-            AnnotatedString(
-                text = matchResult.value,
-                spanStyle = SpanStyle(
-                    color = colors.onPrimary
-                )
-            ),
-            StringAnnotation(
-                item = matchResult.value,
-                start = matchResult.range.first,
-                end = matchResult.range.last,
-                tag = SymbolAnnotationType.LINK.name
-            )
-        )
-        else -> SymbolAnnotation(AnnotatedString(matchResult.value), null)
-    }
+    )
+}
+
+@Preview
+@Composable
+private fun LinkFormatPreview() {
+    val content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. \n" +
+            "Mauris sed feugiat nunc, scelerisque lacinia mi. \n" +
+            "www.pubnub.com \n" +
+            "Donec pretium, sem non \n" +
+            "laoreet euismod, nibh eros congue leo, sit amet iaculis mi lectus \n" +
+            "vel sapien. \n" +
+            "pubnub.com \n" +
+            "Suspendisse faucibus faucibus arcu, at viverra ex vestibulum nec. \n" +
+            "https://pubnub.com?34535/534534?dfg=g&fg \n" +
+            "Pellentesque habitant morbi tristique senectus et netus et malesuada fames \n" +
+            "ac turpis egestas. \n" +
+            "http://PubNub.com?2rjl6 \n" +
+            "Class aptent taciti sociosqu ad litora torquent per conubia \n" +
+            "nostra, per inceptos himenaeos. \n" +
+            "pubnub.com/docs/ \n" +
+            "Vestibulum eget dui augue. Maecenas lacus est, \n" +
+            "placerat eget blandit vel, maximus vel tellus. Aliquam dignissim sapien sit amet \n" +
+            "justo blandit iaculis."
+    Text(text = messageFormatter(text = content))
 }

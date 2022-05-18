@@ -30,11 +30,14 @@ import com.pubnub.components.chat.ui.component.input.LocalTypingIndicatorTheme
 import com.pubnub.components.chat.ui.component.member.DefaultMemberListTheme
 import com.pubnub.components.chat.ui.component.member.LocalMemberListTheme
 import com.pubnub.components.chat.ui.component.member.MemberUi
+import com.pubnub.components.chat.ui.component.menu.DefaultMenuItemTheme
+import com.pubnub.components.chat.ui.component.menu.LocalMenuItemTheme
 import com.pubnub.components.chat.ui.component.message.*
 import com.pubnub.components.chat.ui.component.message.reaction.DefaultReactionTheme
 import com.pubnub.components.chat.ui.component.message.reaction.LocalReactionTheme
 import com.pubnub.components.chat.ui.component.provider.LocalChannel
 import com.pubnub.components.chat.ui.component.provider.LocalPubNub
+import com.pubnub.components.chat.ui.component.provider.LocalUser
 import com.pubnub.components.chat.ui.mapper.member.DBMemberMapper
 import com.pubnub.components.data.Database
 import com.pubnub.components.data.channel.ChannelDao
@@ -114,6 +117,7 @@ fun ChatProvider(
 
     CompositionLocalProvider(
         LocalPubNub provides pubNub,
+        LocalUser provides pubNub.configuration.uuid,
         LocalChannel provides channel,
 
         // Themes
@@ -126,6 +130,7 @@ fun ChatProvider(
         LocalReactionTheme provides DefaultReactionTheme,
         LocalIndicatorTheme provides DefaultIndicatorTheme,
         LocalProfileImageTheme provides DefaultProfileImageTheme,
+        LocalMenuItemTheme provides DefaultMenuItemTheme,
 
         // Repositories
         LocalChannelRepository provides channelRepository,
@@ -173,7 +178,7 @@ fun WithServices(
         ),
         LocalActionService provides actionService,
         LocalMessageReactionService provides DefaultMessageReactionService(
-            LocalPubNub.current.configuration.uuid,
+            LocalUser.current,
             actionService,
             LocalMessageActionRepository.current,
             NetworkMessageActionMapper(),
@@ -192,12 +197,13 @@ fun WithServices(
             LocalErrorHandler.current,
         ),
         LocalTypingService provides TypingService(
-            LocalPubNub.current.configuration.uuid,
+            LocalUser.current,
             usernameResolver,
-            TypingIndicator(LocalPubNub.current),
+            TypingIndicator(LocalPubNub.current, LocalUser.current),
         ),
         LocalOccupancyService provides DefaultOccupancyService(
             LocalPubNub.current,
+            LocalUser.current,
             NetworkOccupancyMapper(),
         ),
     ) {
@@ -222,7 +228,7 @@ fun PubNubPreview(
 @OptIn(FlowPreview::class)
 @Composable
 fun Synchronize() {
-    val currentUser = LocalPubNub.current.configuration.uuid
+    val currentUser = LocalUser.current
 
     val channelService = LocalChannelService.current
     val messageService = LocalMessageService.current

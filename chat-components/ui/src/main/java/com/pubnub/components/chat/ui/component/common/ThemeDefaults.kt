@@ -22,6 +22,7 @@ import com.pubnub.components.chat.ui.component.channel.ChannelListTheme
 import com.pubnub.components.chat.ui.component.input.MessageInputTheme
 import com.pubnub.components.chat.ui.component.input.TypingIndicatorTheme
 import com.pubnub.components.chat.ui.component.member.MemberListTheme
+import com.pubnub.components.chat.ui.component.menu.MenuItemTheme
 import com.pubnub.components.chat.ui.component.message.IndicatorTheme
 import com.pubnub.components.chat.ui.component.message.MessageListTheme
 import com.pubnub.components.chat.ui.component.message.MessageTheme
@@ -61,7 +62,6 @@ object ThemeDefaults {
             .fillMaxWidth()
             .horizontalScroll(rememberScrollState()),
         listFlowRow: FlowRowTheme = FlowRowThemeDefaults.reactionList(),
-        dialog: ModalBottomSheetLayoutTheme = ModalBottomSheetLayoutThemeDefaults.reaction(),
         selectedReaction: ButtonTheme = ButtonThemeDefaults.selectedReaction(),
         notSelectedReaction: ButtonTheme = ButtonThemeDefaults.notSelectedReaction(),
     ) = ReactionTheme(
@@ -69,7 +69,6 @@ object ThemeDefaults {
         listFlowRow,
         selectedReaction,
         notSelectedReaction,
-        dialog,
     )
 
     @Composable
@@ -123,8 +122,6 @@ object ThemeDefaults {
         text: TextTheme = TextThemeDefaults.messageText(),
         profileImage: ProfileImageTheme = profileImage(),
         shape: ShapeTheme = ShapeThemeDefaults.messageBackground(),
-        previewShape: ShapeTheme = ShapeThemeDefaults.linkPreview(),
-        previewImageShape: ShapeTheme = ShapeThemeDefaults.linkPreviewImage(),
         verticalAlignment: Alignment.Vertical = Alignment.Top,
     ) = MessageTheme(
         modifier,
@@ -133,8 +130,6 @@ object ThemeDefaults {
         text,
         profileImage,
         shape,
-        previewShape,
-        previewImageShape,
         verticalAlignment
     )
 
@@ -154,5 +149,16 @@ object ThemeDefaults {
         inactiveColor: Color = Color(0xFF9b9b9b),
         borderStroke: BorderStroke = BorderStroke(2.dp, Color.White),
     ) = IndicatorTheme(modifier, alignment, activeColor, inactiveColor, borderStroke)
+    // endregion
+
+    // region Menu
+    @Composable
+    fun menuItem(
+        modifier: Modifier = Modifier.fillMaxWidth(),
+        text: TextTheme = TextThemeDefaults.menuItemTitle(),
+        icon: IconTheme = IconThemeDefaults.menuIcon(),
+        horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
+        verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    ) = MenuItemTheme(modifier, text, icon, horizontalArrangement, verticalAlignment)
     // endregion
 }
