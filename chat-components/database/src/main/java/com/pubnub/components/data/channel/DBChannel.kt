@@ -13,10 +13,11 @@ data class DBChannel(
     override val name: String,
     override val description: String? = null,
     override val type: String = "default",
-    override val updated: String? = null,
-    override val eTag: String? = null,
-    override val avatarURL: String? = null,
+    override val status: String? = null,
     override val custom: ChannelCustomData? = null,
+    override val profileUrl: String? = null,
+    override val eTag: String? = null,
+    override val updated: String? = null,
 ) : Channel
 
 typealias ChannelCustomData = HashMap<String, Any>
