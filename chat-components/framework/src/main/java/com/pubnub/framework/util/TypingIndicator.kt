@@ -7,6 +7,7 @@ import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.pubsub.PNSignalResult
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.Typing
+import com.pubnub.framework.data.UserId
 import com.pubnub.framework.util.flow.single
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
@@ -17,7 +18,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class TypingIndicator(private val pubNub: PubNub) {
+class TypingIndicator(private val pubNub: PubNub, private val userId: UserId) {
     companion object {
         private const val TYPING_ON = "typing_on"
         private const val TYPING_OFF = "typing_off"
@@ -50,7 +51,7 @@ class TypingIndicator(private val pubNub: PubNub) {
     fun getTyping(channelId: ChannelId? = null): Flow<Typing> =
         getEventSignal()
             .filter { it.isTypingEvent && (channelId == null || channelId == it.channel) }
-            .filter { it.publisher != pubNub.configuration.uuid }
+            .filter { it.publisher != userId }
             .map {
                 Typing(
                     userId = it.publisher!!,

@@ -15,15 +15,13 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.pubnub.components.chat.ui.R
 import com.pubnub.components.chat.ui.component.member.getRandomProfileUrl
-import com.pubnub.components.chat.ui.component.message.reaction.PickedReaction
+import com.pubnub.components.chat.ui.component.menu.React
 import com.pubnub.components.chat.ui.component.message.reaction.renderer.DefaultReactionsPickerRenderer
 import com.pubnub.components.chat.ui.component.message.reaction.renderer.ReactionsRenderer
 import com.pubnub.components.chat.ui.component.message.renderer.GroupMessageRenderer
 import com.pubnub.components.chat.ui.component.message.renderer.MessageRenderer
 import com.pubnub.components.chat.ui.component.presence.Presence
-import com.pubnub.components.chat.ui.component.provider.LocalPubNub
-import com.pubnub.framework.data.MessageId
-import com.pubnub.framework.data.UserId
+import com.pubnub.components.chat.ui.component.provider.LocalUser
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -31,9 +29,8 @@ import kotlinx.coroutines.flow.Flow
 fun MessageList(
     messages: Flow<PagingData<MessageUi>>,
     modifier: Modifier = Modifier,
-    onMemberSelected: (UserId) -> Unit = { _: UserId -> },
-    onShowMenu: ((MessageId) -> Unit)? = null,
-    onReactionSelected: ((PickedReaction) -> Unit)? = null,
+    onMessageSelected: ((MessageUi.Data) -> Unit)? = null,
+    onReactionSelected: ((React) -> Unit)? = null,
     presence: Presence? = null,
     renderer: MessageRenderer = GroupMessageRenderer,
     reactionsPickerRenderer: ReactionsRenderer = DefaultReactionsPickerRenderer,
@@ -41,7 +38,7 @@ fun MessageList(
 
     val theme = LocalMessageListTheme.current
     val context = LocalContext.current
-    val currentUser = LocalPubNub.current.configuration.uuid
+    val currentUser = LocalUser.current
 
     val lazyMessages: LazyPagingItems<MessageUi> = messages.collectAsLazyPagingItems()
 
@@ -76,12 +73,12 @@ fun MessageList(
                                 online = presence?.get(message.publisher.id)?.value,
                                 title = message.publisher.name,
                                 message = styledMessage,
-                                attachments = message.attachment,
                                 timetoken = message.timetoken,
-                                navigateToProfile = onMemberSelected,
                                 reactions = message.reactions,
-                                onShowMenu = onShowMenu,
-                                onReactionSelected = onReactionSelected,
+                                onMessageSelected = onMessageSelected?.let {{ it.invoke(message) }},
+                                onReactionSelected = onReactionSelected?.let {{ reaction ->
+                                    it.invoke(React(reaction,message))
+                                }},
                                 reactionsPickerRenderer = reactionsPickerRenderer,
                             )
                         }

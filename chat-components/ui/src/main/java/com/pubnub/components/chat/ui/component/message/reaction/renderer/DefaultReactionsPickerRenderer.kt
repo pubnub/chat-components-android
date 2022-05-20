@@ -5,7 +5,9 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -20,10 +22,10 @@ import com.google.accompanist.flowlayout.FlowRow
 import com.pubnub.components.chat.ui.component.common.ButtonTheme
 import com.pubnub.components.chat.ui.component.common.TextTheme
 import com.pubnub.components.chat.ui.component.member.MemberUi
+import com.pubnub.components.chat.ui.component.menu.MenuDefaults
 import com.pubnub.components.chat.ui.component.message.reaction.*
 import com.pubnub.components.chat.util.AutoSizeText
 import com.pubnub.framework.data.UserId
-import kotlinx.coroutines.launch
 import kotlin.math.floor
 
 @OptIn(
@@ -34,20 +36,13 @@ import kotlin.math.floor
 )
 object DefaultReactionsPickerRenderer : ReactionsRenderer {
 
-    var visibleItemsCount = 6
+    var visibleItemsCount: Int = 6
 
-    var emojis: List<Emoji> = listOf(
-        UnicodeEmoji("\uD83D\uDC4D"),    // 👍 thumbs up
-        UnicodeEmoji("\u2764"),          // ❤ red heart U+2764
-        UnicodeEmoji("\uD83D\uDE02"),    // 😂 face with tears of joy U+1F602
-        UnicodeEmoji("\uD83D\uDE32"),    // 😲 astonished face U+1F632
-        UnicodeEmoji("\uD83D\uDE22"),    // 😢 crying face U+1F622
-        UnicodeEmoji("\uD83D\uDD25"),    // 🔥 fire U+1F525
-    )
+    var emojis: List<Emoji> = MenuDefaults.reactions()
 
     @Composable
     override fun Picker(
-        onSelected: (Emoji) -> Unit,
+        onSelected: (Reaction) -> Unit,
     ) {
         ReactionsPicker(
             onSelected = onSelected,
@@ -58,7 +53,7 @@ object DefaultReactionsPickerRenderer : ReactionsRenderer {
     override fun PickedList(
         currentUserId: UserId,
         reactions: List<ReactionUi>,
-        onSelected: (Emoji) -> Unit,
+        onSelected: (Reaction) -> Unit,
     ) {
         PickedReactions(
             currentUserId = currentUserId,
@@ -67,38 +62,10 @@ object DefaultReactionsPickerRenderer : ReactionsRenderer {
         )
     }
 
-    // region ReactionsPicker
-    @OptIn(ExperimentalAnimationApi::class)
-    @Composable
-    fun ReactionsBottomSheetLayout(
-        sheetState: ModalBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden),
-        onSelected: (Emoji) -> Unit,
-        content: @Composable () -> Unit
-    ) {
-        val theme = LocalReactionTheme.current
-        val coroutineScope = rememberCoroutineScope()
-        val action: (Emoji) -> Unit = {
-            onSelected(it)
-
-            coroutineScope.launch { sheetState.hide() }
-        }
-        ModalBottomSheetLayout(
-            sheetState = sheetState,
-            sheetContent = { ReactionsPicker(onSelected = action) },
-            sheetShape = theme.dialog.sheetShape,
-            sheetElevation = theme.dialog.sheetElevation,
-            sheetBackgroundColor = theme.dialog.sheetBackgroundColor,
-            sheetContentColor = theme.dialog.sheetContentColor,
-            scrimColor = theme.dialog.scrimColor,
-        ) {
-            content()
-        }
-    }
-
     @OptIn(ExperimentalAnimationApi::class)
     @Composable
     fun ReactionsPicker(
-        onSelected: (Emoji) -> Unit,
+        onSelected: (Reaction) -> Unit,
     ) {
         val theme = LocalReactionTheme.current
 

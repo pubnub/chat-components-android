@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="menu_copy">Copy message</string>
+    <string name="menu_delete">Delete message</string>
+</resources>

@@ -15,8 +15,6 @@ class MessageTheme(
     text: TextTheme,
     profileImage: ProfileImageTheme,
     shape: ShapeTheme,
-    previewShape: ShapeTheme,
-    previewImageShape: ShapeTheme,
     verticalAlignment: Alignment.Vertical,
 
     ) {
@@ -36,12 +34,6 @@ class MessageTheme(
         internal set
 
     var shape by mutableStateOf(shape, structuralEqualityPolicy())
-        internal set
-
-    var previewShape by mutableStateOf(previewShape, structuralEqualityPolicy())
-        internal set
-
-    var previewImageShape by mutableStateOf(previewImageShape, structuralEqualityPolicy())
         internal set
 
     var verticalAlignment by mutableStateOf(verticalAlignment, structuralEqualityPolicy())

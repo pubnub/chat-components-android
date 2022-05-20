@@ -4,7 +4,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.pubnub.components.chat.ui.component.common.ButtonTheme
 import com.pubnub.components.chat.ui.component.common.FlowRowTheme
-import com.pubnub.components.chat.ui.component.common.ModalBottomSheetLayoutTheme
 import com.pubnub.components.chat.ui.component.common.ThemeDefaults
 import com.pubnub.components.chat.ui.component.provider.MissingThemeException
 
@@ -13,7 +12,6 @@ class ReactionTheme(
     listFlowRow: FlowRowTheme,
     selectedReaction: ButtonTheme,
     notSelectedReaction: ButtonTheme,
-    dialog: ModalBottomSheetLayoutTheme,
 ) {
     var pickerModifier by mutableStateOf(pickerModifier, structuralEqualityPolicy())
         internal set
@@ -25,9 +23,6 @@ class ReactionTheme(
         internal set
 
     var notSelectedReaction by mutableStateOf(notSelectedReaction, structuralEqualityPolicy())
-        internal set
-
-    var dialog by mutableStateOf(dialog, structuralEqualityPolicy())
         internal set
 }
 

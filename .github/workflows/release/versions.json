@@ -31,7 +31,7 @@
   ],
   "README.md": [
     {
-      "pattern": "^\\s{2,}implementation \"com\\.pubnub:pubnub-android-chat-components:(v?(\\d+\\.?){2,}([a-zA-Z0-9-]+(\\.?\\d+)?)?)\"$",
+      "pattern": "^\\s{2,}implementation \"com\\.pubnub\\.components:pubnub-android-chat-components:(v?(\\d+\\.?){2,}([a-zA-Z0-9-]+(\\.?\\d+)?)?)\"$",
       "clearedSuffix": false
     }
   ]

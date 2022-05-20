@@ -162,7 +162,6 @@ class ActionService(
      */
     fun bind() {
         Timber.e("Bind")
-        Timber.e("User : ${pubNub.configuration.uuid}")
         listenForActions()
     }
 

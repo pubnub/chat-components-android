@@ -28,7 +28,7 @@ class NetworkMessageHistoryMapper(private val mapper: MapperManager) :
         return DBMessage(
             id = message.id,
             text = message.text,
-            type = message.type,
+            type = message.type ?: NetworkMessage.Type.DEFAULT,
             attachment = message.attachment.toDb(),
             custom = message.custom as Map<String, Any>?,
             publisher = input.uuid!!,

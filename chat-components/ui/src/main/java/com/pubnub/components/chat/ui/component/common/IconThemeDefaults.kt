@@ -22,4 +22,11 @@ object IconThemeDefaults {
             .size(40.dp)
             .padding(8.dp),
     ) = IconTheme(icon, shape, tint, modifier)
+
+    @Composable
+    fun menuIcon(
+        shape: Shape = CircleShape,
+        tint: Color = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.medium),
+        modifier: Modifier = Modifier.padding(8.dp),
+    ) = IconTheme(null, shape, tint, modifier)
 }
