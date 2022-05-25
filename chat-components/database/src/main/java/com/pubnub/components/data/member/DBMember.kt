@@ -14,6 +14,9 @@ data class DBMember(
     override val email: String? = null,
     override val externalId: String? = null,
     override val profileUrl: String? = null,
+    @ColumnInfo(defaultValue = "default")
+    override val type: String = "default",
+    override val status: String? = null,
     override val custom: CustomData? = null,
     override val eTag: String? = null,
     override val updated: String? = null,

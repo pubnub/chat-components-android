@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 3,
-    "identityHash": "c579ff2de277cd4b4fd39a1aae803487",
+    "version": 4,
+    "identityHash": "fbf339712508837e56de98d5dd3f8cb3",
     "entities": [
       {
         "tableName": "message",
@@ -146,7 +146,7 @@
       },
       {
         "tableName": "member",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`memberId` TEXT NOT NULL, `name` TEXT NOT NULL, `email` TEXT, `externalId` TEXT, `profileUrl` TEXT, `custom` TEXT, `eTag` TEXT, `updated` TEXT, PRIMARY KEY(`memberId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`memberId` TEXT NOT NULL, `name` TEXT NOT NULL, `email` TEXT, `externalId` TEXT, `profileUrl` TEXT, `type` TEXT NOT NULL DEFAULT 'default', `status` TEXT, `custom` TEXT, `eTag` TEXT, `updated` TEXT, PRIMARY KEY(`memberId`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -175,6 +175,19 @@
           {
             "fieldPath": "profileUrl",
             "columnName": "profileUrl",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'default'"
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -208,7 +221,7 @@
       },
       {
         "tableName": "membership",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`channelId` TEXT NOT NULL, `memberId` TEXT NOT NULL, `id` TEXT NOT NULL, PRIMARY KEY(`channelId`, `memberId`, `id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`channelId` TEXT NOT NULL, `memberId` TEXT NOT NULL, `status` TEXT, `id` TEXT NOT NULL, PRIMARY KEY(`channelId`, `memberId`, `id`))",
         "fields": [
           {
             "fieldPath": "channelId",
@@ -221,6 +234,12 @@
             "columnName": "memberId",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": false
           },
           {
             "fieldPath": "id",
@@ -261,7 +280,7 @@
       },
       {
         "tableName": "channel",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`channelId` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT, `type` TEXT NOT NULL, `updated` TEXT, `eTag` TEXT, `avatarURL` TEXT, `custom` TEXT, PRIMARY KEY(`channelId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`channelId` TEXT NOT NULL, `name` TEXT, `description` TEXT, `type` TEXT NOT NULL DEFAULT 'default', `status` TEXT, `custom` TEXT, `profileUrl` TEXT, `eTag` TEXT, `updated` TEXT, PRIMARY KEY(`channelId`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -273,7 +292,7 @@
             "fieldPath": "name",
             "columnName": "name",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "description",
@@ -285,11 +304,24 @@
             "fieldPath": "type",
             "columnName": "type",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "'default'"
           },
           {
-            "fieldPath": "updated",
-            "columnName": "updated",
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "custom",
+            "columnName": "custom",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "profileUrl",
+            "columnName": "profileUrl",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -300,14 +332,8 @@
             "notNull": false
           },
           {
-            "fieldPath": "avatarURL",
-            "columnName": "avatarURL",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
-            "fieldPath": "custom",
-            "columnName": "custom",
+            "fieldPath": "updated",
+            "columnName": "updated",
             "affinity": "TEXT",
             "notNull": false
           }
@@ -325,7 +351,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c579ff2de277cd4b4fd39a1aae803487')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fbf339712508837e56de98d5dd3f8cb3')"
     ]
   }
 }
