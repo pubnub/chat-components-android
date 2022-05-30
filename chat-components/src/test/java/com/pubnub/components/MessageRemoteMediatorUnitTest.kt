@@ -4,6 +4,7 @@ import androidx.paging.*
 import com.pubnub.components.chat.network.paging.MessageRemoteMediator
 import com.pubnub.components.chat.service.message.MessageService
 import com.pubnub.components.data.message.DBMessage
+import com.pubnub.components.data.message.action.DBMessageWithActions
 import com.pubnub.components.repository.message.MessageRepository
 import com.pubnub.framework.data.ChannelId
 import io.mockk.*
@@ -40,7 +41,7 @@ class MessageRemoteMediatorUnitTest {
     lateinit var service: MessageService<DBMessage>
 
     @MockK(relaxed = true)
-    lateinit var messageRepository: MessageRepository<DBMessage, DBMessage>
+    lateinit var messageRepository: MessageRepository<DBMessage, DBMessageWithActions>
 
     private val messageCount: Int = 10
     private val channelId: ChannelId = "channel.lobby"
@@ -72,7 +73,7 @@ class MessageRemoteMediatorUnitTest {
     // region Mediator load
     @Test
     fun whenRefreshIsReceived_thenTimeWindowForInitIsCalled() = runBlocking {
-        val state: PagingState<Int, DBMessage> = mockk(relaxed = true)
+        val state: PagingState<Int, DBMessageWithActions> = mockk(relaxed = true)
         val mediator: MessageRemoteMediator = spyk(messageRemoteMediator, recordPrivateCalls = true)
         mediator.load(LoadType.REFRESH, state)
 
@@ -83,7 +84,7 @@ class MessageRemoteMediatorUnitTest {
 
     @Test
     fun whenAppendIsReceived_thenTimeWindowForFirstMessageIsCalled() = runBlocking {
-        val state: PagingState<Int, DBMessage> = mockk(relaxed = true)
+        val state: PagingState<Int, DBMessageWithActions> = mockk(relaxed = true)
         val mediator: MessageRemoteMediator = spyk(messageRemoteMediator, recordPrivateCalls = true)
         mediator.load(LoadType.APPEND, state)
 
@@ -94,7 +95,7 @@ class MessageRemoteMediatorUnitTest {
 
     @Test
     fun whenPrependIsReceived_thenTimeWindowForLastMessageIsCalled() = runBlocking {
-        val state: PagingState<Int, DBMessage> = mockk(relaxed = true)
+        val state: PagingState<Int, DBMessageWithActions> = mockk(relaxed = true)
         val mediator: MessageRemoteMediator = spyk(messageRemoteMediator, recordPrivateCalls = true)
         mediator.load(LoadType.PREPEND, state)
 
@@ -108,7 +109,7 @@ class MessageRemoteMediatorUnitTest {
     @ExperimentalPagingApi
     @Test
     fun whenPageIsNull_thenResultSuccessIsReturned() = runBlocking {
-        val state: PagingState<Int, DBMessage> = mockk(relaxed = true)
+        val state: PagingState<Int, DBMessageWithActions> = mockk(relaxed = true)
         val mediator: MessageRemoteMediator = spyk(messageRemoteMediator, recordPrivateCalls = true)
 
         val result = mediator.load(LoadType.REFRESH, state)
@@ -121,7 +122,7 @@ class MessageRemoteMediatorUnitTest {
     fun whenPageIsNotNull_andRefreshIsReceived_thenFullTimeWindowIsReturned() {
         coEvery { messageRepository.getLast(channelId) } returns null
 
-        val state: PagingState<Int, DBMessage> = mockk(relaxed = true)
+        val state: PagingState<Int, DBMessageWithActions> = mockk(relaxed = true)
         val mediator: MessageRemoteMediator = spyk(messageRemoteMediator, recordPrivateCalls = true)
         val time = System.currentTimeMillis() * 10_000L
         val pageStart = mutableListOf<Long?>()
@@ -146,13 +147,13 @@ class MessageRemoteMediatorUnitTest {
         coEvery { messageRepository.getLast(channelId) } returns null
         coEvery { messageRepository.hasMoreBefore(any(), any()) } returns true
 
-        val message: DBMessage = mockk(relaxed = true) {
+        val message: DBMessageWithActions = mockk(relaxed = true) {
             every { timetoken } returns 1L
         }
 
-        val data: List<PagingSource.LoadResult.Page<Int, DBMessage>> =
+        val data: List<PagingSource.LoadResult.Page<Int, DBMessageWithActions>> =
             listOf(PagingSource.LoadResult.Page(listOf(message), null, null))
-        val state: PagingState<Int, DBMessage> =
+        val state: PagingState<Int, DBMessageWithActions> =
             PagingState(data, null, PagingConfig(10), 0)
         val mediator: MessageRemoteMediator = spyk(messageRemoteMediator, recordPrivateCalls = true)
 
@@ -168,13 +169,13 @@ class MessageRemoteMediatorUnitTest {
     @Test
     fun whenAppendIsReceived_andHasNoMoreMessagesInDb_thenPageIsReturned() {
 
-        val message: DBMessage = mockk(relaxed = true) {
+        val message: DBMessageWithActions = mockk(relaxed = true) {
             every { timetoken } returns 1L
         }
 
-        val data: List<PagingSource.LoadResult.Page<Int, DBMessage>> =
+        val data: List<PagingSource.LoadResult.Page<Int, DBMessageWithActions>> =
             listOf(PagingSource.LoadResult.Page(listOf(message), null, null))
-        val state: PagingState<Int, DBMessage> =
+        val state: PagingState<Int, DBMessageWithActions> =
             PagingState(data, null, PagingConfig(10), 0)
         val mediator: MessageRemoteMediator = spyk(messageRemoteMediator, recordPrivateCalls = true)
 
@@ -203,13 +204,13 @@ class MessageRemoteMediatorUnitTest {
     fun whenPageIsNotNull_andAppendIsReceived_thenFullTimeWindowIsReturned() = runBlocking {
         coEvery { messageRepository.hasMoreBefore(any(), any()) } returns false
 
-        val message: DBMessage = mockk(relaxed = true) {
+        val message: DBMessageWithActions = mockk(relaxed = true) {
             every { timetoken } returns 1L
         }
 
-        val data: List<PagingSource.LoadResult.Page<Int, DBMessage>> =
+        val data: List<PagingSource.LoadResult.Page<Int, DBMessageWithActions>> =
             listOf(PagingSource.LoadResult.Page(listOf(message), null, null))
-        val state: PagingState<Int, DBMessage> =
+        val state: PagingState<Int, DBMessageWithActions> =
             PagingState(data, null, PagingConfig(10), 0)
         val mediator: MessageRemoteMediator = spyk(messageRemoteMediator, recordPrivateCalls = true)
 
@@ -234,13 +235,13 @@ class MessageRemoteMediatorUnitTest {
     fun whenPrependIsReceived_andHasMoreMessagesInDb_thenNullIsReturned() {
         coEvery { messageRepository.hasMoreAfter(any(), any()) } returns true
 
-        val message: DBMessage = mockk(relaxed = true) {
+        val message: DBMessageWithActions = mockk(relaxed = true) {
             every { timetoken } returns 1L
         }
 
-        val data: List<PagingSource.LoadResult.Page<Int, DBMessage>> =
+        val data: List<PagingSource.LoadResult.Page<Int, DBMessageWithActions>> =
             listOf(PagingSource.LoadResult.Page(listOf(message), null, null))
-        val state: PagingState<Int, DBMessage> =
+        val state: PagingState<Int, DBMessageWithActions> =
             PagingState(data, null, PagingConfig(10), 0)
         val mediator: MessageRemoteMediator = spyk(messageRemoteMediator, recordPrivateCalls = true)
 
@@ -257,13 +258,13 @@ class MessageRemoteMediatorUnitTest {
     fun whenPrependIsReceived_andHasNoMoreMessagesInDb_thenPageIsReturned() {
 
         coEvery { messageRepository.hasMoreAfter(any(), any()) } returns false
-        val message: DBMessage = mockk(relaxed = true) {
+        val message: DBMessageWithActions = mockk(relaxed = true) {
             every { timetoken } returns 1L
         }
 
-        val data: List<PagingSource.LoadResult.Page<Int, DBMessage>> =
+        val data: List<PagingSource.LoadResult.Page<Int, DBMessageWithActions>> =
             listOf(PagingSource.LoadResult.Page(listOf(message), null, null))
-        val state: PagingState<Int, DBMessage> =
+        val state: PagingState<Int, DBMessageWithActions> =
             PagingState(data, null, PagingConfig(10), 0)
         val mediator: MessageRemoteMediator = spyk(messageRemoteMediator, recordPrivateCalls = true)
         val pageStart = mutableListOf<Long?>()
