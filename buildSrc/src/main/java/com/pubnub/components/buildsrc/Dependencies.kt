@@ -8,11 +8,11 @@ object Libs {
     const val androidGradlePlugin = "com.android.tools.build:gradle:7.1.2"
     const val ktLint = "com.pinterest:ktlint:${Versions.ktLint}"
     const val jdkDesugar = "com.android.tools:desugar_jdk_libs:1.1.5"
-    const val gradleMavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.18.0"
+    const val gradleMavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.19.0"
     const val gradleVersionsPlugin = "com.github.ben-manes:gradle-versions-plugin:0.42.0"
 
     object Accompanist {
-        private const val version = "0.23.0"
+        private const val version = "0.23.1"
 
         const val swipeRefresh = "com.google.accompanist:accompanist-swiperefresh:$version"
         const val placeholder = "com.google.accompanist:accompanist-placeholder:$version"
@@ -21,7 +21,7 @@ object Libs {
     }
 
     object Coil {
-        private const val version = "1.4.0"
+        private const val version = "2.1.0"
 
         const val coil = "io.coil-kt:coil-compose:$version"
         const val coilGif = "io.coil-kt:coil-gif:$version"
@@ -39,7 +39,7 @@ object Libs {
         const val test = "org.jetbrains.kotlin:kotlin-test"
 
         object Coroutines {
-            private const val version = "1.6.0"
+            private const val version = "1.6.1"
             const val android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version"
             const val test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version"
             const val core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version"
@@ -61,7 +61,7 @@ object Libs {
 
         const val splashscreen = "androidx.core:core-splashscreen:1.0.0"
 
-        const val datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.3.2"
+        const val datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.3.3"
 
         object Compose {
             const val snapshot = ""
@@ -95,7 +95,7 @@ object Libs {
         }
 
         object Paging {
-            private const val version = "3.1.0"
+            private const val version = "3.1.1"
             const val runtime = "androidx.paging:paging-runtime-ktx:$version"
             const val extension = "androidx.paging:paging-compose:1.0.0-alpha14"
         }
@@ -127,7 +127,7 @@ object Libs {
     }
 
     object Hilt {
-        private const val version = "2.41"
+        private const val version = "2.42"
 
         const val gradlePlugin = "com.google.dagger:hilt-android-gradle-plugin:$version"
         const val android = "com.google.dagger:hilt-android:$version"
@@ -141,7 +141,7 @@ object Libs {
     }
 
     object PubNub {
-        private const val version = "7.0.0"
+        private const val version = "7.1.0"
         const val pubnub = "com.pubnub:pubnub-kotlin:$version"
     }
 
@@ -156,13 +156,13 @@ object Libs {
     }
 
     object MockK {
-        private const val version = "1.12.2"
+        private const val version = "1.12.4"
         const val unit = "io.mockk:mockk:$version"
         const val instrumented = "io.mockk:mockk-android:$version"
     }
 
     object Awaitility {
-        private const val version = "4.1.1"
+        private const val version = "4.2.0"
         const val kotlin = "org.awaitility:awaitility-kotlin:$version"
     }
 
@@ -172,7 +172,7 @@ object Libs {
     }
 
     object Retrofit {
-        private const val version = "2.6.2"//"2.9.0"
+        private const val version = "2.9.0"
         const val retrofit = "com.squareup.retrofit2:retrofit:$version"
     }
 

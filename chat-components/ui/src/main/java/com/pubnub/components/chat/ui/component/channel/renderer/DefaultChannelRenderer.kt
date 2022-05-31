@@ -1,7 +1,6 @@
 package com.pubnub.components.chat.ui.component.channel.renderer
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +21,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
-import coil.compose.rememberImagePainter
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.google.accompanist.placeholder.placeholder
 import com.pubnub.components.chat.ui.R
@@ -88,15 +88,13 @@ object DefaultChannelRenderer : ChannelRenderer {
             modifier = modifier.apply { clickAction?.let { action -> clickable { action() } } },
         ) {
             // icon
-            Image(
-                painter = rememberImagePainter(
-                    data = iconUrl,
-                    builder = {
-                        crossfade(false)
-                        placeholder(drawableResId = R.drawable.ic_baseline_account_circle_24)
-                        transformations(CircleCropTransformation())
-                    }
-                ),
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(iconUrl)
+                    .placeholder(drawableResId = R.drawable.ic_baseline_account_circle_24)
+                    .crossfade(false)
+                    .transformations(CircleCropTransformation())
+                    .build(),
                 contentDescription = LocalContext.current.resources.getString(R.string.thumbnail),
                 contentScale = CenterInside,
                 modifier = theme.image.placeholder(visible = placeholder, color = Color.Gray),

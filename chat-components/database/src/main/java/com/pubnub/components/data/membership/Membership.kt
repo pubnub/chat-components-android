@@ -4,4 +4,5 @@ interface Membership {
     val id: String
     val channelId: String
     val memberId: String
+    val status: String?
 }

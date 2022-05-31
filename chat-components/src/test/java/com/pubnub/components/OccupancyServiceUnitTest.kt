@@ -1,6 +1,7 @@
 package com.pubnub.components
 
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
+import com.pubnub.components.chat.network.mapper.NetworkOccupancyMapper
 import com.pubnub.components.chat.service.channel.DefaultOccupancyService
 import com.pubnub.framework.data.OccupancyMap
 import io.mockk.*
@@ -47,7 +48,8 @@ class OccupancyServiceUnitTest {
         service = spyk(
             DefaultOccupancyService(
                 mockk(relaxUnitFun = true, relaxed = true),
-                mockk(),
+                "userId",
+                NetworkOccupancyMapper(),
                 testCoroutineScope
             ), recordPrivateCalls = true
         )
