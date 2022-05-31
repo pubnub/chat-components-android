@@ -75,10 +75,12 @@ fun MessageList(
                                 message = styledMessage,
                                 timetoken = message.timetoken,
                                 reactions = message.reactions,
-                                onMessageSelected = onMessageSelected?.let {{ it.invoke(message) }},
-                                onReactionSelected = onReactionSelected?.let {{ reaction ->
-                                    it.invoke(React(reaction,message))
-                                }},
+                                onMessageSelected = onMessageSelected?.let { { it.invoke(message) } },
+                                onReactionSelected = onReactionSelected?.let {
+                                    { reaction ->
+                                        it.invoke(React(reaction, message))
+                                    }
+                                },
                                 reactionsPickerRenderer = reactionsPickerRenderer,
                             )
                         }

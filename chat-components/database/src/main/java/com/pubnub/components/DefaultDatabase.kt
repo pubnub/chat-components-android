@@ -1,9 +1,7 @@
 package com.pubnub.components
 
-import androidx.room.AutoMigration
-import androidx.room.Database
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
+import androidx.room.*
+import androidx.room.migration.AutoMigrationSpec
 import com.pubnub.components.data.channel.ChannelCustomDataConverter
 import com.pubnub.components.data.channel.DBChannel
 import com.pubnub.components.data.channel.DateConverter
@@ -27,10 +25,11 @@ import com.pubnub.components.data.message.action.DefaultMessageActionDao
         DBMembership::class,
         DBChannel::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = true,
     autoMigrations = [
-        AutoMigration(from = 2, to = 3)
+        AutoMigration(from = 2, to = 3),
+        AutoMigration(from = 3, to = 4, spec = DefaultDatabase.ChannelProfileUrlMigration::class),
     ]
 )
 @TypeConverters(
@@ -46,4 +45,11 @@ abstract class DefaultDatabase : RoomDatabase(),
     abstract override fun channelDao(): DefaultChannelDao
     abstract override fun memberDao(): DefaultMemberDao
     abstract override fun membershipDao(): DefaultMembershipDao
+
+    @RenameColumn(
+        tableName = "channel",
+        fromColumnName = "avatarURL",
+        toColumnName = "profileUrl",
+    )
+    class ChannelProfileUrlMigration : AutoMigrationSpec
 }
