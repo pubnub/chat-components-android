@@ -21,10 +21,10 @@ data class DBMessage(
     override val id: String,
     override val text: String,
     override val contentType: String? = null,
-    override val content: DBContent? = null,
+    override val content: DBCustomContent? = null,
     @ColumnInfo(defaultValue = "") // todo: how to handle Iso date in compile time?
     override val createdAt: String = System.currentTimeMillis().milliseconds.toIsoString(),
-    override val custom: DBContent? = null,
+    override val custom: DBCustomContent? = null,
     val publisher: UserId,
     val channel: ChannelId,
     val timetoken: Timetoken = System.currentTimeMillis().timetoken,
@@ -32,4 +32,4 @@ data class DBMessage(
     var exception: String? = null,
 ) : Message
 
-typealias DBContent = Map<String, Any?>
+typealias DBCustomContent = Map<String, Any?>

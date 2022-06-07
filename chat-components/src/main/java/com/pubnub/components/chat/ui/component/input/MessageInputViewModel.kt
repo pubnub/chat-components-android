@@ -5,11 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.pubnub.components.chat.network.data.NetworkMessagePayload
 import com.pubnub.components.chat.service.message.LocalMessageService
 import com.pubnub.components.chat.service.message.MessageService
 import com.pubnub.components.chat.ui.component.provider.LocalUser
-import com.pubnub.components.data.message.DBContent
+import com.pubnub.components.data.message.DBCustomContent
 import com.pubnub.components.data.message.DBMessage
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
@@ -19,7 +18,6 @@ import com.pubnub.framework.util.Timetoken
 import com.pubnub.framework.util.timetoken
 import com.pubnub.framework.util.toIsoString
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
 
@@ -115,7 +113,7 @@ class MessageInputViewModel(
             id = UUID.randomUUID().toString(),
             text = text,
             contentType = contentType,
-            content = content as DBContent,
+            content = content as DBCustomContent,
             createdAt = time.toIsoString(),
             publisher = this.id,
             channel = id,
