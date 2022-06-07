@@ -80,7 +80,7 @@ class MessageRemoteMediator constructor(
         // last page will contains oldest messages
         val messageTimetoken = state.pages.lastOrNull { it.data.isNotEmpty() }
             ?.data
-            ?.minOf { it.timetoken }
+            ?.minOf { it.message.timetoken }
 
         // just skip when nothing changed
         if (messageTimetoken == firstMessageTimestamp) return null
@@ -103,18 +103,18 @@ class MessageRemoteMediator constructor(
         // first page will contains the newest messages
         val message = state.pages.firstOrNull { it.data.isNotEmpty() }
             ?.data
-            ?.maxByOrNull { it.timetoken }
+            ?.maxByOrNull { it.message.timetoken }
 
         // just skip when nothing changed
-        if (message?.timetoken == lastMessageTimestamp) return null
-        lastMessageTimestamp = message?.timetoken
+        if (message?.message?.timetoken == lastMessageTimestamp) return null
+        lastMessageTimestamp = message?.message?.timetoken
 
         return message?.let {
-            if (messageRepository.hasMoreAfter(channelId, it.timetoken)) null
+            if (messageRepository.hasMoreAfter(channelId, it.message.timetoken)) null
             else {
                 // Get the history // append
                 val start = null// - 1
-                val end = it.timetoken + 1
+                val end = it.message.timetoken + 1
                 MessageWindow(channelId, start, end)
             }
         }

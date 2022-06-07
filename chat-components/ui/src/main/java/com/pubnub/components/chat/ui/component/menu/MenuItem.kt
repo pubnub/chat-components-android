@@ -69,6 +69,7 @@ internal fun dummyMessageData() = MessageUi.Data(
     publisher = MemberUi.Data("user-id", "Publisher"),
     channel = "channel",
     text = "",
+    createdAt = "IsoDate",
     timetoken = 0L,
     isSending = false,
     isDelivered = false,

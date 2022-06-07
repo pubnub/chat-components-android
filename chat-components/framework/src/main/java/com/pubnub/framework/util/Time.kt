@@ -1,8 +1,13 @@
 package com.pubnub.framework.util
 
 import java.util.*
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 typealias Timetoken = Long
+
+fun Timetoken.toIsoString(): String =
+    this.milliseconds.toDuration(DurationUnit.MILLISECONDS).toIsoString()
 
 val Timetoken.seconds: Seconds
     get() = this / 10_000L

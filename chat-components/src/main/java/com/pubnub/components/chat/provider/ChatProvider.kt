@@ -161,7 +161,7 @@ fun WithServices(
     val usernameResolver: (UserId) -> String = { id ->
         runBlocking {
             memberFormatter(id)
-        }.name
+        }.name ?: id
     }
 
     val actionService = ActionService(LocalPubNub.current)

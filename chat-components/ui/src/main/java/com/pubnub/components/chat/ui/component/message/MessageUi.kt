@@ -11,13 +11,14 @@ sealed class MessageUi {
         val uuid: MessageId,
         val publisher: MemberUi.Data,
         val channel: ChannelId,
-        val type: String = "default",
-        val text: String?,
-        val attachment: List<Attachment> = emptyList(),
+        val text: String,
+        val createdAt: String,
         val timetoken: Timetoken,
         val isSending: Boolean,
         val isDelivered: Boolean,
-        val reactions: List<ReactionUi>
+        val reactions: List<ReactionUi>,
+        val contentType: String = "default",
+        val content: Map<String, Any?>? = null,
     ) : MessageUi()
 
     data class Separator(val text: String) : MessageUi()

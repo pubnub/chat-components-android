@@ -5,7 +5,7 @@ import com.pubnub.framework.data.UserId
 sealed class MemberUi {
     data class Data(
         val id: UserId,
-        val name: String,
+        val name: String?,
         val profileUrl: String? = null,
         val description: String? = null,
     ) : MemberUi()

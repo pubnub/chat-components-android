@@ -1,11 +1,10 @@
 package com.pubnub.components.chat.ui.mapper.message
 
-import com.pubnub.components.chat.ui.component.message.Attachment
 import com.pubnub.components.chat.ui.component.message.MessageUi
-import com.pubnub.components.data.message.DBAttachment
 import com.pubnub.components.data.message.DBMessage
 import com.pubnub.components.data.message.action.DBMessageWithActions
 import com.pubnub.framework.mapper.Mapper
+import com.pubnub.framework.util.toIsoString
 
 class DomainMessageMapper : Mapper<MessageUi.Data, DBMessageWithActions> {
     override fun map(input: MessageUi.Data): DBMessageWithActions =
@@ -13,9 +12,10 @@ class DomainMessageMapper : Mapper<MessageUi.Data, DBMessageWithActions> {
         DBMessageWithActions(
             DBMessage(
                 id = input.uuid,
-                type = input.type,
                 text = input.text,
-                attachment = input.attachment.toDb(),
+                contentType = input.contentType,
+                content = null,
+                createdAt = input.timetoken.toIsoString(),
                 custom = null,
 
                 publisher = input.publisher.id,
@@ -26,14 +26,4 @@ class DomainMessageMapper : Mapper<MessageUi.Data, DBMessageWithActions> {
             ),
             actions = emptyList(),
         )
-
-    fun List<Attachment>?.toDb(): List<DBAttachment>? =
-        this?.map { it.toDb() }
-
-    fun Attachment.toDb(): DBAttachment =
-        when (this) {
-            is Attachment.Image -> DBAttachment.Image(imageUrl = imageUrl, custom = custom)
-            is Attachment.Link -> DBAttachment.Link(link = link, custom = custom)
-//            else -> DBAttachment.Custom(custom = custom)
-        }
 }
