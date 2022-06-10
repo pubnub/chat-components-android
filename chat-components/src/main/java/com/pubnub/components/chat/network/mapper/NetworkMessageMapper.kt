@@ -18,7 +18,7 @@ class NetworkMessageMapper(private val mapper: MapperManager) : Mapper<NetworkMe
             id = messagePayload.id,
             text = messagePayload.text,
             contentType = messagePayload.contentType,
-            content = messagePayload.content as DBCustomContent,
+            content = messagePayload.content as DBCustomContent?,
             custom = messagePayload.custom as DBCustomContent?,
             publisher = input.publisher!!,
             channel = input.channel,

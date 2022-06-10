@@ -114,7 +114,7 @@ class MessageInputViewModel(
             id = UUID.randomUUID().toString(),
             text = text,
             contentType = contentType,
-            content = content as DBCustomContent,
+            content = content,
             createdAt = time.toIsoString(),
             publisher = this.id,
             channel = id,
