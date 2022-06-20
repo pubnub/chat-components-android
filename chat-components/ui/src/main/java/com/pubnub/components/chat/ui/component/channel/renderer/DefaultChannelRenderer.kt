@@ -85,7 +85,7 @@ object DefaultChannelRenderer : ChannelRenderer {
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = modifier.apply { clickAction?.let { action -> clickable { action() } } },
+            modifier = modifier.then ( clickAction?.let { action -> Modifier.clickable { action() } } ?: Modifier),
         ) {
             // icon
             Image(

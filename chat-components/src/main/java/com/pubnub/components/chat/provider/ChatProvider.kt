@@ -8,6 +8,7 @@ import com.pubnub.api.PubNub
 import com.pubnub.components.BuildConfig
 import com.pubnub.components.PubNubDatabase
 import com.pubnub.components.R
+import com.pubnub.components.asPubNub
 import com.pubnub.components.chat.network.mapper.*
 import com.pubnub.components.chat.service.channel.DefaultChannelService
 import com.pubnub.components.chat.service.channel.DefaultOccupancyService
@@ -71,7 +72,8 @@ import timber.log.Timber
 @Composable
 fun ChatProvider(
     pubNub: PubNub,
-    database: PubNubDatabase<MessageDao<DBMessage, DBMessageWithActions>, MessageActionDao<DBMessageAction>, ChannelDao<DBChannel, DBChannelWithMembers>, MemberDao<DBMember, DBMemberWithChannels>, MembershipDao<DBMembership>> = Database.INSTANCE,
+    database: PubNubDatabase<MessageDao<DBMessage, DBMessageWithActions>, MessageActionDao<DBMessageAction>, ChannelDao<DBChannel, DBChannelWithMembers>, MemberDao<DBMember, DBMemberWithChannels>, MembershipDao<DBMembership>> = Database.initialize(
+        LocalContext.current).asPubNub(),
     channel: ChannelId = "channel.lobby",
     synchronize: Boolean = true,
     content: @Composable() () -> Unit,

@@ -25,8 +25,6 @@ import com.pubnub.components.data.message.action.MessageActionDao
 object Database {
     private const val DATABASE_NAME = "pubnub_database"
 
-    lateinit var INSTANCE: PubNubDatabase<MessageDao<DBMessage, DBMessageWithActions>, MessageActionDao<DBMessageAction>, ChannelDao<DBChannel, DBChannelWithMembers>, MemberDao<DBMember, DBMemberWithChannels>, MembershipDao<DBMembership>>
-
     fun initialize(
         applicationContext: Context,
         builder: (RoomDatabase.Builder<DefaultDatabase>) -> RoomDatabase.Builder<DefaultDatabase> = { it }
@@ -35,10 +33,6 @@ object Database {
             .addMigrations(MESSAGE_REACTION_MIGRATION)
             .apply { builder(this) }
             .build()
-            .also {
-                Log.e("TAG", "Database build")
-                INSTANCE = it.asPubNub()
-            }
 
     // region Migrations
     private val MESSAGE_REACTION_MIGRATION = Migration(1, 2) {
