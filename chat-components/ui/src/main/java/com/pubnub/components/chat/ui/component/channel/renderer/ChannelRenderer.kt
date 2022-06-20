@@ -8,7 +8,7 @@ interface ChannelRenderer {
     @Composable
     fun Channel(
         name: String,
-        description: String,
+        description: String?,
         modifier: Modifier,
         profileUrl: String?,
         onClick: (() -> Unit)?,

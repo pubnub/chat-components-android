@@ -34,7 +34,7 @@ object DefaultChannelRenderer : ChannelRenderer {
     @Composable
     override fun Channel(
         name: String,
-        description: String,
+        description: String?,
         modifier: Modifier,
         profileUrl: String?,
         onClick: (() -> Unit)?,
@@ -73,8 +73,8 @@ object DefaultChannelRenderer : ChannelRenderer {
     @Composable
     fun ChannelItemView(
         title: String,
-        description: String,
         modifier: Modifier = Modifier,
+        description: String? = null,
         iconUrl: String? = null,
         clickAction: (() -> Unit)? = null,
         leaveAction: (() -> Unit)? = null,
@@ -118,18 +118,20 @@ object DefaultChannelRenderer : ChannelRenderer {
                 )
 
                 // description
-                Text(
-                    text = description,
-                    fontWeight = theme.description.fontWeight,
-                    fontSize = theme.description.fontSize,
-                    color = theme.description.color,
-                    overflow = theme.description.overflow,
-                    maxLines = theme.description.maxLines,
-                    modifier = theme.description.modifier.placeholder(
-                        visible = placeholder,
-                        color = Color.Gray
-                    ),
-                )
+                description?.let {
+                    Text(
+                        text = it,
+                        fontWeight = theme.description.fontWeight,
+                        fontSize = theme.description.fontSize,
+                        color = theme.description.color,
+                        overflow = theme.description.overflow,
+                        maxLines = theme.description.maxLines,
+                        modifier = theme.description.modifier.placeholder(
+                            visible = placeholder,
+                            color = Color.Gray
+                        ),
+                    )
+                }
             }
 
             // leave icon

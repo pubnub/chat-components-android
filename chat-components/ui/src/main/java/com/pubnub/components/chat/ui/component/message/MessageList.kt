@@ -62,7 +62,7 @@ fun MessageList(
                             renderer.Separator(text = message.text)
                         }
                         is MessageUi.Data -> {
-                            val styledMessage = message.text?.let { messageFormatter(text = it) }
+                            val styledMessage = messageFormatter(text = message.text)
 
                             renderer.Message(
                                 messageId = message.uuid,
@@ -71,14 +71,16 @@ fun MessageList(
                                 profileUrl = message.publisher.profileUrl
                                     ?: getRandomProfileUrl(message.publisher.id),
                                 online = presence?.get(message.publisher.id)?.value,
-                                title = message.publisher.name,
+                                title = message.publisher.name ?: message.publisher.id,
                                 message = styledMessage,
                                 timetoken = message.timetoken,
                                 reactions = message.reactions,
-                                onMessageSelected = onMessageSelected?.let {{ it.invoke(message) }},
-                                onReactionSelected = onReactionSelected?.let {{ reaction ->
-                                    it.invoke(React(reaction,message))
-                                }},
+                                onMessageSelected = onMessageSelected?.let { { it.invoke(message) } },
+                                onReactionSelected = onReactionSelected?.let {
+                                    { reaction ->
+                                        it.invoke(React(reaction, message))
+                                    }
+                                },
                                 reactionsPickerRenderer = reactionsPickerRenderer,
                             )
                         }

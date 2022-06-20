@@ -11,10 +11,10 @@ class DBChannelMapper : Mapper<DBChannelWithMembers, ChannelUi.Data> {
     override fun map(input: DBChannelWithMembers): ChannelUi.Data =
         ChannelUi.Data(
             id = input.id,
-            name = input.name,
+            name = input.name ?: input.id,
             description = input.description,
             type = ChannelUi.Data.typeFromString(input.channel.type),
-            profileUrl = input.channel.avatarURL,
+            profileUrl = input.channel.profileUrl,
             updated = input.updated?.toInstant(),
             members = input.members.toUi()
         )

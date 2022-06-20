@@ -219,7 +219,7 @@ class DefaultMessageRepository(
      * @return last Message Timestamp or 1, when not exists
      */
     override suspend fun getLastTimestamp(id: ChannelId): Timetoken =
-        messageDao.getLast(id).firstOrNull()?.timetoken ?: 1L
+        messageDao.getLast(id).firstOrNull()?.message?.timetoken ?: 1L
 
     /**
      * Sets status of Message
@@ -239,7 +239,7 @@ class DefaultMessageRepository(
         val updatedMessage = message.message.copy(
             isSent = isSent,
             exception = exception,
-            timetoken = timestamp ?: message.timetoken,
+            timetoken = timestamp ?: message.message.timetoken,
         )
         messageDao.insertOrUpdate(updatedMessage)
     }

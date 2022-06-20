@@ -75,7 +75,7 @@ fun MemberList(
                 items(list) { member ->
                     val online = presence?.get(member.id)?.value
                     renderer.Member(
-                        name = member.name,
+                        name = member.name ?: member.id,
                         description = member.description,
                         profileUrl = member.profileUrl ?: getRandomProfileUrl(member.id),
                         online = online,
@@ -129,7 +129,7 @@ fun MemberList(
                     }
                     is MemberUi.Data -> {
                         renderer.Member(
-                            name = member.name,
+                            name = member.name ?: member.id,
                             description = member.description,
                             profileUrl = member.profileUrl ?: getRandomProfileUrl(member.id),
                             online = presence?.get(member.id)?.value,//member.online.value,

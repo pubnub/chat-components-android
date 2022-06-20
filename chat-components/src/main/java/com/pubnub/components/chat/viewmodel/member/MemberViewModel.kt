@@ -123,7 +123,7 @@ class MemberViewModel constructor(
      * @return Map of first letter and list of Member UI Data
      */
     fun getListGroup(channelId: ChannelId? = null): Map<String?, List<MemberUi.Data>> =
-        getList(channelId).groupBy { it.name[0].toString() }
+        getList(channelId).groupBy { (it.name ?: it.id)[0].toString() }
 
     /**
      * Get current users online / offline state

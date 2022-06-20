@@ -11,7 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import com.pubnub.components.R
-import com.pubnub.components.chat.network.data.NetworkMessage
+import com.pubnub.components.chat.network.data.NetworkMessagePayload
 import com.pubnub.components.chat.ui.component.input.renderer.DefaultTypingIndicatorRenderer
 import com.pubnub.components.chat.ui.component.input.renderer.TypingIndicatorRenderer
 import com.pubnub.components.chat.ui.component.provider.LocalChannel
@@ -19,91 +19,6 @@ import com.pubnub.components.chat.ui.component.provider.LocalPubNub
 import com.pubnub.framework.service.LocalTypingService
 import com.pubnub.framework.util.Timetoken
 import kotlinx.coroutines.*
-
-@OptIn(DelicateCoroutinesApi::class)
-@Composable
-fun LinkInput(
-    placeholder: String = stringResource(id = R.string.type_link),
-    initialText: String = "",
-    onChange: (String) -> Unit = {},
-    onSuccess: (String, Timetoken) -> Unit = { _, _ -> },
-    onError: (Exception) -> Unit = {},
-    coroutineScope: CoroutineScope = GlobalScope,
-    dispatcher: CoroutineDispatcher = Dispatchers.IO,
-) {
-    checkNotNull(LocalPubNub.current)
-    checkNotNull(LocalChannel.current)
-
-    val channel = LocalChannel.current
-
-    val viewModel: MessageInputViewModel = MessageInputViewModel.default()
-
-    // region actions
-    val sendAction: (String) -> Unit = { message ->
-        coroutineScope.launch(dispatcher) {
-            // send message
-            viewModel.send(
-                channel,
-                "",
-                NetworkMessage.Type.DEFAULT,
-                listOf(
-                    NetworkMessage.Attachment.Link(message)
-                ),
-                onSuccess,
-                onError
-            )
-        }
-    }
-
-    // endregion
-    MessageInput(
-        placeholder = placeholder,
-        initialText = initialText,
-        onSent = sendAction, onChange
-    )
-}
-
-@OptIn(DelicateCoroutinesApi::class)
-@Composable
-fun ImageInput(
-    placeholder: String = stringResource(id = R.string.type_image),
-    initialText: String = "",
-    onChange: (String) -> Unit = {},
-    onSuccess: (String, Timetoken) -> Unit = { _, _ -> },
-    onError: (Exception) -> Unit = {},
-    coroutineScope: CoroutineScope = GlobalScope,
-    dispatcher: CoroutineDispatcher = Dispatchers.IO,
-) {
-    checkNotNull(LocalPubNub.current)
-    checkNotNull(LocalChannel.current)
-
-    val channel = LocalChannel.current
-
-    val viewModel: MessageInputViewModel = MessageInputViewModel.default()
-
-    // region actions
-    val sendAction: (String) -> Unit = { message ->
-        coroutineScope.launch(dispatcher) {
-            // send message
-            viewModel.send(
-                channel,
-                "",
-                NetworkMessage.Type.DEFAULT,
-                listOf(NetworkMessage.Attachment.Image(message)),
-                onSuccess,
-                onError
-            )
-        }
-    }
-
-    // endregion
-    MessageInput(
-        placeholder = placeholder,
-        initialText = initialText,
-        onSent = sendAction, onChange
-    )
-}
-
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -133,7 +48,12 @@ fun MessageInput(
         typingAction("")
 
         // Send message
-        viewModel.send(channel, message, NetworkMessage.Type.DEFAULT, null, onSuccess, onError)
+        viewModel.send(
+            id = channel,
+            message = message,
+            onSuccess = onSuccess,
+            onError = onError,
+        )
     }
     // endregion
 

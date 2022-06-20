@@ -4,12 +4,11 @@ import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.SubscribeCallback
 import com.pubnub.api.models.consumer.PNBoundedPage
 import com.pubnub.api.models.consumer.PNStatus
-import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.components.chat.network.data.NetworkMessage
+import com.pubnub.components.chat.network.data.NetworkMessagePayload
 import com.pubnub.components.chat.network.mapper.NetworkMessageActionHistoryMapper
 import com.pubnub.components.chat.network.mapper.NetworkMessageHistoryMapper
 import com.pubnub.components.chat.network.mapper.NetworkMessageMapper
-import com.pubnub.components.chat.network.mapper.toNetwork
 import com.pubnub.components.chat.service.error.ErrorHandler
 import com.pubnub.components.data.message.DBMessage
 import com.pubnub.components.data.message.action.DBMessageAction
@@ -83,11 +82,12 @@ class DefaultMessageService(
 
         coroutineScope.launch(dispatcher) {
 
-            val networkMessage = NetworkMessage(
+            val networkMessage = NetworkMessagePayload(
                 id = newMessage.id,
-                type = newMessage.type,
                 text = newMessage.text,
-                attachment = newMessage.attachment?.toNetwork(),
+                contentType = newMessage.contentType,
+                content = newMessage.content,
+                createdAt = newMessage.createdAt,
                 custom = newMessage.custom,
             )
             // Publish a message
@@ -109,7 +109,7 @@ class DefaultMessageService(
                             )
 
                             coroutineScope.launch(Dispatchers.Main) {
-                                onSuccess(newMessage.text ?: "", result.timetoken)
+                                onSuccess(newMessage.text, result.timetoken)
                             }
                         }
                     },
@@ -210,12 +210,12 @@ class DefaultMessageService(
     }
     // endregion
 
-    private fun messageFlow(): Flow<PNMessageResult> =
+    private fun messageFlow(): Flow<NetworkMessage> =
         callbackFlow {
             val callback: SubscribeCallback = object : SubscribeCallback() {
                 override fun status(pubnub: PubNub, pnStatus: PNStatus) {}
 
-                override fun message(pubnub: PubNub, pnMessageResult: PNMessageResult) {
+                override fun message(pubnub: PubNub, pnMessageResult: NetworkMessage) {
                     trySendBlocking(pnMessageResult)
                 }
             }
@@ -225,11 +225,11 @@ class DefaultMessageService(
         }
 
     /**
-     * Processing [PNMessageResult] and silently catch exceptions
+     * Processing [NetworkMessage] and silently catch exceptions
      *
      * @see [handleIncomingMessage]
      */
-    private fun PNMessageResult.processMessage() {
+    private fun NetworkMessage.processMessage() {
         coroutineScope.launch(dispatcher) {
             try {
                 handleIncomingMessage(this@processMessage)
@@ -242,7 +242,7 @@ class DefaultMessageService(
     /**
      * Validates an incoming message, decrypt it and store in database
      */
-    private fun handleIncomingMessage(result: PNMessageResult) {
+    private fun handleIncomingMessage(result: NetworkMessage) {
         with(result) {
             if (publisher == null) {
                 errorHandler.onError(RuntimeException("User cannot be null"))

@@ -129,7 +129,7 @@ fun ChannelList(
                     is ChannelUi.Data -> {
                         renderer.Channel(
                             name = channel.name,
-                            description = channel.description!!,
+                            description = channel.description,
                             profileUrl = channel.profileUrl,
                             onClick = { onSelected(channel) },
                             onLeave = onLeave?.run { { onLeave(channel) } },
