@@ -9,6 +9,7 @@ import com.pubnub.api.PubNub
 import com.pubnub.components.chat.provider.LocalMemberRepository
 import com.pubnub.components.chat.service.channel.LocalOccupancyService
 import com.pubnub.components.chat.service.channel.OccupancyService
+import com.pubnub.components.chat.ui.component.channel.ChannelUi
 import com.pubnub.components.chat.ui.component.member.MemberUi
 import com.pubnub.components.chat.ui.component.presence.Presence
 import com.pubnub.components.chat.ui.component.provider.LocalPubNub
@@ -83,10 +84,12 @@ class MemberViewModel constructor(
      * Note: when [channelId] is not set, then Members for all channels are returned
      * @return Flow of Member UI Paging Data
      */
+    @Suppress("UNCHECKED_CAST")
     fun getAll(
         channelId: ChannelId? = null,
         filter: Query? = null,
         sorted: Array<Sorted> = arrayOf(Sorted(MemberUi.Data::name.name, Sorted.Direction.ASC)),
+        transform: PagingData<MemberUi>.() -> PagingData<MemberUi> = { this },
     ): Flow<PagingData<MemberUi>> =
         Pager(
             config = PagingConfig(pageSize = 10, enablePlaceholders = true),
@@ -98,7 +101,7 @@ class MemberViewModel constructor(
                     sorted = sorted,
                 )
             },
-        ).flow.map { it.map { dbMapper.map(it) } }
+        ).flow.map { (it.map { dbMapper.map(it) } as PagingData<MemberUi>).transform() }
 
     /**
      * Get list of Members

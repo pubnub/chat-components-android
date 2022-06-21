@@ -87,7 +87,7 @@ class ChannelViewModel constructor(
     fun getAll(
         filter: Query? = null,
         sorted: Array<Sorted> = emptyArray(),
-        transform: PagingData<ChannelUi.Data>.() -> PagingData<ChannelUi> = {
+        transform: PagingData<ChannelUi>.() -> PagingData<ChannelUi> = {
             insertSeparators { before: ChannelUi?, after: ChannelUi? ->
                 val isHeader = before is ChannelUi.Header || after is ChannelUi.Header
                 if (isHeader) return@insertSeparators null
@@ -129,7 +129,7 @@ class ChannelViewModel constructor(
      *
      * @return Map of group name and list of Channels
      */
-    fun getList(): Map<String?, List<ChannelUi.Data>> {
+    fun getList(): Map<String?, List<ChannelUi>> {
         val channels =
             runBlocking {
                 withContext(viewModelScope.coroutineContext + Dispatchers.IO) {
@@ -137,11 +137,11 @@ class ChannelViewModel constructor(
                 }
             }
         return mapOf(
-            resources.getString(R.string.group_title) to channels.filter { it.type == ChannelUi.Data.GROUP },
-            resources.getString(R.string.default_title) to channels.filter { it.type == ChannelUi.Data.DEFAULT },
-            resources.getString(R.string.direct_title) to channels.filter { it.type == ChannelUi.Data.DIRECT },
+            resources.getString(R.string.group_title) to channels.filter { it is ChannelUi.Data && it.type == ChannelUi.Data.GROUP },
+            resources.getString(R.string.default_title) to channels.filter { it is ChannelUi.Data && it.type == ChannelUi.Data.DEFAULT },
+            resources.getString(R.string.direct_title) to channels.filter { it is ChannelUi.Data && it.type == ChannelUi.Data.DIRECT },
         )
     }
 
-    private fun DBChannelWithMembers.toUi(): ChannelUi.Data = dbMapper.map(this)
+    private fun DBChannelWithMembers.toUi(): ChannelUi = dbMapper.map(this)
 }

@@ -14,6 +14,7 @@ import com.pubnub.components.chat.provider.LocalMessageRepository
 import com.pubnub.components.chat.service.channel.LocalOccupancyService
 import com.pubnub.components.chat.service.channel.OccupancyService
 import com.pubnub.components.chat.service.message.LocalMessageService
+import com.pubnub.components.chat.ui.component.channel.ChannelUi
 import com.pubnub.components.chat.ui.component.message.MessageUi
 import com.pubnub.components.chat.ui.component.presence.Presence
 import com.pubnub.components.chat.ui.component.provider.LocalChannel
@@ -123,7 +124,21 @@ class MessageViewModel constructor(
      *
      * @return Flow of Message UI Paging Data
      */
-    fun getAll(): Flow<PagingData<MessageUi>> =
+    fun getAll(
+        transform: PagingData<MessageUi>.() -> PagingData<MessageUi> = {
+            insertSeparators { after: MessageUi?, before: MessageUi? ->
+                if (
+                    (before is MessageUi.Data? && after is MessageUi.Data?) &&
+                    before == null && after != null ||
+                    before is MessageUi.Data && after is MessageUi.Data &&
+                    !before.timetoken.isSameDate(after.timetoken)
+                ) {
+                    after as MessageUi.Data
+                    MessageUi.Separator(after.timetoken.formatDate())
+                } else null
+            }
+        },
+    ): Flow<PagingData<MessageUi>> =
         Pager(
             config = config,
             pagingSourceFactory = {
@@ -133,20 +148,10 @@ class MessageViewModel constructor(
                 )
             },
             remoteMediator = remoteMediator,
-        ).flow.map { paging -> paging.map { it.toMessageUi().also { Timber.i("Message $it") } } }
-            .map { pagingData ->
-                pagingData.insertSeparators { after: MessageUi?, before: MessageUi? ->
-                    if (
-                        (before is MessageUi.Data? && after is MessageUi.Data?) &&
-                        before == null && after != null ||
-                        before is MessageUi.Data && after is MessageUi.Data &&
-                        !before.timetoken.isSameDate(after.timetoken)
-                    ) {
-                        after as MessageUi.Data
-                        MessageUi.Separator(after.timetoken.formatDate())
-                    } else null
-                }
-            }
+        ).flow.map { paging ->
+            paging.map { it.toMessageUi() }
+                .transform()
+        }
             .cachedIn(viewModelScope)
             .distinctUntilChanged()
 
