@@ -80,6 +80,7 @@ class MemberViewModel constructor(
      * @param channelId Id of the Channel
      * @param filter Query filter for database
      * @param sorted Array of Sorted objects
+     * @param transform Transformer for a Paging Data
      *
      * Note: when [channelId] is not set, then Members for all channels are returned
      * @return Flow of Member UI Paging Data

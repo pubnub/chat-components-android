@@ -122,6 +122,8 @@ class MessageViewModel constructor(
     /**
      * Get Messages for selected Channel
      *
+     * @param transform Transformer for a Paging Data
+     *
      * @return Flow of Message UI Paging Data
      */
     fun getAll(

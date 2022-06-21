@@ -81,7 +81,7 @@ class ChannelViewModel constructor(
      *
      * @param filter Query filter for database
      * @param sorted Array of Sorted objects
-     *
+     * @param transform Transformer for a Paging Data
      * @return Flow of Channel UI Paging Data
      */
     fun getAll(
