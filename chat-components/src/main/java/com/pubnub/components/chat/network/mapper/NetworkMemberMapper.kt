@@ -2,8 +2,6 @@ package com.pubnub.components.chat.network.mapper
 
 import com.pubnub.api.managers.MapperManager
 import com.pubnub.components.chat.network.data.NetworkMember
-import com.pubnub.components.chat.network.data.status
-import com.pubnub.components.chat.network.data.type
 import com.pubnub.components.data.member.DBMember
 import com.pubnub.framework.mapper.Mapper
 import com.pubnub.framework.util.asObject

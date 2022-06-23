@@ -5,8 +5,6 @@ import com.google.gson.reflect.TypeToken
 import com.pubnub.api.managers.MapperManager
 import com.pubnub.api.models.consumer.objects.channel.PNChannelMetadata
 import com.pubnub.components.chat.network.data.NetworkChannelMetadata
-import com.pubnub.components.chat.network.data.status
-import com.pubnub.components.chat.network.data.type
 import com.pubnub.components.data.channel.ChannelCustomData
 import com.pubnub.components.data.channel.DBChannel
 import com.pubnub.framework.mapper.Mapper

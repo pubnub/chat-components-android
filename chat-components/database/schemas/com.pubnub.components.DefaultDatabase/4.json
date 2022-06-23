@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "fbf339712508837e56de98d5dd3f8cb3",
+    "identityHash": "379d45668c4a4b2e6900a9919f1b595a",
     "entities": [
       {
         "tableName": "message",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `type` TEXT NOT NULL, `text` TEXT, `attachment` TEXT, `custom` TEXT, `publisher` TEXT NOT NULL, `channel` TEXT NOT NULL, `timetoken` INTEGER NOT NULL, `isSent` INTEGER NOT NULL, `exception` TEXT, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `text` TEXT NOT NULL, `contentType` TEXT, `content` TEXT, `createdAt` TEXT NOT NULL DEFAULT '', `custom` TEXT, `publisher` TEXT NOT NULL, `channel` TEXT NOT NULL, `timetoken` INTEGER NOT NULL, `isSent` INTEGER NOT NULL, `exception` TEXT, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -15,22 +15,29 @@
             "notNull": true
           },
           {
-            "fieldPath": "type",
-            "columnName": "type",
+            "fieldPath": "text",
+            "columnName": "text",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "text",
-            "columnName": "text",
+            "fieldPath": "contentType",
+            "columnName": "contentType",
             "affinity": "TEXT",
             "notNull": false
           },
           {
-            "fieldPath": "attachment",
-            "columnName": "attachment",
+            "fieldPath": "content",
+            "columnName": "content",
             "affinity": "TEXT",
             "notNull": false
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
           },
           {
             "fieldPath": "custom",
@@ -351,7 +358,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fbf339712508837e56de98d5dd3f8cb3')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '379d45668c4a4b2e6900a9919f1b595a')"
     ]
   }
 }

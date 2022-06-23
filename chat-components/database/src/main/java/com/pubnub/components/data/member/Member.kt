@@ -4,7 +4,7 @@ import com.pubnub.framework.data.UserId
 
 interface Member {
     val id: UserId              // The unique identifier for an user
-    val name: String            // Name of the user that could be displayed in the UI
+    val name: String?           // Name of the user that could be displayed in the UI
     val email: String?          // not used in Chat Components
     val externalId: String?     // not used in Chat Components
     val profileUrl: String?     // URL to an user avatar that could be displayed in the UI
