@@ -12,7 +12,7 @@ fun Timetoken.toIsoString(locale: Locale = Locale.getDefault()): String {
     val iso8601format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", locale).apply {
         timeZone = TimeZone.getTimeZone("UTC")
     }
-    return iso8601format.format(Date(this.milliseconds))
+    return iso8601format.format(Date(this.seconds))
 }
 
 val Timetoken.seconds: Seconds
