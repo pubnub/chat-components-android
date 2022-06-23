@@ -3,7 +3,6 @@ package com.pubnub.components.vsp
 import com.google.gson.JsonObject
 import com.pubnub.components.TestTree
 import com.pubnub.components.chat.network.data.NetworkChannelMetadata
-import com.pubnub.components.chat.network.data.type
 import com.pubnub.components.chat.network.mapper.NetworkChannelMapper
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi

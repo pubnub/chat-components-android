@@ -4,7 +4,6 @@ import com.pubnub.api.managers.MapperManager
 import com.pubnub.components.TestTree
 import com.pubnub.components.chat.network.data.NetworkChannelMetadata
 import com.pubnub.components.chat.network.data.NetworkMember
-import com.pubnub.components.chat.network.data.type
 import com.pubnub.components.chat.network.mapper.NetworkMemberMapper
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi

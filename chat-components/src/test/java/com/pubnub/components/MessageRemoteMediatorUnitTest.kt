@@ -148,7 +148,7 @@ class MessageRemoteMediatorUnitTest {
         coEvery { messageRepository.hasMoreBefore(any(), any()) } returns true
 
         val message: DBMessageWithActions = mockk(relaxed = true) {
-            every { timetoken } returns 1L
+            every { message.timetoken } returns 1L
         }
 
         val data: List<PagingSource.LoadResult.Page<Int, DBMessageWithActions>> =
@@ -170,7 +170,7 @@ class MessageRemoteMediatorUnitTest {
     fun whenAppendIsReceived_andHasNoMoreMessagesInDb_thenPageIsReturned() {
 
         val message: DBMessageWithActions = mockk(relaxed = true) {
-            every { timetoken } returns 1L
+            every { message.timetoken } returns 1L
         }
 
         val data: List<PagingSource.LoadResult.Page<Int, DBMessageWithActions>> =
@@ -205,7 +205,7 @@ class MessageRemoteMediatorUnitTest {
         coEvery { messageRepository.hasMoreBefore(any(), any()) } returns false
 
         val message: DBMessageWithActions = mockk(relaxed = true) {
-            every { timetoken } returns 1L
+            every { message.timetoken } returns 1L
         }
 
         val data: List<PagingSource.LoadResult.Page<Int, DBMessageWithActions>> =
@@ -236,7 +236,7 @@ class MessageRemoteMediatorUnitTest {
         coEvery { messageRepository.hasMoreAfter(any(), any()) } returns true
 
         val message: DBMessageWithActions = mockk(relaxed = true) {
-            every { timetoken } returns 1L
+            every { message.timetoken } returns 1L
         }
 
         val data: List<PagingSource.LoadResult.Page<Int, DBMessageWithActions>> =
@@ -259,7 +259,7 @@ class MessageRemoteMediatorUnitTest {
 
         coEvery { messageRepository.hasMoreAfter(any(), any()) } returns false
         val message: DBMessageWithActions = mockk(relaxed = true) {
-            every { timetoken } returns 1L
+            every { message.timetoken } returns 1L
         }
 
         val data: List<PagingSource.LoadResult.Page<Int, DBMessageWithActions>> =
