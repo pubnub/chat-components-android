@@ -10,7 +10,7 @@ import com.pubnub.framework.data.UserId
 @Entity(tableName = "member")
 data class DBMember(
     @PrimaryKey @ColumnInfo(name = "memberId") override val id: UserId,
-    override val name: String,
+    override val name: String? = null,
     override val email: String? = null,
     override val externalId: String? = null,
     override val profileUrl: String? = null,

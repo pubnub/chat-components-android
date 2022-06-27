@@ -158,7 +158,7 @@ object Libs {
     }
 
     object MockK {
-        private const val version = "1.12.4"
+        private const val version = "1.12.3"
         const val unit = "io.mockk:mockk:$version"
         const val instrumented = "io.mockk:mockk-android:$version"
     }

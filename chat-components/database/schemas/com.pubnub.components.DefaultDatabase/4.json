@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "379d45668c4a4b2e6900a9919f1b595a",
+    "identityHash": "684419a10817537f0ebc0f632b647571",
     "entities": [
       {
         "tableName": "message",
@@ -153,7 +153,7 @@
       },
       {
         "tableName": "member",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`memberId` TEXT NOT NULL, `name` TEXT NOT NULL, `email` TEXT, `externalId` TEXT, `profileUrl` TEXT, `type` TEXT NOT NULL DEFAULT 'default', `status` TEXT, `custom` TEXT, `eTag` TEXT, `updated` TEXT, PRIMARY KEY(`memberId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`memberId` TEXT NOT NULL, `name` TEXT, `email` TEXT, `externalId` TEXT, `profileUrl` TEXT, `type` TEXT NOT NULL DEFAULT 'default', `status` TEXT, `custom` TEXT, `eTag` TEXT, `updated` TEXT, PRIMARY KEY(`memberId`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -165,7 +165,7 @@
             "fieldPath": "name",
             "columnName": "name",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "email",
@@ -358,7 +358,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '379d45668c4a4b2e6900a9919f1b595a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '684419a10817537f0ebc0f632b647571')"
     ]
   }
 }
