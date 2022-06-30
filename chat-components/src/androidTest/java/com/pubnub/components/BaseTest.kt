@@ -10,9 +10,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
 import com.pubnub.components.data.Database
-import com.pubnub.components.data.member.DBMember
 import com.pubnub.framework.data.UserId
-
 import io.mockk.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers

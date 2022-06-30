@@ -14,7 +14,6 @@ import com.pubnub.components.chat.provider.LocalMessageRepository
 import com.pubnub.components.chat.service.channel.LocalOccupancyService
 import com.pubnub.components.chat.service.channel.OccupancyService
 import com.pubnub.components.chat.service.message.LocalMessageService
-import com.pubnub.components.chat.ui.component.channel.ChannelUi
 import com.pubnub.components.chat.ui.component.message.MessageUi
 import com.pubnub.components.chat.ui.component.presence.Presence
 import com.pubnub.components.chat.ui.component.provider.LocalChannel
@@ -28,7 +27,6 @@ import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.MessageId
 import com.pubnub.framework.mapper.Mapper
 import com.pubnub.framework.util.Timetoken
-import com.pubnub.framework.util.isSameDate
 import com.pubnub.framework.util.seconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -36,7 +34,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -127,19 +124,7 @@ class MessageViewModel constructor(
      * @return Flow of Message UI Paging Data
      */
     fun getAll(
-        transform: PagingData<MessageUi>.() -> PagingData<MessageUi> = {
-            insertSeparators { after: MessageUi?, before: MessageUi? ->
-                if (
-                    (before is MessageUi.Data? && after is MessageUi.Data?) &&
-                    before == null && after != null ||
-                    before is MessageUi.Data && after is MessageUi.Data &&
-                    !before.timetoken.isSameDate(after.timetoken)
-                ) {
-                    after as MessageUi.Data
-                    MessageUi.Separator(after.timetoken.formatDate())
-                } else null
-            }
-        },
+        transform: PagingData<MessageUi>.() -> PagingData<MessageUi> = { this },
     ): Flow<PagingData<MessageUi>> =
         Pager(
             config = config,

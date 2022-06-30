@@ -87,25 +87,7 @@ class ChannelViewModel constructor(
     fun getAll(
         filter: Query? = null,
         sorted: Array<Sorted> = emptyArray(),
-        transform: PagingData<ChannelUi>.() -> PagingData<ChannelUi> = {
-            insertSeparators { before: ChannelUi?, after: ChannelUi? ->
-                val isHeader = before is ChannelUi.Header || after is ChannelUi.Header
-                if (isHeader) return@insertSeparators null
-
-                val firstOne = before == null && after != null
-                val typeChanged =
-                    (before != null && after != null && (before as ChannelUi.Data).type != (after as ChannelUi.Data).type)
-                if (firstOne || typeChanged) {
-                    val title = when ((after as ChannelUi.Data).type) {
-                        ChannelUi.Data.GROUP -> resources.getString(R.string.channels)
-                        ChannelUi.Data.DIRECT -> resources.getString(R.string.direct_chats)
-                        else -> resources.getString(R.string.channels)
-                    }
-
-                    ChannelUi.Header(title)
-                } else null
-            }
-        },
+        transform: PagingData<ChannelUi>.() -> PagingData<ChannelUi> = { this },
     ): Flow<PagingData<ChannelUi>> =
         Pager(
             config = PagingConfig(pageSize = 10, enablePlaceholders = true),

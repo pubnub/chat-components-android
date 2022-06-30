@@ -73,7 +73,8 @@ import timber.log.Timber
 fun ChatProvider(
     pubNub: PubNub,
     database: PubNubDatabase<MessageDao<DBMessage, DBMessageWithActions>, MessageActionDao<DBMessageAction>, ChannelDao<DBChannel, DBChannelWithMembers>, MemberDao<DBMember, DBMemberWithChannels>, MembershipDao<DBMembership>> = Database.initialize(
-        LocalContext.current).asPubNub(),
+        LocalContext.current
+    ).asPubNub(),
     channel: ChannelId = "channel.lobby",
     synchronize: Boolean = true,
     content: @Composable() () -> Unit,
