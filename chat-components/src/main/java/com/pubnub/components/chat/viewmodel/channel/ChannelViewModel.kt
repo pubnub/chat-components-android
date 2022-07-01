@@ -81,12 +81,13 @@ class ChannelViewModel constructor(
      *
      * @param filter Query filter for database
      * @param sorted Array of Sorted objects
-     *
+     * @param transform Transformer for a Paging Data
      * @return Flow of Channel UI Paging Data
      */
     fun getAll(
         filter: Query? = null,
         sorted: Array<Sorted> = emptyArray(),
+        transform: PagingData<ChannelUi>.() -> PagingData<ChannelUi> = { this },
     ): Flow<PagingData<ChannelUi>> =
         Pager(
             config = PagingConfig(pageSize = 10, enablePlaceholders = true),
@@ -100,23 +101,7 @@ class ChannelViewModel constructor(
         ).flow.map { pagingData ->
             pagingData
                 .map { it.toUi() }
-                .insertSeparators { before: ChannelUi?, after: ChannelUi? ->
-                    val isHeader = before is ChannelUi.Header || after is ChannelUi.Header
-                    if (isHeader) return@insertSeparators null
-
-                    val firstOne = before == null && after != null
-                    val typeChanged =
-                        (before != null && after != null && (before as ChannelUi.Data).type != (after as ChannelUi.Data).type)
-                    if (firstOne || typeChanged) {
-                        val title = when ((after as ChannelUi.Data).type) {
-                            ChannelUi.Data.GROUP -> resources.getString(R.string.channels)
-                            ChannelUi.Data.DIRECT -> resources.getString(R.string.direct_chats)
-                            else -> resources.getString(R.string.channels)
-                        }
-
-                        ChannelUi.Header(title)
-                    } else null
-                }
+                .transform()
         }.distinctUntilChanged().cachedIn(viewModelScope)
 
     /**
@@ -126,7 +111,7 @@ class ChannelViewModel constructor(
      *
      * @return Map of group name and list of Channels
      */
-    fun getList(): Map<String?, List<ChannelUi.Data>> {
+    fun getList(): Map<String?, List<ChannelUi>> {
         val channels =
             runBlocking {
                 withContext(viewModelScope.coroutineContext + Dispatchers.IO) {
@@ -134,11 +119,11 @@ class ChannelViewModel constructor(
                 }
             }
         return mapOf(
-            resources.getString(R.string.group_title) to channels.filter { it.type == ChannelUi.Data.GROUP },
-            resources.getString(R.string.default_title) to channels.filter { it.type == ChannelUi.Data.DEFAULT },
-            resources.getString(R.string.direct_title) to channels.filter { it.type == ChannelUi.Data.DIRECT },
+            resources.getString(R.string.group_title) to channels.filter { it is ChannelUi.Data && it.type == ChannelUi.Data.GROUP },
+            resources.getString(R.string.default_title) to channels.filter { it is ChannelUi.Data && it.type == ChannelUi.Data.DEFAULT },
+            resources.getString(R.string.direct_title) to channels.filter { it is ChannelUi.Data && it.type == ChannelUi.Data.DIRECT },
         )
     }
 
-    private fun DBChannelWithMembers.toUi(): ChannelUi.Data = dbMapper.map(this)
+    private fun DBChannelWithMembers.toUi(): ChannelUi = dbMapper.map(this)
 }

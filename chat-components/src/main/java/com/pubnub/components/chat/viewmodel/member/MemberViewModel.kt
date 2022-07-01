@@ -79,14 +79,17 @@ class MemberViewModel constructor(
      * @param channelId Id of the Channel
      * @param filter Query filter for database
      * @param sorted Array of Sorted objects
+     * @param transform Transformer for a Paging Data
      *
      * Note: when [channelId] is not set, then Members for all channels are returned
      * @return Flow of Member UI Paging Data
      */
+    @Suppress("UNCHECKED_CAST")
     fun getAll(
         channelId: ChannelId? = null,
         filter: Query? = null,
         sorted: Array<Sorted> = arrayOf(Sorted(MemberUi.Data::name.name, Sorted.Direction.ASC)),
+        transform: PagingData<MemberUi>.() -> PagingData<MemberUi> = { this },
     ): Flow<PagingData<MemberUi>> =
         Pager(
             config = PagingConfig(pageSize = 10, enablePlaceholders = true),
@@ -98,7 +101,7 @@ class MemberViewModel constructor(
                     sorted = sorted,
                 )
             },
-        ).flow.map { it.map { dbMapper.map(it) } }
+        ).flow.map { (it.map { dbMapper.map(it) } as PagingData<MemberUi>).transform() }
 
     /**
      * Get list of Members

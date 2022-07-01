@@ -27,7 +27,6 @@ import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.MessageId
 import com.pubnub.framework.mapper.Mapper
 import com.pubnub.framework.util.Timetoken
-import com.pubnub.framework.util.isSameDate
 import com.pubnub.framework.util.seconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -35,7 +34,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -121,9 +119,13 @@ class MessageViewModel constructor(
     /**
      * Get Messages for selected Channel
      *
+     * @param transform Transformer for a Paging Data
+     *
      * @return Flow of Message UI Paging Data
      */
-    fun getAll(): Flow<PagingData<MessageUi>> =
+    fun getAll(
+        transform: PagingData<MessageUi>.() -> PagingData<MessageUi> = { this },
+    ): Flow<PagingData<MessageUi>> =
         Pager(
             config = config,
             pagingSourceFactory = {
@@ -133,20 +135,10 @@ class MessageViewModel constructor(
                 )
             },
             remoteMediator = remoteMediator,
-        ).flow.map { paging -> paging.map { it.toMessageUi().also { Timber.i("Message $it") } } }
-            .map { pagingData ->
-                pagingData.insertSeparators { after: MessageUi?, before: MessageUi? ->
-                    if (
-                        (before is MessageUi.Data? && after is MessageUi.Data?) &&
-                        before == null && after != null ||
-                        before is MessageUi.Data && after is MessageUi.Data &&
-                        !before.timetoken.isSameDate(after.timetoken)
-                    ) {
-                        after as MessageUi.Data
-                        MessageUi.Separator(after.timetoken.formatDate())
-                    } else null
-                }
-            }
+        ).flow.map { paging ->
+            paging.map { it.toMessageUi() }
+                .transform()
+        }
             .cachedIn(viewModelScope)
             .distinctUntilChanged()
 
