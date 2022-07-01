@@ -89,20 +89,7 @@ class MemberViewModel constructor(
         channelId: ChannelId? = null,
         filter: Query? = null,
         sorted: Array<Sorted> = arrayOf(Sorted(MemberUi.Data::name.name, Sorted.Direction.ASC)),
-        transform: PagingData<MemberUi>.() -> PagingData<MemberUi> = {
-                                                                     insertSeparators { before: MemberUi?, after: MemberUi? ->
-                                                                         val isSeparator = before is MemberUi.Separator || after is MemberUi.Separator
-                                                                         if (isSeparator) return@insertSeparators null
-
-                                                                         val isFirst = before == null && after != null
-                                                                         val typeChanged =
-                                                                             (before != null && after != null && (before as MemberUi.Data).name!![0] != (after as MemberUi.Data).name!![0])
-                                                                         if (isFirst || typeChanged) {
-                                                                             val title = (after as MemberUi.Data).name!![0].toString()
-                                                                             MemberUi.Separator(title)
-                                                                         } else null
-                                                                     }
-                                                                     },
+        transform: PagingData<MemberUi>.() -> PagingData<MemberUi> = { this },
     ): Flow<PagingData<MemberUi>> =
         Pager(
             config = PagingConfig(pageSize = 10, enablePlaceholders = true),
