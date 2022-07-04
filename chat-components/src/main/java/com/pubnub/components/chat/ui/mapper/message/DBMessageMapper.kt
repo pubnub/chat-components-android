@@ -1,7 +1,6 @@
 package com.pubnub.components.chat.ui.mapper.message
 
 import com.pubnub.components.chat.ui.component.member.MemberUi
-import com.pubnub.components.chat.ui.component.message.Attachment
 import com.pubnub.components.chat.ui.component.message.MessageUi
 import com.pubnub.components.chat.ui.component.message.reaction.ReactionUi
 import com.pubnub.components.data.message.action.DBMessageAction

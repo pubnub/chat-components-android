@@ -12,17 +12,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import com.pubnub.components.R
-import com.pubnub.components.chat.network.data.NetworkMessagePayload
 import com.pubnub.components.chat.ui.component.input.renderer.AnimatedTypingIndicatorRenderer
-import com.pubnub.components.chat.ui.component.input.renderer.DefaultTypingIndicatorRenderer
-import com.pubnub.components.chat.ui.component.input.renderer.TypingIndicatorRenderer
 import com.pubnub.components.chat.ui.component.input.renderer.TypingState
 import com.pubnub.components.chat.ui.component.provider.LocalChannel
-import com.pubnub.components.chat.ui.component.provider.LocalPubNub
 import com.pubnub.framework.service.LocalTypingService
 import com.pubnub.framework.util.Timetoken
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.map
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -37,7 +31,8 @@ fun MessageInput(
             exit = shrinkVertically(),
         ) {
             AnimatedTypingIndicatorRenderer.TypingIndicator(state.data)
-        } },
+        }
+    },
     onSuccess: (String, Timetoken) -> Unit = { _, _ -> },
     onError: (Exception) -> Unit = {},
 ) {
