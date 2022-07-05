@@ -19,10 +19,10 @@ class NetworkMessageMapper(private val mapper: MapperManager) : Mapper<NetworkMe
             text = messagePayload.text,
             contentType = messagePayload.contentType,
             content = messagePayload.content as DBCustomContent?,
+            createdAt = messagePayload.createdAt,
             custom = messagePayload.custom as DBCustomContent?,
             publisher = input.publisher!!,
             channel = input.channel,
-            timetoken = input.timetoken!!,
             isSent = true,
             exception = null,
         )

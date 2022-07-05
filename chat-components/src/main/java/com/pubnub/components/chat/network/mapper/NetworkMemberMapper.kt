@@ -10,10 +10,12 @@ class NetworkMemberMapper(private val mapper: MapperManager) : Mapper<NetworkMem
     override fun map(input: NetworkMember): DBMember =
         DBMember(
             id = input.id,
-            name = input.name!!,
+            name = input.name,
             email = input.email,
             externalId = input.externalId,
             profileUrl = input.profileUrl,
+            type = input.type ?: "default",
+            status = input.status,
             custom = input.custom.asObject(mapper),
             eTag = input.eTag,
             updated = input.updated,

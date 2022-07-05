@@ -42,7 +42,7 @@ class TypingServiceUnitTest {
     private val usernameResolver: (UserId) -> String = { "username_$it" }
 
     private val typingIndicator: TypingIndicator =
-        spyk(TypingIndicator(mockk()), recordPrivateCalls = true)
+        spyk(TypingIndicator(mockk(), userId), recordPrivateCalls = true)
 
     lateinit var service: TypingService
 

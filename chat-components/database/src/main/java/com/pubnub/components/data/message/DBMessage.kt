@@ -9,6 +9,8 @@ import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.util.Timetoken
 import com.pubnub.framework.util.timetoken
+import com.pubnub.framework.util.toIsoString
+import com.pubnub.framework.util.toTimetoken
 import kotlin.time.Duration.Companion.milliseconds
 
 @Keep
@@ -23,11 +25,11 @@ data class DBMessage(
     override val contentType: String? = null,
     override val content: DBCustomContent? = null,
     @ColumnInfo(defaultValue = "") // todo: how to handle Iso date in compile time?
-    override val createdAt: String = System.currentTimeMillis().milliseconds.toIsoString(),
+    override val createdAt: String = System.currentTimeMillis().timetoken.toIsoString(),
     override val custom: DBCustomContent? = null,
     val publisher: UserId,
     val channel: ChannelId,
-    val timetoken: Timetoken = System.currentTimeMillis().timetoken,
+    val timetoken: Timetoken = createdAt.toTimetoken(),
     val isSent: Boolean = true,
     var exception: String? = null,
 ) : Message

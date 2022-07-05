@@ -4,8 +4,10 @@ import com.pubnub.api.PubNub
 import com.pubnub.api.PubNubException
 import com.pubnub.api.callbacks.SubscribeCallback
 import com.pubnub.api.models.consumer.PNStatus
+import com.pubnub.api.models.consumer.objects.PNKey
 import com.pubnub.api.models.consumer.objects.PNPage
 import com.pubnub.api.models.consumer.objects.PNSortKey
+import com.pubnub.api.models.consumer.objects.SortField
 import com.pubnub.api.models.consumer.pubsub.objects.PNDeleteChannelMetadataEventMessage
 import com.pubnub.api.models.consumer.pubsub.objects.PNObjectEventResult
 import com.pubnub.api.models.consumer.pubsub.objects.PNSetChannelMetadataEventMessage
@@ -71,7 +73,7 @@ class DefaultChannelService(
         limit: Int?,
         page: PNPage?,
         filter: String?,
-        sort: Collection<PNSortKey>,
+        sort: Collection<PNSortKey<PNKey>>,
         includeCustom: Boolean,
     ) {
         coroutineScope.launch(dispatcher) {
@@ -85,7 +87,7 @@ class DefaultChannelService(
         limit: Int? = null,
         page: PNPage? = null,
         filter: String? = null,
-        sort: Collection<PNSortKey> = listOf(),
+        sort: Collection<PNSortKey<PNKey>> = listOf(),
         includeCustom: Boolean = false,
         onNext: (PNPage?, Int) -> Unit = { _, _ -> },
     ) {

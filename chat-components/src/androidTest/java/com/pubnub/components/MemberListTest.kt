@@ -67,7 +67,7 @@ class MemberListTest : BaseTest() {
                 onChildAt(index).apply {
                     assertHasClickAction()
                     onChildren().apply {
-                        assertAny(hasText(item.name))
+                        assertAny(hasText(item.name!!))
                         assertAny(hasText(item.description!!))
                     }
                 }
@@ -96,7 +96,7 @@ class MemberListTest : BaseTest() {
                 onChildAt(index).apply {
                     assertHasClickAction()
                     onChildren().apply {
-                        assertAny(hasText(item.name))
+                        assertAny(hasText(item.name!!))
                         assertAny(hasText(item.description!!))
                     }
                 }

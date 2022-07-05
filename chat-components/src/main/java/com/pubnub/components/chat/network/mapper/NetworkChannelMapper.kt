@@ -13,7 +13,7 @@ import com.pubnub.framework.util.asObject
 class NetworkChannelMapper(private val mapper: MapperManager? = null) :
     Mapper<NetworkChannelMetadata, DBChannel> {
 
-    private fun getCustomData(custom: Any?): ChannelCustomData =
+    private fun getCustomData(custom: Any?): ChannelCustomData? =
         if (mapper != null) {
             custom.asObject(mapper)
         } else {
@@ -24,23 +24,23 @@ class NetworkChannelMapper(private val mapper: MapperManager? = null) :
 
 
     override fun map(input: PNChannelMetadata): DBChannel {
-        val custom: ChannelCustomData = getCustomData(input.custom)
+        val custom: ChannelCustomData? = getCustomData(input.custom)
 
-        val type = (custom["type"] as? String) ?: "default"
-        val avatarURL = (custom["avatarURL"] as String)
-        val channelCustom = custom.apply {
-            this.remove("type")
-            this.remove("avatarURL")
+        val type = input.type ?: ((custom?.get("type") as? String?) ?: "default")
+        val profileUrl = (custom?.get("profileUrl") as? String)
+        val channelCustom = custom?.apply {
+            remove("profileUrl")
         }
         return DBChannel(
             id = input.id,
-            name = input.name!!,
+            name = input.name,
             description = input.description,
             type = type,
-            updated = input.updated,
-            eTag = input.eTag,
-            profileUrl = avatarURL,
+            status = input.status,
             custom = channelCustom,
+            profileUrl = profileUrl,
+            eTag = input.eTag,
+            updated = input.updated,
         )
     }
 }

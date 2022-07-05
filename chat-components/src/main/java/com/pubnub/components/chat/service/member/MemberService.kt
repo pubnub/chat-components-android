@@ -1,6 +1,7 @@
 package com.pubnub.components.chat.service.member
 
 import androidx.compose.runtime.staticCompositionLocalOf
+import com.pubnub.api.models.consumer.objects.PNKey
 import com.pubnub.api.models.consumer.objects.PNPage
 import com.pubnub.api.models.consumer.objects.PNSortKey
 import com.pubnub.components.data.member.DBMember
@@ -19,7 +20,7 @@ interface MemberService<Data : Member> {
         limit: Int? = null,
         page: PNPage? = null,
         filter: String? = null,
-        sort: Collection<PNSortKey> = listOf(),
+        sort: Collection<PNSortKey<PNKey>> = listOf(),
         includeCustom: Boolean = true,
     )
 

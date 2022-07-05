@@ -83,7 +83,9 @@ dependencies {
 
     implementation Libs.JakeWharton.timber
 
-    implementation Libs.PubNub.pubnub
+    api platform(Libs.PubNub.bom)
+    implementation Libs.PubNub.kotlin
+    implementation Libs.PubNub.memberships
 
     androidTestImplementation Libs.JUnit.junit
     androidTestImplementation Libs.AndroidX.Test.runner

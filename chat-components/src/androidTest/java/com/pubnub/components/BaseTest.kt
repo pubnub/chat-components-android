@@ -67,16 +67,11 @@ open class BaseTest {
                 GlobalScope.launch(Dispatchers.IO) {
                     with(Database.INSTANCE) {
                         // add test member
-                        memberDao().insert(
+                        memberDao().insertOrUpdate(
                             DBMember(
-                                userId,
-                                "test",
-                                null,
-                                null,
-                                null,
-                                DBMember.CustomData("asd"),
-                                null,
-                                null
+                                id = userId,
+                                name ="test",
+                                custom = DBMember.CustomData("asd"),
                             ),
                         )
                     }

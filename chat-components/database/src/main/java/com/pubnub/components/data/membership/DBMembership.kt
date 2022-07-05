@@ -13,5 +13,6 @@ import com.pubnub.framework.data.UserId
 data class DBMembership(
     override val channelId: ChannelId,
     override val memberId: UserId,
+    override val status: String? = null,
     override val id: String = "${channelId}:${memberId}",
 ) : Membership

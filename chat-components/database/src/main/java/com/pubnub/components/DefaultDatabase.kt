@@ -28,6 +28,7 @@ import com.pubnub.components.data.message.action.DefaultMessageActionDao
     version = 4,
     exportSchema = true,
     autoMigrations = [
+        AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
         AutoMigration(from = 3, to = 4, spec = DefaultDatabase.UnifiedPayloadMigration::class),
     ]
