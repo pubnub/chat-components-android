@@ -140,8 +140,8 @@ object GroupMessageRenderer : MessageRenderer {
 
     @Composable
     fun GroupChatMessage(
-        @Suppress("UNUSED_PARAMETER") currentUserId: UserId,
-        @Suppress("UNUSED_PARAMETER") userId: UserId,
+        currentUserId: UserId,
+        userId: UserId,
         profileUrl: String?,
         online: Boolean?,
         title: String,
@@ -153,7 +153,8 @@ object GroupMessageRenderer : MessageRenderer {
         onReactionSelected: ((Reaction) -> Unit)? = null,
         reactionsPicker: ReactionsRenderer = DefaultReactionsPickerRenderer,
     ) {
-        val theme = LocalMessageListTheme.current.message
+        val theme = if (currentUserId == userId) LocalMessageListTheme.current.message
+        else LocalMessageListTheme.current.messageOwn
 
         val date = timetoken.formatDate()
         val reactionEnabled = onReactionSelected != null
