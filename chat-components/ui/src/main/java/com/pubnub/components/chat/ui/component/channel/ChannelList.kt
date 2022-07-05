@@ -22,31 +22,11 @@ fun ChannelList(
     onSelected: (ChannelUi.Data) -> Unit = {},
     onAdd: (() -> Unit)? = null,
     onLeave: ((ChannelUi.Data) -> Unit)? = null,
+    useStickyHeader: Boolean = false,
     headerContent: @Composable (LazyItemScope) -> Unit = {},
     footerContent: @Composable (LazyItemScope) -> Unit = {},
     itemContent: @Composable LazyListScope.(ChannelUi?) -> Unit = { channel ->
-        when (channel) {
-            null -> {
-                DefaultChannelRenderer.Placeholder()
-            }
-            is ChannelUi.Header -> {
-                DefaultChannelRenderer.renderSeparator(
-                    scope = this,
-                    title = channel.title,
-                    onClick = onAdd
-                )
-            }
-            is ChannelUi.Data -> {
-                DefaultChannelRenderer.Channel(
-                    name = channel.name,
-                    description = channel.description,
-                    profileUrl = channel.profileUrl,
-                    onClick = { onSelected(channel) },
-                    onLeave = onLeave?.run { { onLeave(channel) } },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-        }
+        ChannelListContent(channel, useStickyHeader, onSelected, onAdd, onLeave)
     },
 ) {
     checkNotNull(LocalPubNub.current)
@@ -83,27 +63,11 @@ fun ChannelList(
     onSelected: (ChannelUi.Data) -> Unit = {},
     onAdd: (() -> Unit)? = null,
     onLeave: ((ChannelUi.Data) -> Unit)? = null,
+    useStickyHeader: Boolean = false,
     headerContent: @Composable (LazyItemScope) -> Unit = {},
     footerContent: @Composable (LazyItemScope) -> Unit = { _: LazyItemScope -> },
     itemContent: @Composable LazyListScope.(ChannelUi?) -> Unit = { channel ->
-        when (channel) {
-            null -> {
-                DefaultChannelRenderer.Placeholder()
-            }
-            is ChannelUi.Header -> {
-                DefaultChannelRenderer.Separator(title = channel.title, onClick = onAdd)
-            }
-            is ChannelUi.Data -> {
-                DefaultChannelRenderer.Channel(
-                    name = channel.name,
-                    description = channel.description,
-                    profileUrl = channel.profileUrl,
-                    onClick = { onSelected(channel) },
-                    onLeave = onLeave?.run { { onLeave(channel) } },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-        }
+        ChannelListContent(channel, useStickyHeader, onSelected, onAdd, onLeave)
     },
 ) {
     checkNotNull(LocalPubNub.current)
@@ -130,6 +94,44 @@ fun ChannelList(
             item {
                 footerContent(this)
             }
+        }
+    }
+}
+
+@Composable
+fun LazyListScope.ChannelListContent(
+    channel: ChannelUi?,
+    useStickyHeader: Boolean = false,
+    onSelected: (ChannelUi.Data) -> Unit,
+    onAdd: (() -> Unit)?,
+    onLeave: ((ChannelUi.Data) -> Unit)?,
+){
+    when (channel) {
+        null -> {
+            DefaultChannelRenderer.Placeholder()
+        }
+        is ChannelUi.Header -> {
+            if(useStickyHeader)
+                DefaultChannelRenderer.Separator(
+                    title = channel.title,
+                    onClick = onAdd
+                )
+            else
+                DefaultChannelRenderer.renderSeparator(
+                    scope = this,
+                    title = channel.title,
+                    onClick = onAdd
+                )
+        }
+        is ChannelUi.Data -> {
+            DefaultChannelRenderer.Channel(
+                name = channel.name,
+                description = channel.description,
+                profileUrl = channel.profileUrl,
+                onClick = { onSelected(channel) },
+                onLeave = onLeave?.run { { onLeave(channel) } },
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
     }
 }

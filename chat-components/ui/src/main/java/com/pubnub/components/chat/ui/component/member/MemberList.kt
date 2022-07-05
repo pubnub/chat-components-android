@@ -1,12 +1,8 @@
 package com.pubnub.components.chat.ui.component.member
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -17,7 +13,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.pubnub.components.chat.ui.R
 import com.pubnub.components.chat.ui.component.member.renderer.DefaultMemberRenderer
-import com.pubnub.components.chat.ui.component.member.renderer.MemberRenderer
 import com.pubnub.components.chat.ui.component.presence.Presence
 import com.pubnub.components.chat.ui.component.provider.LocalPubNub
 import com.pubnub.framework.util.hash
@@ -25,32 +20,15 @@ import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun MemberList(
-    members: List<MemberUi.Data>,
+    members: List<MemberUi>,
     presence: Presence? = null,
     onSelected: (MemberUi.Data) -> Unit = {},
-    header: @Composable (LazyItemScope) -> Unit = {},
-    footer: @Composable (LazyItemScope) -> Unit = {},
-    renderer: MemberRenderer = DefaultMemberRenderer,
-) {
-    MemberList(
-        members = mapOf(null to members),
-        presence = presence,
-        onSelected = onSelected,
-        header = header,
-        footer = footer,
-        renderer = renderer,
-    )
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun MemberList(
-    members: Map<String?, List<MemberUi.Data>>,
-    presence: Presence? = null,
-    onSelected: (MemberUi.Data) -> Unit = {},
-    header: @Composable (LazyItemScope) -> Unit = {},
-    footer: @Composable (LazyItemScope) -> Unit = {},
-    renderer: MemberRenderer = DefaultMemberRenderer,
+    useStickyHeader: Boolean = false,
+    headerContent: @Composable (LazyItemScope) -> Unit = {},
+    footerContent: @Composable (LazyItemScope) -> Unit = {},
+    itemContent: @Composable LazyListScope.(MemberUi?) -> Unit = { member ->
+        MemberListContent(member, useStickyHeader, presence, onSelected)
+    },
 ) {
     checkNotNull(LocalPubNub.current)
 
@@ -67,25 +45,13 @@ fun MemberList(
             },
         ) {
             item {
-                header(this)
+                headerContent(this)
             }
-            members.forEach { (header, list) ->
-                renderer.renderSeparator(this, header)
-
-                items(list) { member ->
-                    val online = presence?.get(member.id)?.value
-                    renderer.Member(
-                        name = member.name ?: member.id,
-                        description = member.description,
-                        profileUrl = member.profileUrl ?: getRandomProfileUrl(member.id),
-                        online = online,
-                        onClick = { onSelected(member) },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
+            items(members) { member ->
+                this@LazyColumn.itemContent(member)
             }
             item {
-                footer(this)
+                footerContent(this)
             }
         }
     }
@@ -96,9 +62,12 @@ fun MemberList(
     members: Flow<PagingData<MemberUi>>,
     presence: Presence? = null,
     onSelected: (MemberUi.Data) -> Unit = {},
-    header: @Composable (LazyItemScope) -> Unit = {},
-    footer: @Composable (LazyItemScope) -> Unit = {},
-    renderer: MemberRenderer = DefaultMemberRenderer,
+    useStickyHeader: Boolean = false,
+    headerContent: @Composable (LazyItemScope) -> Unit = {},
+    footerContent: @Composable (LazyItemScope) -> Unit = {},
+    itemContent: @Composable LazyListScope.(MemberUi?) -> Unit = { member ->
+        MemberListContent(member, useStickyHeader, presence, onSelected)
+    },
 ) {
 
     val theme = LocalMemberListTheme.current
@@ -115,38 +84,53 @@ fun MemberList(
             },
         ) {
             item {
-                header(this)
+                headerContent(this)
             }
             items(lazyItems) { member ->
-                if (member == null) {
-                    renderer.Placeholder()
-                    return@items
-                }
-
-                when (member) {
-                    is MemberUi.Separator -> {
-                        renderer.Separator(title = member.text)
-                    }
-                    is MemberUi.Data -> {
-                        renderer.Member(
-                            name = member.name ?: member.id,
-                            description = member.description,
-                            profileUrl = member.profileUrl ?: getRandomProfileUrl(member.id),
-                            online = presence?.get(member.id)?.value,//member.online.value,
-                            onClick = { onSelected(member) },
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    }
-                }
+                this@LazyColumn.itemContent(member)
             }
-
             item {
-                footer(this)
+                footerContent(this)
             }
         }
     }
 }
 
+@Composable
+fun LazyListScope.MemberListContent(
+    member: MemberUi?,
+    useStickyHeader: Boolean,
+    presence: Presence?,
+    onSelected: (MemberUi.Data) -> Unit
+){
+    when (member) {
+        null -> {
+            DefaultMemberRenderer.Placeholder()
+        }
+        is MemberUi.Separator -> {
+            if(useStickyHeader)
+                DefaultMemberRenderer.renderSeparator(
+                    scope = this,
+                    title = member.text,
+                )
+            else
+                DefaultMemberRenderer.Separator(
+                    title = member.text,
+                )
+        }
+        is MemberUi.Data -> {
+            val online = presence?.get(member.id)?.value
+            DefaultMemberRenderer.Member(
+                name = member.name ?: member.id,
+                description = member.description,
+                profileUrl = member.profileUrl ?: getRandomProfileUrl(member.id),
+                online = online,
+                onClick = { onSelected(member) },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
+}
 
 fun getRandomProfileUrl(id: String) =
     "https://www.gravatar.com/avatar/${hash(id)}?s=256&d=identicon"
