@@ -1,5 +1,6 @@
 package com.pubnub.components.chat.ui.component.member
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.*
@@ -96,23 +97,25 @@ fun MemberList(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LazyListScope.MemberListContent(
     member: MemberUi?,
     useStickyHeader: Boolean,
     presence: Presence?,
     onSelected: (MemberUi.Data) -> Unit
-){
+) {
     when (member) {
         null -> {
             DefaultMemberRenderer.Placeholder()
         }
         is MemberUi.Separator -> {
-            if(useStickyHeader)
-                DefaultMemberRenderer.renderSeparator(
-                    scope = this,
-                    title = member.text,
-                )
+            if (useStickyHeader)
+                stickyHeader(member.text) {
+                    DefaultMemberRenderer.Separator(
+                        title = member.text,
+                    )
+                }
             else
                 DefaultMemberRenderer.Separator(
                     title = member.text,

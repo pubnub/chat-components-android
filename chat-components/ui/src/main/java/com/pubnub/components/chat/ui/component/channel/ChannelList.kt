@@ -1,5 +1,6 @@
 package com.pubnub.components.chat.ui.component.channel
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.*
@@ -98,6 +99,7 @@ fun ChannelList(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LazyListScope.ChannelListContent(
     channel: ChannelUi?,
@@ -105,20 +107,21 @@ fun LazyListScope.ChannelListContent(
     onSelected: (ChannelUi.Data) -> Unit,
     onAdd: (() -> Unit)?,
     onLeave: ((ChannelUi.Data) -> Unit)?,
-){
+) {
     when (channel) {
         null -> {
             DefaultChannelRenderer.Placeholder()
         }
         is ChannelUi.Header -> {
-            if(useStickyHeader)
-                DefaultChannelRenderer.Separator(
-                    title = channel.title,
-                    onClick = onAdd
-                )
+            if (useStickyHeader)
+                stickyHeader(channel.title) {
+                    DefaultChannelRenderer.Separator(
+                        title = channel.title,
+                        onClick = onAdd
+                    )
+                }
             else
-                DefaultChannelRenderer.renderSeparator(
-                    scope = this,
+                DefaultChannelRenderer.Separator(
                     title = channel.title,
                     onClick = onAdd
                 )
