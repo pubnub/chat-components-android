@@ -9,7 +9,7 @@ import com.pubnub.framework.data.UserId
 import com.pubnub.framework.mapper.Mapper
 
 class DBMessageMapper(
-    val memberFormatter: (UserId) -> MemberUi.Data,
+    private val memberFormatter: (UserId) -> MemberUi.Data,
 ) : Mapper<DBMessageWithActions, MessageUi.Data> {
     @Suppress("UNCHECKED_CAST")
     override fun map(input: DBMessageWithActions): MessageUi.Data =
