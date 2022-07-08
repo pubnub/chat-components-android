@@ -1,6 +1,5 @@
 package com.pubnub.components.chat.ui.component.member.renderer
 
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
@@ -22,6 +21,4 @@ interface MemberRenderer {
     @Composable
     fun Separator(title: String) {
     }
-
-    fun renderSeparator(scope: LazyListScope, title: String?)
 }

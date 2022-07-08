@@ -159,14 +159,7 @@ fun WithServices(
     sync: Boolean,
     content: @Composable() () -> Unit
 ) {
-    val memberFormatter = LocalMemberFormatter.current
     val mapper = LocalPubNub.current.mapper
-    val usernameResolver: (UserId) -> String = { id ->
-        runBlocking {
-            memberFormatter(id)
-        }.name ?: id
-    }
-
     val actionService = ActionService(LocalPubNub.current)
 
     CompositionLocalProvider(
@@ -201,7 +194,6 @@ fun WithServices(
         ),
         LocalTypingService provides TypingService(
             LocalUser.current,
-            usernameResolver,
             TypingIndicator(LocalPubNub.current, LocalUser.current),
         ),
         LocalOccupancyService provides DefaultOccupancyService(

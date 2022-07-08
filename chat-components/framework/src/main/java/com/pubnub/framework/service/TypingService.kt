@@ -17,16 +17,11 @@ import kotlin.time.Duration.Companion.seconds
 
 /**
  * Service to send and collect data about typing users
- *
- * Received data will be mapped by [usernameResolver]
- *
- * @param usernameResolver for mapping uuid into name
  */
 @OptIn(ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class, FlowPreview::class)
 @Framework
 class TypingService constructor(
     private val id: UserId,
-    private val usernameResolver: (UserId) -> String,
     private val typingIndicator: TypingIndicator,
     private val coroutineScope: CoroutineScope = GlobalScope,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
@@ -62,9 +57,6 @@ class TypingService constructor(
             list.filter { data ->
                 data.channelId == id // is current channel
                         && (!filterOwn || data.userId != this.id) // user is not own
-            }.map {
-                val userName = usernameResolver(it.userId)
-                it.copy(userId = userName)
             }
         }
 

@@ -25,7 +25,6 @@ sealed class ChannelUi {
             const val DIRECT = "direct"
             const val GROUP = "group"
 
-
             @TypeDef
             fun typeFromString(value: String?): String =
                 when (value) {

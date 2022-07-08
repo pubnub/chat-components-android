@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -39,14 +38,6 @@ object DefaultMemberRenderer : MemberRenderer {
             clickAction = onClick,
             modifier = modifier,
         )
-    }
-
-    override fun renderSeparator(scope: LazyListScope, title: String?) {
-        if (title != null) {
-            scope.stickyHeader {
-                MemberItemHeaderView(title)
-            }
-        }
     }
 
     @Composable

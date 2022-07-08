@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.pubnub.components.chat.ui.R
 import com.pubnub.components.chat.ui.component.input.LocalTypingIndicatorTheme
-import com.pubnub.framework.data.Typing
+import com.pubnub.components.chat.ui.component.input.TypingUi
 import kotlinx.coroutines.delay
 
 /**
@@ -37,7 +37,7 @@ object AnimatedTypingIndicatorRenderer : TypingIndicatorRenderer {
     private val easing = FastOutSlowInEasing
 
     @Composable
-    override fun TypingIndicator(data: List<Typing>) {
+    override fun TypingIndicator(data: List<TypingUi>) {
         val context = LocalContext.current
         val theme = LocalTypingIndicatorTheme.current
 
@@ -58,7 +58,7 @@ object AnimatedTypingIndicatorRenderer : TypingIndicatorRenderer {
 
                 // Draw text
                 Text(
-                    text = context.getString(R.string.is_typing_animated, lastData.userId),
+                    text = context.getString(R.string.is_typing_animated, lastData.user.name),
                     fontWeight = theme.text.fontWeight,
                     fontSize = theme.text.fontSize,
                     color = theme.text.color,

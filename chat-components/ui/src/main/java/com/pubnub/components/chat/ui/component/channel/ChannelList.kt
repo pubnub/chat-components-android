@@ -3,10 +3,7 @@ package com.pubnub.components.chat.ui.component.channel
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -16,40 +13,22 @@ import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.pubnub.components.chat.ui.R
-import com.pubnub.components.chat.ui.component.channel.renderer.ChannelRenderer
 import com.pubnub.components.chat.ui.component.channel.renderer.DefaultChannelRenderer
 import com.pubnub.components.chat.ui.component.provider.LocalPubNub
 import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun ChannelList(
-    channels: List<ChannelUi.Data>,
-    onSelected: (ChannelUi.Data) -> Unit = {},
-    onLeave: ((ChannelUi.Data) -> Unit)? = null,
-    header: @Composable (LazyItemScope) -> Unit = {},
-    footer: @Composable (LazyItemScope) -> Unit = {},
-    renderer: ChannelRenderer = DefaultChannelRenderer,
-) {
-    ChannelList(
-        channels = mapOf(null to channels),
-        onSelected = onSelected,
-        onLeave = onLeave,
-        header = header,
-        footer = footer,
-        renderer = renderer,
-    )
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun ChannelList(
-    channels: Map<String?, List<ChannelUi.Data>>,
+    channels: List<ChannelUi>,
     onSelected: (ChannelUi.Data) -> Unit = {},
     onAdd: (() -> Unit)? = null,
     onLeave: ((ChannelUi.Data) -> Unit)? = null,
-    header: @Composable (LazyItemScope) -> Unit = {},
-    footer: @Composable (LazyItemScope) -> Unit = {},
-    renderer: ChannelRenderer = DefaultChannelRenderer,
+    useStickyHeader: Boolean = false,
+    headerContent: @Composable (LazyItemScope) -> Unit = {},
+    footerContent: @Composable (LazyItemScope) -> Unit = {},
+    itemContent: @Composable LazyListScope.(ChannelUi?) -> Unit = { channel ->
+        ChannelListContent(channel, useStickyHeader, onSelected, onAdd, onLeave)
+    },
 ) {
     checkNotNull(LocalPubNub.current)
 
@@ -65,23 +44,15 @@ fun ChannelList(
             },
         ) {
             item {
-                header(this)
+                headerContent(this)
             }
-            channels.forEach { (header, list) ->
-                renderer.renderSeparator(this, header, onAdd)
-                items(list) { channel ->
-                    renderer.Channel(
-                        name = channel.name,
-                        description = channel.description!!,
-                        profileUrl = channel.profileUrl,
-                        onClick = { onSelected(channel) },
-                        onLeave = onLeave?.run { { onLeave(channel) } },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
+
+            items(channels) { channel ->
+                this@LazyColumn.itemContent(channel)
             }
+
             item {
-                footer(this)
+                footerContent(this)
             }
         }
     }
@@ -93,16 +64,18 @@ fun ChannelList(
     onSelected: (ChannelUi.Data) -> Unit = {},
     onAdd: (() -> Unit)? = null,
     onLeave: ((ChannelUi.Data) -> Unit)? = null,
-    header: @Composable (LazyItemScope) -> Unit = {},
-    footer: @Composable (LazyItemScope) -> Unit = { _: LazyItemScope -> },
-    renderer: ChannelRenderer = DefaultChannelRenderer,
+    useStickyHeader: Boolean = false,
+    headerContent: @Composable (LazyItemScope) -> Unit = {},
+    footerContent: @Composable (LazyItemScope) -> Unit = { _: LazyItemScope -> },
+    itemContent: @Composable LazyListScope.(ChannelUi?) -> Unit = { channel ->
+        ChannelListContent(channel, useStickyHeader, onSelected, onAdd, onLeave)
+    },
 ) {
     checkNotNull(LocalPubNub.current)
 
     val theme = LocalChannelListTheme.current
     val context = LocalContext.current
 
-    // Scroll with paginated channels?
     val lazyItems = channels.collectAsLazyPagingItems()
     Box(modifier = theme.modifier) {
         val lazyListState = rememberLazyListState(initialFirstVisibleItemIndex = 0)
@@ -114,33 +87,54 @@ fun ChannelList(
             },
         ) {
             item {
-                header(this)
+                headerContent(this)
             }
             items(lazyItems) { channel ->
-                if (channel == null) {
-                    renderer.Placeholder()
-                    return@items
-                }
-
-                when (channel) {
-                    is ChannelUi.Header -> {
-                        renderer.Separator(title = channel.title, onClick = onAdd)
-                    }
-                    is ChannelUi.Data -> {
-                        renderer.Channel(
-                            name = channel.name,
-                            description = channel.description,
-                            profileUrl = channel.profileUrl,
-                            onClick = { onSelected(channel) },
-                            onLeave = onLeave?.run { { onLeave(channel) } },
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    }
-                }
+                this@LazyColumn.itemContent(channel)
             }
             item {
-                footer(this)
+                footerContent(this)
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun LazyListScope.ChannelListContent(
+    channel: ChannelUi?,
+    useStickyHeader: Boolean = false,
+    onSelected: (ChannelUi.Data) -> Unit,
+    onAdd: (() -> Unit)?,
+    onLeave: ((ChannelUi.Data) -> Unit)?,
+) {
+    when (channel) {
+        null -> {
+            DefaultChannelRenderer.Placeholder()
+        }
+        is ChannelUi.Header -> {
+            if (useStickyHeader)
+                stickyHeader(channel.title) {
+                    DefaultChannelRenderer.Separator(
+                        title = channel.title,
+                        onClick = onAdd
+                    )
+                }
+            else
+                DefaultChannelRenderer.Separator(
+                    title = channel.title,
+                    onClick = onAdd
+                )
+        }
+        is ChannelUi.Data -> {
+            DefaultChannelRenderer.Channel(
+                name = channel.name,
+                description = channel.description,
+                profileUrl = channel.profileUrl,
+                onClick = { onSelected(channel) },
+                onLeave = onLeave?.run { { onLeave(channel) } },
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
     }
 }

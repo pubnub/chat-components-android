@@ -12,12 +12,12 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import com.pubnub.components.chat.ui.R
 import com.pubnub.components.chat.ui.component.input.LocalTypingIndicatorTheme
-import com.pubnub.framework.data.Typing
+import com.pubnub.components.chat.ui.component.input.TypingUi
 
 object DefaultTypingIndicatorRenderer : TypingIndicatorRenderer {
 
     @Composable
-    override fun TypingIndicator(data: List<Typing>) {
+    override fun TypingIndicator(data: List<TypingUi>) {
         val context = LocalContext.current
         val theme = LocalTypingIndicatorTheme.current
 
@@ -43,7 +43,7 @@ object DefaultTypingIndicatorRenderer : TypingIndicatorRenderer {
                 }
                 // Draw text
                 Text(
-                    text = context.getString(R.string.is_typing, lastData.userId),
+                    text = context.getString(R.string.is_typing, lastData.user.name),
                     fontWeight = theme.text.fontWeight,
                     fontSize = theme.text.fontSize,
                     color = theme.text.color,

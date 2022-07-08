@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -59,14 +58,6 @@ object DefaultChannelRenderer : ChannelRenderer {
     override fun Separator(title: String?, onClick: (() -> Unit)?) {
         if (title != null) {
             ChannelItemHeaderView(title, onClick)
-        }
-    }
-
-    override fun renderSeparator(scope: LazyListScope, title: String?, onClick: (() -> Unit)?) {
-        if (title != null) {
-            scope.stickyHeader(title) {
-                ChannelItemHeaderView(title, onClick)
-            }
         }
     }
 

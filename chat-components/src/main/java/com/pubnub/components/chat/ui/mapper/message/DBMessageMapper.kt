@@ -1,7 +1,6 @@
 package com.pubnub.components.chat.ui.mapper.message
 
 import com.pubnub.components.chat.ui.component.member.MemberUi
-import com.pubnub.components.chat.ui.component.message.Attachment
 import com.pubnub.components.chat.ui.component.message.MessageUi
 import com.pubnub.components.chat.ui.component.message.reaction.ReactionUi
 import com.pubnub.components.data.message.action.DBMessageAction
@@ -10,7 +9,7 @@ import com.pubnub.framework.data.UserId
 import com.pubnub.framework.mapper.Mapper
 
 class DBMessageMapper(
-    val memberFormatter: (UserId) -> MemberUi.Data,
+    private val memberFormatter: (UserId) -> MemberUi.Data,
 ) : Mapper<DBMessageWithActions, MessageUi.Data> {
     @Suppress("UNCHECKED_CAST")
     override fun map(input: DBMessageWithActions): MessageUi.Data =

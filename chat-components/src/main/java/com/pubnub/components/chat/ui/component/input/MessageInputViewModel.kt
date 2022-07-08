@@ -8,7 +8,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pubnub.components.chat.service.message.LocalMessageService
 import com.pubnub.components.chat.service.message.MessageService
 import com.pubnub.components.chat.ui.component.provider.LocalUser
-import com.pubnub.components.data.message.DBCustomContent
 import com.pubnub.components.data.message.DBMessage
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
