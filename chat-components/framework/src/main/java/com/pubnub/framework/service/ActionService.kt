@@ -11,6 +11,7 @@ import com.pubnub.api.models.consumer.message_actions.PNMessageAction
 import com.pubnub.api.models.consumer.message_actions.PNRemoveMessageActionResult
 import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResult
 import com.pubnub.framework.data.ChannelId
+import com.pubnub.framework.service.error.ErrorHandler
 import com.pubnub.framework.util.Framework
 import com.pubnub.framework.util.flow.single
 import com.pubnub.framework.util.toJson
@@ -18,7 +19,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.*
-import timber.log.Timber
 
 /**
  * Action Service which handle [PNMessageActionResult]
@@ -33,6 +33,7 @@ import timber.log.Timber
 @Framework
 class ActionService(
     private val pubNub: PubNub,
+    private val errorHandler: ErrorHandler,
     private val coroutineScope: CoroutineScope = GlobalScope,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
@@ -53,7 +54,7 @@ class ActionService(
         channelId: ChannelId,
         messageAction: PNMessageAction,
     ): PNAddMessageActionResult {
-        Timber.i("Send message action to channel '$channelId': ${messageAction.toJson(pubNub.mapper)}")
+        errorHandler.i("Send message action to channel '$channelId': ${messageAction.toJson(pubNub.mapper)}")
         return pubNub.addMessageAction(
             channel = channelId,
             messageAction = messageAction,
@@ -72,7 +73,7 @@ class ActionService(
         messageTimetoken: Long,
         actionTimetoken: Long,
     ): PNRemoveMessageActionResult {
-        Timber.i("Remove message action from channel '$channelId', messageTimetoken '$messageTimetoken', actionTimetoken '$actionTimetoken'")
+        errorHandler.i("Remove message action from channel '$channelId', messageTimetoken '$messageTimetoken', actionTimetoken '$actionTimetoken'")
         return pubNub.removeMessageAction(
             channel = channelId,
             messageTimetoken = messageTimetoken,
@@ -95,7 +96,7 @@ class ActionService(
         end: Long?,
         limit: Int? = null,
     ): PNGetMessageActionsResult {
-        Timber.i("Get message action from channel '$channelId', time [$end : $start)")
+        errorHandler.i("Get message action from channel '$channelId', time [$end : $start)")
         return pubNub.getMessageActions(
             channel = channelId,
             page = PNBoundedPage(
@@ -136,22 +137,22 @@ class ActionService(
         val newActions = result.actions
         results.addAll(newActions)
 
-        Timber.e("Sync successful. New actions: ${newActions.size}")
+        errorHandler.e("Sync successful. New actions: ${newActions.size}")
         return when {
             result.page != null -> {
-                Timber.i("Page: ${result.page}")
+                errorHandler.i("Page: ${result.page}")
                 val newestActionTimestamp = result.page!!.start
 
-                Timber.e("Trying to sync successful with end '$newestActionTimestamp'")
+                errorHandler.e("Trying to sync successful with end '$newestActionTimestamp'")
                 getAll(channelId, newestActionTimestamp, end, limit, results)
             }
             newActions.isNotEmpty() -> {
                 val newestActionTimestamp = newActions.minOf { it.actionTimetoken!! }
-                Timber.e("Trying to sync successful with end '$newestActionTimestamp'")
+                errorHandler.e("Trying to sync successful with end '$newestActionTimestamp'")
                 getAll(channelId, newestActionTimestamp, end, limit, results)
             }
             else -> {
-                Timber.e("Sync successful. No more actions. Result size: ${results.size}")
+                errorHandler.e("Sync successful. No more actions. Result size: ${results.size}")
                 results
             }
         }
@@ -161,7 +162,7 @@ class ActionService(
      * Start listening for Actions
      */
     fun bind() {
-        Timber.e("Bind")
+        errorHandler.e("Bind")
         listenForActions()
     }
 
@@ -169,7 +170,7 @@ class ActionService(
      * Stop listening for Actions
      */
     fun unbind() {
-        Timber.e("Unbind")
+        errorHandler.e("Unbind")
         if (::actionJob.isInitialized)
             stopListenForActions()
     }
@@ -216,7 +217,7 @@ class ActionService(
      * Will check [PNMessageActionResult.messageAction] type and process it.
      */
     private suspend fun PNMessageActionResult.processAction() {
-        Timber.i("Action received: $messageAction")
+        errorHandler.i("Action received: $messageAction")
         _actions.emit(this@processAction)
     }
 

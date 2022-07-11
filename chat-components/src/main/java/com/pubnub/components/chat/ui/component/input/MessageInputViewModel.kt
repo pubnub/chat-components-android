@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.pubnub.components.chat.provider.LocalErrorHandler
 import com.pubnub.components.chat.service.message.LocalMessageService
 import com.pubnub.components.chat.service.message.MessageService
 import com.pubnub.components.chat.ui.component.provider.LocalUser
@@ -13,6 +14,7 @@ import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.service.LocalTypingService
 import com.pubnub.framework.service.TypingService
+import com.pubnub.framework.service.error.ErrorHandler
 import com.pubnub.framework.util.Timetoken
 import com.pubnub.framework.util.timetoken
 import com.pubnub.framework.util.toIsoString
@@ -30,7 +32,8 @@ class MessageInputViewModel(
     private val id: UserId,
     private val messageService: MessageService<DBMessage>,
     private val typingService: TypingService? = null,
-) : ViewModel() {
+    private val errorHandler: ErrorHandler,
+    ) : ViewModel() {
 
     companion object {
         /**
@@ -47,10 +50,11 @@ class MessageInputViewModel(
         fun default(
             id: UserId = LocalUser.current,
             messageService: MessageService<DBMessage> = LocalMessageService.current,
+            errorHandler: ErrorHandler = LocalErrorHandler.current,
             typingService: TypingService? = null,
         ): MessageInputViewModel =
             viewModel(
-                factory = MessageInputViewModelFactory(id, messageService, typingService)
+                factory = MessageInputViewModelFactory(id, messageService, errorHandler, typingService)
             )
 
         /**
@@ -66,7 +70,7 @@ class MessageInputViewModel(
             id: UserId = LocalUser.current,
             messageService: MessageService<DBMessage> = LocalMessageService.current,
         ): MessageInputViewModel =
-            default(id, messageService, LocalTypingService.current)
+            default(id, messageService, LocalErrorHandler.current, LocalTypingService.current)
     }
 
     private val time: Timetoken get() = System.currentTimeMillis().timetoken
@@ -90,7 +94,7 @@ class MessageInputViewModel(
         onSuccess: (String, Timetoken) -> Unit = { _: String, _: Timetoken -> },
         onError: (Exception) -> Unit = { _: Exception -> }
     ) {
-        Timber.i("Sending message '$message' to channel '$id'")
+        errorHandler.i("Sending message '$message' to channel '$id'")
         val data = create(id, message, contentType, content)
         viewModelScope.launch(Dispatchers.IO) {
             messageService.send(
@@ -138,12 +142,13 @@ class MessageInputViewModel(
 class MessageInputViewModelFactory(
     private val id: UserId,
     private val messageService: MessageService<DBMessage>,
+    private val errorHandler: ErrorHandler,
     private val typingService: TypingService? = null,
 ) :
     ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return MessageInputViewModel(id, messageService, typingService) as T
+        return MessageInputViewModel(id, messageService, typingService, errorHandler) as T
     }
 }
 

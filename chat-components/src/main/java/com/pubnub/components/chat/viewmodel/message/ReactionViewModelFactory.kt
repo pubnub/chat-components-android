@@ -8,6 +8,7 @@ import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.repository.message.action.MessageActionRepository
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
+import com.pubnub.framework.service.error.ErrorHandler
 import kotlinx.coroutines.FlowPreview
 
 @OptIn(ExperimentalPagingApi::class, FlowPreview::class)
@@ -16,6 +17,7 @@ class ReactionViewModelFactory constructor(
     private val channelId: ChannelId,
     private val messageActionRepository: MessageActionRepository<DBMessageAction>,
     private val messageReactionService: DefaultMessageReactionService? = null,
+    private val errorHandler: ErrorHandler,
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -26,6 +28,7 @@ class ReactionViewModelFactory constructor(
                 channelId,
                 messageActionRepository,
                 messageReactionService,
+                errorHandler,
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

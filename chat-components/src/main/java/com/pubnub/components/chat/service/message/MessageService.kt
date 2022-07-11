@@ -17,8 +17,8 @@ interface MessageService<Data : Message> {
         message: Data,
         meta: Any? = null,
         store: Boolean = true,
-        onSuccess: (String, Timetoken) -> Unit = { message, result -> Timber.i("Message '$message' sent, result: $result") },
-        onError: (Exception) -> Unit = { Timber.i("Message sending error: $it") },
+        onSuccess: (String, Timetoken) -> Unit = { _: String, _: Timetoken -> },
+        onError: (Exception) -> Unit = {},
     )
 
     suspend fun fetchAll(
@@ -27,7 +27,7 @@ interface MessageService<Data : Message> {
         end: Long?,
         count: Int,
         withActions: Boolean = true,
-        withUUID: Boolean = false
+        withUUID: Boolean = false,
     )
 }
 

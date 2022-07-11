@@ -4,6 +4,7 @@ import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.SubscribeCallback
 import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
+import com.pubnub.framework.service.error.ErrorHandler
 import com.pubnub.components.chat.ui.component.presence.Presence
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.Occupancy
@@ -16,7 +17,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
-import timber.log.Timber
 
 /**
  * Occupancy Service responsible for notifying about channels occupation changes
@@ -30,6 +30,7 @@ class DefaultOccupancyService(
     private val pubNub: PubNub,
     private val userId: UserId,
     private val occupancyMapper: OccupancyMapper,
+    private val errorHandler: ErrorHandler,
     private val coroutineScope: CoroutineScope = GlobalScope,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : OccupancyService {
@@ -102,7 +103,6 @@ class DefaultOccupancyService(
 
     // region Binding
     override fun bind() {
-        Timber.e("Bind")
         listenForPresence()
         // Get lobby occupancy
         coroutineScope.launch(dispatcher) {
@@ -120,7 +120,7 @@ class DefaultOccupancyService(
         try {
             getOccupancy()?.let { setOccupancy(it) }
         } catch (e: Exception) {
-            Timber.w(e, "Cannot set occupancy")
+            errorHandler.w(e, "Cannot set occupancy")
         }
     }
 
@@ -128,7 +128,7 @@ class DefaultOccupancyService(
      * Listen for incoming presence and process it
      */
     private fun listenForPresence() {
-        Timber.d("Listen for presence")
+        errorHandler.d("Listen for presence")
         pubNub.addListener(_listener)
     }
 
@@ -152,12 +152,12 @@ class DefaultOccupancyService(
             }
 
     private suspend fun setOccupancy(occupancy: OccupancyMap) {
-        Timber.i("Set occupancy: $occupancy")
+        errorHandler.i("Set occupancy: $occupancy")
         _occupancy.emit(occupancy)
     }
 
     private suspend fun processAction(action: PNPresenceEventResult) {
-        Timber.d("Process action $action")
+        errorHandler.d("Process action $action")
         val occupancyMap = _occupancy.replayCache.lastOrNull() ?: OccupancyMap()
         val previousOccupants = occupancyMap[action.channel]
         val occupants = action.getOccupants(previousOccupants)
