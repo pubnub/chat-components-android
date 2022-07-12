@@ -63,8 +63,8 @@ class NetworkChannelMetadataMigrationUnitTest {
         Assert.assertEquals(expectedProfileUrl, result.profileUrl)
     }
 
-    @Test(expected = Exception::class)
-    fun whenProfileUrlDoesntExistsInCustom_thenExceptionIsThrown() = runTest {
+    @Test
+    fun whenProfileUrlDoesntExistsInCustom_thenNoExceptionIsThrown() = runTest {
         val data: NetworkChannelMetadata = mockk(relaxed = true)
 
         networkChannelMapper.map(data)
