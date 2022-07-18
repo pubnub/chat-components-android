@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.ExperimentalPagingApi
+import com.pubnub.components.chat.provider.LocalErrorHandler
 import com.pubnub.components.chat.provider.LocalMessageActionRepository
 import com.pubnub.components.chat.service.message.action.DefaultMessageReactionService
 import com.pubnub.components.chat.service.message.action.LocalMessageReactionService
@@ -15,6 +16,7 @@ import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.repository.message.action.MessageActionRepository
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
+import com.pubnub.framework.service.error.ErrorHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
@@ -29,7 +31,8 @@ class ReactionViewModel constructor(
     private val channelId: ChannelId,
     private val messageActionRepository: MessageActionRepository<DBMessageAction>,
     private val messageReactionService: DefaultMessageReactionService?,
-) : ViewModel() {
+    private val errorHandler: ErrorHandler,
+    ) : ViewModel() {
 
     companion object {
         /**
@@ -48,6 +51,7 @@ class ReactionViewModel constructor(
                 channelId = id,
                 messageActionRepository = LocalMessageActionRepository.current,
                 messageReactionService = LocalMessageReactionService.current as DefaultMessageReactionService,
+                errorHandler = LocalErrorHandler.current,
             )
             return viewModel(factory = factory)
         }
@@ -64,9 +68,9 @@ class ReactionViewModel constructor(
      * @param react Selected reaction for the message
      */
     fun reactionSelected(react: React) {
-        Timber.e("On Reaction: $react")
+        errorHandler.i("On Reaction: $react")
         viewModelScope.launch {
-            Timber.e("Looking for reaction '$react' ")
+            errorHandler.v("Looking for reaction '$react' ")
             val storedReaction = messageActionRepository.get(
                 userId,
                 channelId,
@@ -75,7 +79,7 @@ class ReactionViewModel constructor(
                 react.reaction.value,
             )
 
-            Timber.e("Stored action: $storedReaction")
+            errorHandler.v("Stored action: $storedReaction")
             if (storedReaction?.user == userId)
                 messageReactionService?.remove(
                     storedReaction.channel,

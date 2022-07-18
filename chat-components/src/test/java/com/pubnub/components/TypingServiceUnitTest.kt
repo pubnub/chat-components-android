@@ -1,5 +1,6 @@
 package com.pubnub.components
 
+import com.pubnub.components.chat.service.error.NoErrorHandler
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.Typing
 import com.pubnub.framework.data.TypingMap
@@ -57,8 +58,8 @@ class TypingServiceUnitTest {
         service = spyk(
             TypingService(
                 userId,
-                usernameResolver,
                 typingIndicator,
+                NoErrorHandler(),
                 testCoroutineScope,
                 testCoroutineDispatcher,
             ), recordPrivateCalls = true

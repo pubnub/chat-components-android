@@ -5,6 +5,7 @@ import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.Typing
 import com.pubnub.framework.data.TypingMap
 import com.pubnub.framework.data.UserId
+import com.pubnub.framework.service.error.ErrorHandler
 import com.pubnub.framework.util.Framework
 import com.pubnub.framework.util.Seconds
 import com.pubnub.framework.util.TypingIndicator
@@ -12,7 +13,6 @@ import com.pubnub.framework.util.flow.tickerFlow
 import com.pubnub.framework.util.timetoken
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import timber.log.Timber
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -23,6 +23,7 @@ import kotlin.time.Duration.Companion.seconds
 class TypingService constructor(
     private val id: UserId,
     private val typingIndicator: TypingIndicator,
+    private val errorHandler: ErrorHandler,
     private val coroutineScope: CoroutineScope = GlobalScope,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
@@ -33,7 +34,7 @@ class TypingService constructor(
     }
 
     init {
-        Timber.e("Typing Service: $id")
+        errorHandler.i("Typing Service: $id")
     }
 
     private val _typing: MutableSharedFlow<TypingMap> =
@@ -69,14 +70,14 @@ class TypingService constructor(
         isTyping: Boolean,
         timestamp: Long = System.currentTimeMillis().timetoken
     ) {
-//        Timber.d("Set typing $userId $channelId $isTyping $timestamp")
+        errorHandler.d("Set typing $userId $channelId $isTyping $timestamp")
         val data = Typing(userId, channelId, isTyping, timestamp)
         if (shouldSendTypingEvent(data)) {
             setTypingData(data)
             typingIndicator.setTyping(
                 channelId = channelId,
                 isTyping = isTyping,
-                onError = { Timber.e("Cannot send typing signal\n$it") }
+                onError = { errorHandler.e("Cannot send typing signal\n$it") }
             )
         }
     }
@@ -87,7 +88,7 @@ class TypingService constructor(
      * Bind for signals and launch timeout timer
      */
     fun bind(id: ChannelId) {
-        Timber.i("-> Bind for typing signal: $id ($this)")
+        errorHandler.i("-> Bind for typing signal: $id ($this)")
         listenForSignal()
         startTimeoutTimer()
     }
@@ -96,7 +97,7 @@ class TypingService constructor(
      * Unbind signal changes listener and stop timeout timer
      */
     fun unbind() {
-        Timber.i("<- Unbind for typing signal ($this)")
+        errorHandler.i("<- Unbind for typing signal ($this)")
         stopListenForPresence()
         stopTimeoutTimer()
     }

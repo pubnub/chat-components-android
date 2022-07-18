@@ -9,7 +9,7 @@ import com.pubnub.components.chat.network.data.NetworkMessagePayload
 import com.pubnub.components.chat.network.mapper.NetworkMessageActionHistoryMapper
 import com.pubnub.components.chat.network.mapper.NetworkMessageHistoryMapper
 import com.pubnub.components.chat.network.mapper.NetworkMessageMapper
-import com.pubnub.components.chat.service.error.ErrorHandler
+import com.pubnub.framework.service.error.ErrorHandler
 import com.pubnub.components.data.message.DBMessage
 import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.data.message.action.DBMessageWithActions
@@ -124,7 +124,7 @@ class DefaultMessageService(
                                 if (exception is PNException)
                                     onError(exception)
                             }
-                            errorHandler.onError(exception)
+                            errorHandler.e(exception)
                         }
                     },
                 )
@@ -166,7 +166,7 @@ class DefaultMessageService(
                                 val message = networkHistoryMapper.map(channel, it)
                                 insertOrUpdate(message)
                             } catch (e: Exception) {
-                                errorHandler.onError(
+                                errorHandler.e(
                                     e,
                                     "Cannot map message ${it.message.toJson(pubNub.mapper)}"
                                 )
@@ -176,7 +176,7 @@ class DefaultMessageService(
                                 insertMessageAction(*actions)
 
                             } catch (e: Exception) {
-                                errorHandler.onError(
+                                errorHandler.e(
                                     e,
                                     "Cannot map message action ${it.toJson(pubNub.mapper)}"
                                 )
@@ -185,7 +185,7 @@ class DefaultMessageService(
                     }
                 },
                 onError = { exception ->
-                    errorHandler.onError(exception, "Cannot pull history")
+                    errorHandler.e(exception, "Cannot pull history")
                 }
             )
     }
@@ -234,7 +234,7 @@ class DefaultMessageService(
             try {
                 handleIncomingMessage(this@processMessage)
             } catch (e: Exception) {
-                errorHandler.onError(e, "Cannot map message")
+                errorHandler.e(e, "Cannot map message")
             }
         }
     }
@@ -245,14 +245,13 @@ class DefaultMessageService(
     private fun handleIncomingMessage(result: NetworkMessage) {
         with(result) {
             if (publisher == null) {
-                errorHandler.onError(RuntimeException("User cannot be null"))
+                errorHandler.e(RuntimeException("User cannot be null"))
                 return
             }
             if (timetoken == null) {
-                errorHandler.onError(RuntimeException("Timestamp cannot be null"))
+                errorHandler.e(RuntimeException("Timestamp cannot be null"))
                 return
             }
-
 
             val messageData: DBMessage = networkMapper.map(result)
             insertOrUpdate(messageData)

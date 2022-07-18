@@ -3,7 +3,7 @@ package com.pubnub.components.chat.service.message.action
 import com.pubnub.api.models.consumer.message_actions.PNMessageAction
 import com.pubnub.api.models.consumer.pubsub.BasePubSubResult
 import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResult
-import com.pubnub.components.chat.service.error.ErrorHandler
+import com.pubnub.framework.service.error.ErrorHandler
 import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.repository.message.action.MessageActionRepository
 import com.pubnub.framework.data.ChannelId
@@ -15,7 +15,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import timber.log.Timber
 
 @OptIn(
     ExperimentalCoroutinesApi::class,
@@ -41,7 +40,6 @@ class DefaultMessageReactionService(
      * @param types Accepted types of message actions, which will be stored in database
      */
     override fun bind(types: Array<String>) {
-        Timber.e("Bind")
         this.types = types
         listenForActions()
     }
@@ -50,7 +48,6 @@ class DefaultMessageReactionService(
      * Stop listening for Actions
      */
     override fun unbind() {
-        Timber.e("Unbind")
         stopListenForActions()
     }
 
@@ -61,7 +58,7 @@ class DefaultMessageReactionService(
      * @param lastTimetoken Last synchronization timestamp
      */
     override fun synchronize(channel: ChannelId, lastTimetoken: Long?) {
-        Timber.e("Sync actions for channel '$channel'")
+        errorHandler.i("Sync actions for channel '$channel'")
         coroutineScope.launch(dispatcher) {
             val lastActionTimestamp =
                 lastTimetoken ?: messageActionRepository.getLastTimetoken(channel)
@@ -100,7 +97,7 @@ class DefaultMessageReactionService(
             actionService.remove(channel, messageTimetoken, published)
             removeAction(userId, channel, messageTimetoken, type, value)
         } catch (e: Exception) {
-            errorHandler.onError(e, "Cannot remove message action")
+            errorHandler.e(e, "Cannot remove message action")
         }
     }
 
@@ -125,7 +122,7 @@ class DefaultMessageReactionService(
                 .toResult(channel)
             addAction(result)
         } catch (e: Exception) {
-            errorHandler.onError(e, "Cannot add message action")
+            errorHandler.e(e, "Cannot add message action")
         }
     }
 
@@ -209,7 +206,7 @@ class DefaultMessageReactionService(
         value: String
     ) {
         val action = messageActionRepository.get(user, channel, messageTimetoken, type, value)
-        Timber.e("Remove action $action")
+        errorHandler.i("Remove action $action")
         if (action != null)
             messageActionRepository.remove(action)
     }

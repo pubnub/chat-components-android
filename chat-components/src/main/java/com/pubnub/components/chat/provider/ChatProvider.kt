@@ -15,8 +15,6 @@ import com.pubnub.components.chat.service.channel.DefaultOccupancyService
 import com.pubnub.components.chat.service.channel.LocalChannelService
 import com.pubnub.components.chat.service.channel.LocalOccupancyService
 import com.pubnub.components.chat.service.error.TimberErrorHandler
-import com.pubnub.components.chat.service.member.DefaultMemberService
-import com.pubnub.components.chat.service.member.LocalMemberService
 import com.pubnub.components.chat.service.message.DefaultMessageService
 import com.pubnub.components.chat.service.message.LocalMessageService
 import com.pubnub.components.chat.service.message.action.DefaultMessageReactionService
@@ -120,7 +118,7 @@ fun ChatProvider(
 
     CompositionLocalProvider(
         LocalPubNub provides pubNub,
-        LocalUser provides pubNub.configuration.uuid,
+        LocalUser provides pubNub.configuration.userId.value,
         LocalChannel provides channel,
 
         // Themes
@@ -160,7 +158,7 @@ fun WithServices(
     content: @Composable() () -> Unit
 ) {
     val mapper = LocalPubNub.current.mapper
-    val actionService = ActionService(LocalPubNub.current)
+    val actionService = ActionService(LocalPubNub.current, LocalErrorHandler.current)
 
     CompositionLocalProvider(
         LocalMessageService provides DefaultMessageService(
@@ -182,24 +180,17 @@ fun WithServices(
         ),
         LocalChannelService provides DefaultChannelService(
             LocalPubNub.current,
-            LocalChannelRepository.current,
-            NetworkChannelMapper(mapper),
-            LocalErrorHandler.current,
-        ),
-        LocalMemberService provides DefaultMemberService(
-            LocalPubNub.current,
-            LocalMemberRepository.current,
-            NetworkMemberMapper(mapper),
-            LocalErrorHandler.current,
         ),
         LocalTypingService provides TypingService(
             LocalUser.current,
             TypingIndicator(LocalPubNub.current, LocalUser.current),
+            LocalErrorHandler.current,
         ),
         LocalOccupancyService provides DefaultOccupancyService(
             LocalPubNub.current,
             LocalUser.current,
             NetworkOccupancyMapper(),
+            LocalErrorHandler.current,
         ),
     ) {
         if (sync) Synchronize()
@@ -213,7 +204,7 @@ fun PubNubPreview(
 ) {
     val context = LocalContext.current
     val pubNub =
-        PubNub(PNConfiguration(uuid = "previewUUID").apply { publishKey = ""; subscribeKey = "" })
+        PubNub(PNConfiguration(com.pubnub.api.UserId("previewUUID")).apply { publishKey = ""; subscribeKey = "" })
     Database.initialize(context)
     ChatProvider(pubNub, synchronize = false) {
         content()
@@ -235,14 +226,12 @@ fun Synchronize() {
 
     // One instance of disposable!
     DisposableEffect(true) {
-        Timber.e("ChannelEffect bind")
         messageService.bind()
         occupancyService.bind()
         actionService.bind()
         messageActionService.bind()
 
         onDispose {
-            Timber.e("ChannelEffect unbind")
             messageService.unbind()
             occupancyService.unbind()
             actionService.unbind()
@@ -253,14 +242,15 @@ fun Synchronize() {
 
     // Bind for channels
     val channels by membershipRepository.getAll(currentUser).collectAsState(initial = emptyList())
+    val errorHandler = LocalErrorHandler.current
     DisposableEffect(channels) {
         val channelArray = channels.map { it.channelId }.toTypedArray()
-        Timber.e("Bind for channels ${channelArray.joinToString()}")
+        errorHandler.i("Bind for channels ${channelArray.joinToString()}")
         // Get current member channels
         channelService.bind(*channelArray)
 
         onDispose {
-            Timber.e("Unbind channels")
+            errorHandler.e("Unbind channels")
             channelService.unbind()
         }
     }

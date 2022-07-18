@@ -141,7 +141,7 @@ object Libs {
     }
 
     object PubNub {
-        private const val version = "0.1.0"
+        private const val version = "0.2.0"
         const val bom = "com.pubnub:pubnub-kotlin-bom:$version"
         const val kotlin = "com.pubnub:pubnub-kotlin"
         const val memberships = "com.pubnub:pubnub-memberships"
