@@ -113,8 +113,6 @@ fun ChatProvider(
     val messageActionRepository = DefaultMessageActionRepository(database.actionDao())
     // endregion
 
-    val errorHandler = TimberLogger()
-
     CompositionLocalProvider(
         LocalPubNub provides pubNub,
         LocalUser provides pubNub.configuration.userId.value,
@@ -141,8 +139,6 @@ fun ChatProvider(
 
         // Utils
         LocalMemberFormatter provides memberFormatter,
-        LocalLogger provides errorHandler,
-
         ) {
         WithServices(synchronize) {
             content()
@@ -179,6 +175,7 @@ fun WithServices(
         ),
         LocalChannelService provides DefaultChannelService(
             LocalPubNub.current,
+            LocalLogger.current,
         ),
         LocalTypingService provides TypingService(
             LocalUser.current,
@@ -244,12 +241,12 @@ fun Synchronize() {
     val errorHandler = LocalLogger.current
     DisposableEffect(channels) {
         val channelArray = channels.map { it.channelId }.toTypedArray()
-        errorHandler.i("Bind for channels ${channelArray.joinToString()}")
+        errorHandler.d("Bind for channels ${channelArray.joinToString()}")
         // Get current member channels
         channelService.bind(*channelArray)
 
         onDispose {
-            errorHandler.e("Unbind channels")
+            errorHandler.d("Unbind channels")
             channelService.unbind()
         }
     }

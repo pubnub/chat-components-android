@@ -94,7 +94,7 @@ class MessageInputViewModel(
         onSuccess: (String, Timetoken) -> Unit = { _: String, _: Timetoken -> },
         onError: (Exception) -> Unit = { _: Exception -> }
     ) {
-        logger.i("Sending message '%s' to channel '%s'", message, id)
+        logger.i("Sending message '$message' to channel '$id'")
         val data = create(id, message, contentType, content)
         viewModelScope.launch(Dispatchers.IO) {
             messageService.send(
@@ -102,7 +102,7 @@ class MessageInputViewModel(
                 message = data,
                 meta = hashMapOf("uuid" to this@MessageInputViewModel.id),
                 onSuccess = { message: String, timetoken: Timetoken ->
-                    logger.d("Message sent successfully at %s", timetoken.toIsoString())
+                    logger.d("Message sent successfully at ${timetoken.toIsoString()}")
                     onSuccess(message, timetoken)
                 },
                 onError = { exception: Exception ->

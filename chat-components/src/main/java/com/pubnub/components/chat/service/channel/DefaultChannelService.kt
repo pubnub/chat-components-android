@@ -14,13 +14,13 @@ class DefaultChannelService(
     private var subscribedChannels: List<String> = listOf()
 
     override fun bind(vararg channels: String) {
-        logger.i("Subscribing to the channels '%s'", channels.joinToString())
+        logger.i("Subscribing to the channels '${channels.joinToString()}'")
         subscribedChannels = listOf(*channels)
         pubNub.subscribe(channels = subscribedChannels, withPresence = true)
     }
 
     override fun unbind() {
-        logger.i("Unsubscribing from channels '%s'", subscribedChannels.joinToString())
+        logger.i("Unsubscribing from channels '${subscribedChannels.joinToString()}'")
         pubNub.unsubscribe(channels = subscribedChannels)
     }
 }

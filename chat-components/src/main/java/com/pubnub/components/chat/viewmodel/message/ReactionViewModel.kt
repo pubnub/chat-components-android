@@ -67,9 +67,9 @@ class ReactionViewModel constructor(
      * @param react Selected reaction for the message
      */
     fun reactionSelected(react: React) {
-        logger.i("Reaction selected: %s", react.toString())
+        logger.i("Reaction selected: '$react'")
         viewModelScope.launch {
-            logger.v("Looking for reaction: %s", react.toString())
+            logger.v("Looking for reaction: '$react'")
             val storedReaction = messageActionRepository.get(
                 userId,
                 channelId,
@@ -79,7 +79,7 @@ class ReactionViewModel constructor(
             )
 
             if (storedReaction?.user == userId) {
-                logger.v("Removing action: %s", storedReaction.toString())
+                logger.v("Removing action: '$storedReaction")
                 messageReactionService?.remove(
                     storedReaction.channel,
                     storedReaction.messageTimestamp,
@@ -88,7 +88,7 @@ class ReactionViewModel constructor(
                     storedReaction.value
                 )
             } else {
-                logger.v("Adding action: %s", react.toString())
+                logger.v("Adding action: '$react'")
                 messageReactionService?.add(
                     channelId,
                     react.message.timetoken,

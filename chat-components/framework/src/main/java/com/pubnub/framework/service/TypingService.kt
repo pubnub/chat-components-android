@@ -34,7 +34,7 @@ class TypingService constructor(
     }
 
     init {
-        logger.i("Typing Service for User %s created", id)
+        logger.i("Typing Service for User '$id' created")
     }
 
     private val _typing: MutableSharedFlow<TypingMap> =
@@ -70,7 +70,7 @@ class TypingService constructor(
         isTyping: Boolean,
         timestamp: Long = System.currentTimeMillis().timetoken
     ) {
-        logger.d("Set typing for user %s on %s, value: %b at %s", userId, channelId, isTyping, timestamp)
+        logger.d("Set typing for user '$userId' on '$channelId', value: '$isTyping' at $timestamp")
         val data = Typing(userId, channelId, isTyping, timestamp)
         if (shouldSendTypingEvent(data)) {
             setTypingData(data)
@@ -88,7 +88,7 @@ class TypingService constructor(
      * Bind for signals and launch timeout timer
      */
     fun bind(id: ChannelId) {
-        logger.i("Start listening for typing signal on channel '%s'", id)
+        logger.i("Start listening for typing signal on channel '$id'")
         listenForSignal()
         startTimeoutTimer()
     }

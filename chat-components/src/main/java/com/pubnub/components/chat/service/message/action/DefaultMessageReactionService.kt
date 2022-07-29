@@ -40,7 +40,7 @@ class DefaultMessageReactionService(
      * @param types Accepted types of message actions, which will be stored in database
      */
     override fun bind(types: Array<String>) {
-        logger.d("Start listening for actions: %s", types.joinToString())
+        logger.d("Start listening for actions for: '${types.joinToString()}'")
         this.types = types
         listenForActions()
     }
@@ -60,7 +60,7 @@ class DefaultMessageReactionService(
      * @param lastTimetoken Last synchronization timestamp
      */
     override fun synchronize(channel: ChannelId, lastTimetoken: Long?) {
-        logger.i("Sync actions for channel '%s'", channel)
+        logger.i("Sync actions for channel '$channel'")
         coroutineScope.launch(dispatcher) {
             val lastActionTimestamp =
                 lastTimetoken ?: messageActionRepository.getLastTimetoken(channel)
@@ -95,7 +95,7 @@ class DefaultMessageReactionService(
         type: String,
         value: String,
     ) {
-        logger.i("Remove message action '%s':'%s' on channel '%s'", type, value, channel)
+        logger.i("Remove message action '$type:$value' on channel '$channel'")
         try {
             actionService.remove(channel, messageTimetoken, published)
             removeAction(userId, channel, messageTimetoken, type, value)
@@ -120,7 +120,7 @@ class DefaultMessageReactionService(
         type: String,
         value: String,
     ) {
-        logger.i("Add message action '%s':'%s' on channel '%s'", type, value, channel)
+        logger.i("Add message action '$type:$value' on channel '$channel'")
         try {
             val result = actionService.add(channel, PNMessageAction(type, value, messageTimetoken))
                 .toResult(channel)

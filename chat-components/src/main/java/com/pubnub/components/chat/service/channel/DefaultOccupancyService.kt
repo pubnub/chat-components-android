@@ -154,12 +154,12 @@ class DefaultOccupancyService(
             }
 
     private suspend fun setOccupancy(occupancy: OccupancyMap) {
-        logger.i("Set occupancy %s", occupancy.toString())
+        logger.i("Set occupancy '$occupancy'")
         _occupancy.emit(occupancy)
     }
 
     private suspend fun processAction(action: PNPresenceEventResult) {
-        logger.d("Process action", action.toString())
+        logger.d("Process action: '$action'")
         val occupancyMap = _occupancy.replayCache.lastOrNull() ?: OccupancyMap()
         val previousOccupants = occupancyMap[action.channel]
         val occupants = action.getOccupants(previousOccupants)

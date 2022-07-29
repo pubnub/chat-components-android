@@ -54,7 +54,7 @@ class ActionService(
         channelId: ChannelId,
         messageAction: PNMessageAction,
     ): PNAddMessageActionResult {
-        logger.i("Send message action to channel '%s': %s", channelId, messageAction.toJson(pubNub.mapper))
+        logger.i("Send message action to channel '$channelId': ${messageAction.toJson(pubNub.mapper)}")
         return pubNub.addMessageAction(
             channel = channelId,
             messageAction = messageAction,
@@ -73,7 +73,7 @@ class ActionService(
         messageTimetoken: Long,
         actionTimetoken: Long,
     ): PNRemoveMessageActionResult {
-        logger.i("Remove message action from channel '%s', messageTimetoken '%d', actionTimetoken '%d'", channelId, messageTimetoken, actionTimetoken)
+        logger.i("Remove message action from channel '$channelId', messageTimetoken '$messageTimetoken', actionTimetoken '$actionTimetoken'")
         return pubNub.removeMessageAction(
             channel = channelId,
             messageTimetoken = messageTimetoken,
@@ -96,7 +96,7 @@ class ActionService(
         end: Long?,
         limit: Int? = null,
     ): PNGetMessageActionsResult {
-        logger.i("Get message action from channel '%s', time [%d : %d)", channelId, end, start)
+        logger.i("Get message action from channel '$channelId', time [$end : $start)")
         return pubNub.getMessageActions(
             channel = channelId,
             page = PNBoundedPage(
@@ -137,22 +137,22 @@ class ActionService(
         val newActions = result.actions
         results.addAll(newActions)
 
-        logger.i("Sync successful. Received new actions: %d", newActions.size)
+        logger.i("Sync successful. Received new actions: ${newActions.size}")
         return when {
             result.page != null -> {
-                logger.d("Page received: %s", result.page.toString())
+                logger.d("Page received: ${result.page}")
                 val newestActionTimestamp = result.page!!.start
 
-                logger.i("Trying to sync with end '%d'", newestActionTimestamp)
+                logger.i("Trying to sync with end '$newestActionTimestamp'")
                 getAll(channelId, newestActionTimestamp, end, limit, results)
             }
             newActions.isNotEmpty() -> {
                 val newestActionTimestamp = newActions.minOf { it.actionTimetoken!! }
-                logger.e("Trying to sync with end '%d'", newestActionTimestamp)
+                logger.e("Trying to sync with end '$newestActionTimestamp'")
                 getAll(channelId, newestActionTimestamp, end, limit, results)
             }
             else -> {
-                logger.i("Sync successful. No more actions. Result size: %d", results.size)
+                logger.i("Sync successful. No more actions. Result size: ${results.size}")
                 results
             }
         }
@@ -172,7 +172,7 @@ class ActionService(
     fun unbind() {
         if (::actionJob.isInitialized) {
             stopListenForActions()
-            logger.e("Stop listening for message actions")
+            logger.d("Stop listening for message actions")
         }
     }
 

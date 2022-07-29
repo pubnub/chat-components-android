@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NonNls
 interface Logger {
 
     /** Log a verbose exception and a message with optional format args */
-    fun v(t: Throwable?, @NonNls message: String?, vararg args: Any?)
+    fun v(t: Throwable?, @NonNls message: String?, vararg args: Any?) { log(priority = Log.VERBOSE, t = t, message = message, args = args) }
 
     /** Log a verbose message with optional format args */
     fun v(@NonNls message: String?, vararg args: Any?) { v(t = null, message = message, args = args) }
@@ -15,7 +15,7 @@ interface Logger {
     fun v(t: Throwable?) { v(t = t, message = null) }
 
     /** Log a debug exception and a message with optional format args */
-    fun d(t: Throwable?, @NonNls message: String?, vararg args: Any?)
+    fun d(t: Throwable?, @NonNls message: String?, vararg args: Any?) { log(priority = Log.DEBUG, t = t, message = message, args = args) }
 
     /** Log a debug message with optional format args */
     fun d(@NonNls message: String?, vararg args: Any?) { d(t = null, message = message, args = args) }
@@ -24,7 +24,7 @@ interface Logger {
     fun d(t: Throwable?) { d(t = t, message =null) }
 
     /** Log an info exception and a message with optional format args */
-    fun i(t: Throwable?, @NonNls message: String?, vararg args: Any?)
+    fun i(t: Throwable?, @NonNls message: String?, vararg args: Any?) { log(priority = Log.INFO, t = t, message = message, args = args) }
 
     /** Log an info message with optional format args */
     fun i(@NonNls message: String?, vararg args: Any?) { i(t = null, message = message, args = args) }
@@ -33,7 +33,7 @@ interface Logger {
     fun i(t: Throwable?) { i(t = t, message =null) }
 
     /** Log a warning exception and a message with optional format args */
-    fun w(t: Throwable?, @NonNls message: String?, vararg args: Any?)
+    fun w(t: Throwable?, @NonNls message: String?, vararg args: Any?) { log(priority = Log.WARN, t = t, message = message, args = args) }
 
     /** Log a warning message with optional format args */
     fun w(@NonNls message: String?, vararg args: Any?) { w(t = null, message = message, args = args) }
@@ -42,7 +42,7 @@ interface Logger {
     fun w(t: Throwable?) { w(t = t, message =null) }
 
     /** Log an error exception and a message with optional format args */
-    fun e(t: Throwable?, @NonNls message: String?, vararg args: Any?)
+    fun e(t: Throwable?, @NonNls message: String?, vararg args: Any?) { log(priority = Log.ERROR, t = t, message = message, args = args) }
 
     /** Log an error message with optional format args */
     fun e(@NonNls message: String?, vararg args: Any?) { e(t = null, message = message, args = args) }
@@ -51,7 +51,7 @@ interface Logger {
     fun e(t: Throwable?) { e(t = t, message =null) }
 
     /** Log an assert exception and a message with optional format args */
-    fun wtf(t: Throwable?, @NonNls message: String?, vararg args: Any?)
+    fun wtf(t: Throwable?, @NonNls message: String?, vararg args: Any?) { log(priority = Log.ASSERT, t = t, message = message, args = args) }
 
     /** Log an assert message with optional format args */
     fun wtf(@NonNls message: String?, vararg args: Any?) { wtf(t = null, message = message, args = args) }
@@ -60,16 +60,7 @@ interface Logger {
     fun wtf(t: Throwable?) { wtf(t = t, message =null) }
 
     /** Log at `priority` an exception and a message with optional format args */
-    fun log(priority: Int, t: Throwable?, @NonNls message: String?, vararg args: Any?){
-        when(priority){
-            Log.VERBOSE ->  { v(t = t, message = message, args = args) }
-            Log.DEBUG -> { d(t = t, message = message, args = args) }
-            Log.INFO -> { i(t = t, message = message, args = args) }
-            Log.WARN -> { w(t = t, message = message, args = args) }
-            Log.ERROR -> { e(t = t, message = message, args = args) }
-            Log.ASSERT -> { wtf(t = t, message = message, args = args) }
-        }
-    }
+    fun log(priority: Int, t: Throwable?, @NonNls message: String?, vararg args: Any?)
 
     /** Log at `priority` a message with optional format args */
     fun log(priority: Int, @NonNls message: String?, vararg args: Any?) { log(priority = priority, t = null, message = message, args = args) }
