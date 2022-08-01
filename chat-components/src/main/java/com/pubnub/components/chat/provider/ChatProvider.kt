@@ -65,7 +65,6 @@ import com.pubnub.framework.service.TypingService
 import com.pubnub.framework.util.TypingIndicator
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.runBlocking
-import timber.log.Timber
 
 @Composable
 fun ChatProvider(
@@ -155,7 +154,7 @@ fun ChatProvider(
 @Composable
 fun WithServices(
     sync: Boolean,
-    content: @Composable() () -> Unit
+    content: @Composable() () -> Unit,
 ) {
     val mapper = LocalPubNub.current.mapper
     val actionService = ActionService(LocalPubNub.current, LocalErrorHandler.current)
@@ -204,7 +203,9 @@ fun PubNubPreview(
 ) {
     val context = LocalContext.current
     val pubNub =
-        PubNub(PNConfiguration(com.pubnub.api.UserId("previewUUID")).apply { publishKey = ""; subscribeKey = "" })
+        PubNub(PNConfiguration(com.pubnub.api.UserId("previewUUID")).apply {
+            publishKey = ""; subscribeKey = ""
+        })
     Database.initialize(context)
     ChatProvider(pubNub, synchronize = false) {
         content()

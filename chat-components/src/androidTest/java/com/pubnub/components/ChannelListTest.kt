@@ -60,12 +60,14 @@ class ChannelListTest : BaseTest() {
             assertIsDisplayed()
 
             channels.forEachIndexed { index, item ->
-                // Thumbnail
-                onChildAt(3 * index).assertContentDescriptionEquals(context.getString(R.string.thumbnail))
-                // Channel name
-                onChildAt(3 * index + 1).assert(hasText(item.name))
-                // Channel description
-                onChildAt(3 * index + 2).assert(hasText(item.description!!))
+                onChildAt(index).apply {
+                    // Thumbnail
+                    onChildAt(0).assertContentDescriptionEquals(context.getString(R.string.thumbnail))
+                    // Channel name
+                    onChildAt(1).assert(hasText(item.name))
+                    // Channel description
+                    onChildAt(2).assert(hasText(item.description!!))
+                }
             }
         }
     }
@@ -84,16 +86,18 @@ class ChannelListTest : BaseTest() {
         }
 
         // Then
-        composeTestRule.onNodeWithContentDescription(channelList, useUnmergedTree = false).apply {
+        composeTestRule.onNodeWithContentDescription(channelList, useUnmergedTree = true).apply {
             assertIsDisplayed()
 
             FAKE_CHANNELS.forEachIndexed { index, item ->
-                // Thumbnail
-                onChildAt(3 * index).assertContentDescriptionEquals(context.getString(R.string.thumbnail))
-                // Channel name
-                onChildAt(3 * index + 1).assert(hasText(item.name))
-                // Channel description
-                onChildAt(3 * index + 2).assert(hasText(item.description!!))
+                onChildAt(index).apply {
+                    // Thumbnail
+                    onChildAt(0).assertContentDescriptionEquals(context.getString(R.string.thumbnail))
+                    // Channel name
+                    onChildAt(1).assert(hasText(item.name))
+                    // Channel description
+                    onChildAt(2).assert(hasText(item.description!!))
+                }
             }
         }
     }

@@ -41,7 +41,7 @@ class DefaultMemberRepository(
     override fun getAll(
         id: ChannelId?,
         filter: Query?,
-        vararg sorted: Sorted
+        vararg sorted: Sorted,
     ): PagingSource<Int, DBMemberWithChannels> {
         val stringQuery: MutableList<String> = mutableListOf("SELECT * FROM `member`")
         val arguments: MutableList<Any> = mutableListOf()

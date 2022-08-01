@@ -16,7 +16,7 @@ data class UnicodeEmoji(override val type: String, override val value: String) :
 data class LocalResourceEmoji(
     override val type: String,
     override val value: String,
-    @DrawableRes val drawable: Int
+    @DrawableRes val drawable: Int,
 ) : Emoji() {
     constructor(value: String, drawable: Int) : this("reaction_resource", value, drawable)
 }

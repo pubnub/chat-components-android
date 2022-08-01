@@ -201,7 +201,7 @@ class ActionService(
 
                 override fun messageAction(
                     pubnub: PubNub,
-                    pnMessageActionResult: PNMessageActionResult
+                    pnMessageActionResult: PNMessageActionResult,
                 ) {
                     trySendBlocking(pnMessageActionResult)
                 }

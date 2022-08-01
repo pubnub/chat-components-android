@@ -20,7 +20,6 @@ import com.pubnub.framework.service.error.ErrorHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 /**
  * [ReactionViewModel] contains the logic for adding and removing message reactions.
@@ -32,7 +31,7 @@ class ReactionViewModel constructor(
     private val messageActionRepository: MessageActionRepository<DBMessageAction>,
     private val messageReactionService: DefaultMessageReactionService?,
     private val errorHandler: ErrorHandler,
-    ) : ViewModel() {
+) : ViewModel() {
 
     companion object {
         /**

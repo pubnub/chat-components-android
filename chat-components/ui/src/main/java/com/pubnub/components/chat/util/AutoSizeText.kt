@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFontLoader
+import androidx.compose.ui.platform.LocalFontFamilyResolver
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextLayoutResult
@@ -136,7 +136,7 @@ fun AutoSizeText(
 private fun BoxWithConstraintsScope.shouldShrink(
     text: AnnotatedString,
     textStyle: TextStyle,
-    maxLines: Int
+    maxLines: Int,
 ): Boolean {
     val textDelegate = TextDelegate(
         text,
@@ -145,7 +145,7 @@ private fun BoxWithConstraintsScope.shouldShrink(
         true,
         TextOverflow.Clip,
         LocalDensity.current,
-        LocalFontLoader.current,
+        LocalFontFamilyResolver.current,
     )
 
     val textLayoutResult = textDelegate.layout(

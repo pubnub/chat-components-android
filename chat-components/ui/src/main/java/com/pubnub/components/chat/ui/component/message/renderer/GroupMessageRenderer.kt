@@ -1,5 +1,6 @@
 package com.pubnub.components.chat.ui.component.message.renderer
 
+import android.annotation.SuppressLint
 import android.util.Patterns.EMAIL_ADDRESS
 import android.webkit.URLUtil
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -134,8 +135,7 @@ object GroupMessageRenderer : MessageRenderer {
 //        }
     }
 
-    private val dateFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
-    private fun Timetoken.formatDate() =
+    private fun Timetoken.formatDate(dateFormat: SimpleDateFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())) =
         dateFormat.format(this.seconds).uppercase()
 
     @Composable
@@ -243,7 +243,7 @@ object GroupMessageRenderer : MessageRenderer {
                                 ChatText(
                                     message = message,
                                     theme = theme.text,
-                                    placeholder = theme.text.modifier.then(
+                                    placeholderModifier = theme.text.modifier.then(
                                         messagePlaceholder.then(
                                             Modifier.padding(
                                                 theme.shape.padding
@@ -316,7 +316,7 @@ object GroupMessageRenderer : MessageRenderer {
     }
 
     @Composable
-    fun ThemedText(text: String, theme: TextTheme, modifier: Modifier = theme.modifier) {
+    fun ThemedText(text: String, theme: TextTheme, modifier: Modifier) {
         Text(
             text = text,
             fontWeight = theme.fontWeight,
@@ -335,7 +335,7 @@ object GroupMessageRenderer : MessageRenderer {
     fun ChatText(
         message: AnnotatedString,
         theme: TextTheme,
-        placeholder: Modifier = Modifier,
+        @SuppressLint("ModifierParameter") placeholderModifier: Modifier = Modifier,
         modifier: Modifier = Modifier,
         onLongPress: ((Offset) -> Unit)? = null,
         onPress: suspend PressGestureScope.(Offset) -> Unit = {},
@@ -344,7 +344,7 @@ object GroupMessageRenderer : MessageRenderer {
         val uriHandler = LocalUriHandler.current
         ClickableText(
             text = message,
-            modifier = modifier.then(placeholder),
+            modifier = modifier.then(placeholderModifier),
             style = theme.asStyle(),
             onClick = {
                 message
@@ -388,7 +388,7 @@ fun ClickableText(
     onDoubleTap: ((Offset) -> Unit)? = null,
     onLongPress: ((Offset) -> Unit)? = null,
     onPress: suspend PressGestureScope.(Offset) -> Unit = {},
-    onClick: (Int) -> Unit = {}
+    onClick: (Int) -> Unit = {},
 ) {
     val layoutResult = remember { mutableStateOf<TextLayoutResult?>(null) }
     val gesturesIndicator = Modifier.pointerInput(onClick) {

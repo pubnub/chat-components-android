@@ -20,7 +20,6 @@ import com.pubnub.framework.util.timetoken
 import com.pubnub.framework.util.toIsoString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.util.*
 
 /**
@@ -33,7 +32,7 @@ class MessageInputViewModel(
     private val messageService: MessageService<DBMessage>,
     private val typingService: TypingService? = null,
     private val errorHandler: ErrorHandler,
-    ) : ViewModel() {
+) : ViewModel() {
 
     companion object {
         /**
@@ -54,7 +53,10 @@ class MessageInputViewModel(
             typingService: TypingService? = null,
         ): MessageInputViewModel =
             viewModel(
-                factory = MessageInputViewModelFactory(id, messageService, errorHandler, typingService)
+                factory = MessageInputViewModelFactory(id,
+                    messageService,
+                    errorHandler,
+                    typingService)
             )
 
         /**
@@ -80,8 +82,8 @@ class MessageInputViewModel(
      *
      * @param id ID of the channel
      * @param message Text to send
-     * @param type Type of a message
-     * @param attachments List of attachments
+     * @param contentType Type of a content
+     * @param content Custom message content
      * @param onSuccess Action to be fired after a successful sent
      * @param onError Action to be fired after an error
      */
@@ -92,7 +94,7 @@ class MessageInputViewModel(
         contentType: String? = null,
         content: Map<String, Any?>? = null,
         onSuccess: (String, Timetoken) -> Unit = { _: String, _: Timetoken -> },
-        onError: (Exception) -> Unit = { _: Exception -> }
+        onError: (Exception) -> Unit = { _: Exception -> },
     ) {
         errorHandler.i("Sending message '$message' to channel '$id'")
         val data = create(id, message, contentType, content)

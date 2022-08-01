@@ -57,6 +57,6 @@ class DataClassTest {
         override val id: String,
         override val name: String,
         override val count: Long,
-        override val custom: Any?
+        override val custom: Any?,
     ) : FakeInterface
 }

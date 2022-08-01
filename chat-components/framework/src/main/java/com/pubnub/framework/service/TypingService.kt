@@ -68,7 +68,7 @@ class TypingService constructor(
         userId: UserId,
         channelId: ChannelId,
         isTyping: Boolean,
-        timestamp: Long = System.currentTimeMillis().timetoken
+        timestamp: Long = System.currentTimeMillis().timetoken,
     ) {
         errorHandler.d("Set typing $userId $channelId $isTyping $timestamp")
         val data = Typing(userId, channelId, isTyping, timestamp)

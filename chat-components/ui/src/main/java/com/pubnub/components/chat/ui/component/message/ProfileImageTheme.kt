@@ -10,7 +10,7 @@ import com.pubnub.components.chat.ui.component.provider.MissingThemeException
 
 class ProfileImageTheme(
     modifier: Modifier,
-    indicatorTheme: IndicatorTheme
+    indicatorTheme: IndicatorTheme,
 ) {
     var modifier by mutableStateOf(modifier, structuralEqualityPolicy())
         internal set

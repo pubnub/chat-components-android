@@ -1,10 +1,7 @@
 package com.pubnub.framework.util
 
 import java.text.SimpleDateFormat
-import java.time.Instant
 import java.util.*
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 typealias Timetoken = Long
 
@@ -20,7 +17,7 @@ fun String.toTimetoken(locale: Locale = Locale.getDefault()): Timetoken {
     val iso8601format = SimpleDateFormat(iso8601Pattern, locale).apply {
         timeZone = TimeZone.getTimeZone("UTC")
     }
-    return iso8601format.parse(this)?.time?:0 * 10
+    return (iso8601format.parse(this)?.time ?: 0) * 10
 }
 
 val Timetoken.seconds: Seconds

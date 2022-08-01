@@ -18,7 +18,7 @@ class ButtonTheme(
     colors: ButtonColors,
     contentPadding: PaddingValues,
     text: TextTheme,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     var elevation by mutableStateOf(elevation, structuralEqualityPolicy())
         internal set
