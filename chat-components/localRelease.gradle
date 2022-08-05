@@ -1,0 +1,41 @@
+import java.util.regex.Pattern
+
+task localRelease {
+    group 'Release'
+    description 'Modify gradle.properties, set new library version and publish to local maven'
+    doFirst {
+        if (project.hasProperty("v")) {
+            def version = project.getProperty("v")
+            println 'Release version '+version+' to local maven'
+            releaseSigningEnabled(false)
+            releaseVersionName("chat-components/database/build.gradle", version)
+            releaseVersionName("chat-components/framework/build.gradle", version)
+            releaseVersionName("chat-components/ui/build.gradle", version)
+            releaseVersionName("chat-components/build.gradle", version)
+
+        } else {
+            def error = "Missing version parameter. Please pass '-Pv' with expected release version."
+            logger.error(error)
+            throw new TaskExecutionException( it, new Exception(error))
+        }
+    }
+}
+
+localRelease.finalizedBy publishToMavenLocal
+
+tasks.withType(PublishToMavenLocal) { it.dependsOn test }
+tasks.withType(PublishToMavenLocal) { it.dependsOn connectedAndroidTest }
+
+static def releaseSigningEnabled(value) {
+    def propertiesFile = "gradle.properties"
+    def regex = Pattern.compile("RELEASE_SIGNING_ENABLED.*")
+    def updatedContent = new File(propertiesFile).getText('UTF-8').replaceAll(regex, "") + ("RELEASE_SIGNING_ENABLED="+value+"\n")
+    new File(propertiesFile).write(updatedContent, 'UTF-8')
+}
+
+static def releaseVersionName(buildFile, value) {
+    def regex = "(.*?versionName\\s*?=\\s*?)(\"\\d\\.\\d\\.\\d\")"
+    def newVersion = "\$1\""+value+"\""
+    def updatedContent = new File(buildFile).getText('UTF-8').replaceAll(regex, newVersion)
+    new File(buildFile).write(updatedContent, 'UTF-8')
+}

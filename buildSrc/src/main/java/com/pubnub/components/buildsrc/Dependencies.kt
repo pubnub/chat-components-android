@@ -79,14 +79,6 @@ object Libs {
             const val uiTest = "androidx.compose.ui:ui-test-junit4:$version"
         }
 
-        object Emoji {
-            private const val version = "1.0.1"
-
-            const val emoji = "androidx.emoji2:emoji2:$version"
-            const val emojiViews = "androidx.emoji2:emoji2-views:$version"
-            const val emojiViewsHelper = "androidx.emoji2:emoji2-views-helper:$version"
-        }
-
         object Lifecycle {
             private const val version = "2.5.1"
             const val viewModelCompose =
