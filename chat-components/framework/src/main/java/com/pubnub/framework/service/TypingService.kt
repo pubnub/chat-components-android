@@ -5,7 +5,7 @@ import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.Typing
 import com.pubnub.framework.data.TypingMap
 import com.pubnub.framework.data.UserId
-import com.pubnub.framework.service.error.ErrorHandler
+import com.pubnub.framework.service.error.Logger
 import com.pubnub.framework.util.Framework
 import com.pubnub.framework.util.Seconds
 import com.pubnub.framework.util.TypingIndicator
@@ -23,7 +23,7 @@ import kotlin.time.Duration.Companion.seconds
 class TypingService constructor(
     private val id: UserId,
     private val typingIndicator: TypingIndicator,
-    private val errorHandler: ErrorHandler,
+    private val logger: Logger,
     private val coroutineScope: CoroutineScope = GlobalScope,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
@@ -34,7 +34,7 @@ class TypingService constructor(
     }
 
     init {
-        errorHandler.i("Typing Service: $id")
+        logger.i("Typing Service for User '$id' created")
     }
 
     private val _typing: MutableSharedFlow<TypingMap> =
@@ -70,14 +70,14 @@ class TypingService constructor(
         isTyping: Boolean,
         timestamp: Long = System.currentTimeMillis().timetoken
     ) {
-        errorHandler.d("Set typing $userId $channelId $isTyping $timestamp")
+        logger.d("Set typing for user '$userId' on '$channelId', value: '$isTyping' at $timestamp")
         val data = Typing(userId, channelId, isTyping, timestamp)
         if (shouldSendTypingEvent(data)) {
             setTypingData(data)
             typingIndicator.setTyping(
                 channelId = channelId,
                 isTyping = isTyping,
-                onError = { errorHandler.e("Cannot send typing signal\n$it") }
+                onError = { logger.e(it, "Cannot send typing signal") }
             )
         }
     }
@@ -88,7 +88,7 @@ class TypingService constructor(
      * Bind for signals and launch timeout timer
      */
     fun bind(id: ChannelId) {
-        errorHandler.i("-> Bind for typing signal: $id ($this)")
+        logger.i("Start listening for typing signal on channel '$id'")
         listenForSignal()
         startTimeoutTimer()
     }
@@ -97,7 +97,7 @@ class TypingService constructor(
      * Unbind signal changes listener and stop timeout timer
      */
     fun unbind() {
-        errorHandler.i("<- Unbind for typing signal ($this)")
+        logger.i("Stop listening for typing signal")
         stopListenForPresence()
         stopTimeoutTimer()
     }

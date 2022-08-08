@@ -3,7 +3,7 @@ package com.pubnub.components.chat.service.message.action
 import com.pubnub.api.models.consumer.message_actions.PNMessageAction
 import com.pubnub.api.models.consumer.pubsub.BasePubSubResult
 import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResult
-import com.pubnub.framework.service.error.ErrorHandler
+import com.pubnub.framework.service.error.Logger
 import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.repository.message.action.MessageActionRepository
 import com.pubnub.framework.data.ChannelId
@@ -26,7 +26,7 @@ class DefaultMessageReactionService(
     private val actionService: ActionService,
     private val messageActionRepository: MessageActionRepository<DBMessageAction>,
     private val mapper: Mapper<PNMessageActionResult, DBMessageAction>,
-    private val errorHandler: ErrorHandler,
+    private val logger: Logger,
     private val coroutineScope: CoroutineScope = GlobalScope,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : MessageReactionService<DBMessageAction> {
@@ -40,6 +40,7 @@ class DefaultMessageReactionService(
      * @param types Accepted types of message actions, which will be stored in database
      */
     override fun bind(types: Array<String>) {
+        logger.d("Start listening for actions for: '${types.joinToString()}'")
         this.types = types
         listenForActions()
     }
@@ -48,6 +49,7 @@ class DefaultMessageReactionService(
      * Stop listening for Actions
      */
     override fun unbind() {
+        logger.d("Stop listening for actions")
         stopListenForActions()
     }
 
@@ -58,7 +60,7 @@ class DefaultMessageReactionService(
      * @param lastTimetoken Last synchronization timestamp
      */
     override fun synchronize(channel: ChannelId, lastTimetoken: Long?) {
-        errorHandler.i("Sync actions for channel '$channel'")
+        logger.i("Sync actions for channel '$channel'")
         coroutineScope.launch(dispatcher) {
             val lastActionTimestamp =
                 lastTimetoken ?: messageActionRepository.getLastTimetoken(channel)
@@ -93,11 +95,12 @@ class DefaultMessageReactionService(
         type: String,
         value: String,
     ) {
+        logger.i("Remove message action '$type:$value' on channel '$channel'")
         try {
             actionService.remove(channel, messageTimetoken, published)
             removeAction(userId, channel, messageTimetoken, type, value)
         } catch (e: Exception) {
-            errorHandler.e(e, "Cannot remove message action")
+            logger.e(e, "Cannot remove message action")
         }
     }
 
@@ -117,12 +120,13 @@ class DefaultMessageReactionService(
         type: String,
         value: String,
     ) {
+        logger.i("Add message action '$type:$value' on channel '$channel'")
         try {
             val result = actionService.add(channel, PNMessageAction(type, value, messageTimetoken))
                 .toResult(channel)
             addAction(result)
         } catch (e: Exception) {
-            errorHandler.e(e, "Cannot add message action")
+            logger.e(e, "Cannot add message action")
         }
     }
 
@@ -206,7 +210,6 @@ class DefaultMessageReactionService(
         value: String
     ) {
         val action = messageActionRepository.get(user, channel, messageTimetoken, type, value)
-        errorHandler.i("Remove action $action")
         if (action != null)
             messageActionRepository.remove(action)
     }
