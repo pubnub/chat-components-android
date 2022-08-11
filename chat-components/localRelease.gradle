@@ -1,41 +1,132 @@
 import java.util.regex.Pattern
 
+def buildFiles = [
+        "chat-components/database/build.gradle",
+        "chat-components/framework/build.gradle",
+        "chat-components/ui/build.gradle",
+        "chat-components/build.gradle"
+]
+def backupFiles = buildFiles + "gradle.properties"
+
+task createBackup {
+    group 'Release'
+    description 'Create backup of gradle files'
+    doLast {
+        createBackupFiles(backupFiles)
+    }
+}
+
+task restoreBackup {
+    group 'Release'
+    description 'Restore backup of gradle files'
+    doLast {
+        restoreBackupFiles(backupFiles)
+    }
+}
+
+task tests {
+    dependsOn 'test'
+    dependsOn 'database:test'
+    dependsOn 'framework:test'
+    dependsOn 'ui:test'
+    dependsOn 'connectedAndroidTest'
+    dependsOn 'database:connectedAndroidTest'
+    dependsOn 'framework:connectedAndroidTest'
+    dependsOn 'ui:connectedAndroidTest'
+}
+
+task localPublish {
+
+    finalizedBy 'framework:publishToMavenLocal'
+    finalizedBy 'database:publishToMavenLocal'
+    finalizedBy'ui:publishToMavenLocal'
+    finalizedBy 'publishToMavenLocal'
+
+
+    doLast {
+        println 'Publish to Maven Local: '+project.name
+    }
+}
+
 task localRelease {
     group 'Release'
     description 'Modify gradle.properties, set new library version and publish to local maven'
-    doFirst {
-        if (project.hasProperty("v")) {
-            def version = project.getProperty("v")
-            println 'Release version '+version+' to local maven'
-            releaseSigningEnabled(false)
-            releaseVersionName("chat-components/database/build.gradle", version)
-            releaseVersionName("chat-components/framework/build.gradle", version)
-            releaseVersionName("chat-components/ui/build.gradle", version)
-            releaseVersionName("chat-components/build.gradle", version)
 
-        } else {
-            def error = "Missing version parameter. Please pass '-Pv' with expected release version."
-            logger.error(error)
-            throw new TaskExecutionException( it, new Exception(error))
+
+    dependsOn createBackup
+
+    def tasks = [tests, localPublish, restoreBackup]
+    placeTasksInOrder([localRelease] + tasks)
+
+
+    afterEvaluate {
+
+        doFirst {
+            if (project.hasProperty("v")) {
+                def version = project.getProperty("v")
+                println 'Release version '+version+' to local maven'
+
+                releaseSigningEnabled("gradle.properties", false)
+                releasePropertiesVersionName("gradle.properties", version)
+                buildFiles.each { fileName -> releaseVersionName(fileName, version) }
+
+            } else {
+                def error = "Missing version parameter. Please pass '-Pv' with expected release version."
+                logger.error(error)
+                throw new TaskExecutionException( it, new Exception(error))
+            }
         }
     }
 }
 
-localRelease.finalizedBy publishToMavenLocal
-
-tasks.withType(PublishToMavenLocal) { it.dependsOn test }
-tasks.withType(PublishToMavenLocal) { it.dependsOn connectedAndroidTest }
-
-static def releaseSigningEnabled(value) {
-    def propertiesFile = "gradle.properties"
+static def releaseSigningEnabled(propertiesFile, value) {
+    println 'Setting RELEASE_SIGNING_ENABLED = '+value+' in \''+propertiesFile+'\''
     def regex = Pattern.compile("RELEASE_SIGNING_ENABLED.*")
     def updatedContent = new File(propertiesFile).getText('UTF-8').replaceAll(regex, "") + ("RELEASE_SIGNING_ENABLED="+value+"\n")
     new File(propertiesFile).write(updatedContent, 'UTF-8')
 }
 
+static def releasePropertiesVersionName(buildFile, value) {
+    println 'Setting VERSION_NAME = '+value+' in \''+buildFile+'\''
+    // VERSION_NAME=0.5.0-rc01
+    def regex = "(.*?VERSION_NAME\\s*?=\\s*?)(\\d\\.\\d\\.\\d.*)"
+    def newVersion = "\$1"+value
+    def updatedContent = new File(buildFile).getText('UTF-8').replaceAll(regex, newVersion)
+    new File(buildFile).write(updatedContent, 'UTF-8')
+}
+
 static def releaseVersionName(buildFile, value) {
-    def regex = "(.*?versionName\\s*?=\\s*?)(\"\\d\\.\\d\\.\\d\")"
+    println 'Setting versionName = '+value+' in \''+buildFile+'\''
+    def regex = "(.*?versionName\\s*?=\\s*?)(\"\\d\\.\\d\\.\\d.*\")"
     def newVersion = "\$1\""+value+"\""
     def updatedContent = new File(buildFile).getText('UTF-8').replaceAll(regex, newVersion)
     new File(buildFile).write(updatedContent, 'UTF-8')
+}
+
+static def createBackupFiles(files) {
+    files.each { fileName ->
+        println 'Create backup of \''+fileName+'\''
+        def src = new File(fileName)
+        def dest = new File(fileName+".backup")
+        dest.write(src.text)
+    }
+}
+
+static def restoreBackupFiles(files) {
+    files.each { fileName ->
+        println 'Restore backup of \''+fileName+'\''
+        def src = new File(fileName+".backup")
+        def dest = new File(fileName)
+        dest.write(src.text)
+        src.delete()
+    }
+}
+
+static def placeTasksInOrder(tasks) {
+    for (int i=0; i < tasks.size() -1; i++) {
+        def earlierTask = tasks.get(i)
+        def laterTask   = tasks.get(i +1)
+        earlierTask.finalizedBy laterTask
+        laterTask.mustRunAfter(earlierTask)
+    }
 }
