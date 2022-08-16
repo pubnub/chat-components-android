@@ -11,7 +11,7 @@ def backupFiles = buildFiles + "gradle.properties"
 task createBackup {
     group 'Release'
     description 'Create backup of gradle files'
-    doLast {
+    doFirst {
         createBackupFiles(backupFiles)
     }
 }
@@ -41,7 +41,6 @@ task localPublish {
     finalizedBy 'database:publishToMavenLocal'
     finalizedBy'ui:publishToMavenLocal'
     finalizedBy 'publishToMavenLocal'
-
 
     doLast {
         println 'Publish to Maven Local: '+project.name
@@ -77,6 +76,18 @@ task localRelease {
             }
         }
     }
+}
+
+localRelease.configure {
+    mustRunAfter createBackup
+}
+
+localPublish.configure {
+    mustRunAfter tests
+}
+
+restoreBackup.configure {
+    mustRunAfter localPublish
 }
 
 static def releaseSigningEnabled(propertiesFile, value) {
