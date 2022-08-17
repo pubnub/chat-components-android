@@ -11,7 +11,7 @@ interface MemberRenderer {
         profileUrl: String,
         online: Boolean?,
         onClick: () -> Unit,
-        modifier: Modifier
+        modifier: Modifier,
     )
 
     @Composable

@@ -21,7 +21,7 @@ fun MessageMenu(
             state = state,
             onClick = onClick,
         )
-    }
+    },
 ) {
     Column(modifier) {
         items.forEach { state ->

@@ -3,6 +3,7 @@ package com.pubnub.components
 import com.google.gson.JsonParser
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
+import com.pubnub.api.UserId
 import com.pubnub.components.chat.network.data.NetworkChannelMetadata
 import com.pubnub.components.chat.network.data.NetworkMember
 import com.pubnub.components.chat.network.data.NetworkMessage
@@ -28,7 +29,7 @@ class PayloadTest {
 
     @Before
     fun setUp() {
-        pubNub = PubNub(PNConfiguration(PubNub.generateUUID()))
+        pubNub = PubNub(PNConfiguration(UserId(PubNub.generateUUID())))
         MockKAnnotations.init(this, relaxed = true, relaxUnitFun = true)
     }
 
@@ -46,7 +47,8 @@ class PayloadTest {
         // Given
         val networkMemberMapper = NetworkMemberMapper(pubNub.mapper)
         val response: NetworkMember = pubNub.mapper.fromJson(userJson, NetworkMember::class.java)
-        val responseCustom = pubNub.mapper.fromJson(pubNub.mapper.toJson(response.custom), DBMember.CustomData::class.java)
+        val responseCustom = pubNub.mapper.fromJson(pubNub.mapper.toJson(response.custom),
+            DBMember.CustomData::class.java)
 
         // When
         val dbObject = networkMemberMapper.map(response)
@@ -65,168 +67,188 @@ class PayloadTest {
     }
 
     @Test
-    fun givenValidUserJsonWithoutUserName_whenIsReceived_thenNetworkMemberMapperReturnsValidDbObjectWithIdAsAName() = runTest {
-        // Given
-        val networkMemberMapper = NetworkMemberMapper(pubNub.mapper)
-        val response: NetworkMember = pubNub.mapper.fromJson(userJsonNoName, NetworkMember::class.java)
-        val responseCustom = pubNub.mapper.fromJson(pubNub.mapper.toJson(response.custom), DBMember.CustomData::class.java)
+    fun givenValidUserJsonWithoutUserName_whenIsReceived_thenNetworkMemberMapperReturnsValidDbObjectWithIdAsAName() =
+        runTest {
+            // Given
+            val networkMemberMapper = NetworkMemberMapper(pubNub.mapper)
+            val response: NetworkMember =
+                pubNub.mapper.fromJson(userJsonNoName, NetworkMember::class.java)
+            val responseCustom = pubNub.mapper.fromJson(pubNub.mapper.toJson(response.custom),
+                DBMember.CustomData::class.java)
 
-        // When
-        val dbObject = networkMemberMapper.map(response)
+            // When
+            val dbObject = networkMemberMapper.map(response)
 
-        // Then
-        Assert.assertEquals(response.id, dbObject.id)
-        Assert.assertEquals(response.name, dbObject.name)
-        Assert.assertEquals(response.externalId, dbObject.externalId)
-        Assert.assertEquals(response.profileUrl, dbObject.profileUrl)
-        Assert.assertEquals(response.email, dbObject.email)
-        Assert.assertEquals(responseCustom, dbObject.custom)
-        Assert.assertEquals(response.updated, dbObject.updated)
-        Assert.assertEquals(response.eTag, dbObject.eTag)
-        Assert.assertEquals(response.type, dbObject.type)
-        Assert.assertEquals(response.status, dbObject.status)
-    }
-
-    @Test
-    fun givenValidUserJsonWithoutType_whenIsReceived_thenNetworkMemberMapperReturnsValidDbObjectWithDefaultType() = runTest {
-        // Given
-        val networkMemberMapper = NetworkMemberMapper(pubNub.mapper)
-        val response: NetworkMember = pubNub.mapper.fromJson(userJsonNoType, NetworkMember::class.java)
-        val responseCustom = pubNub.mapper.fromJson(pubNub.mapper.toJson(response.custom), DBMember.CustomData::class.java)
-
-        // When
-        val dbObject = networkMemberMapper.map(response)
-
-        // Then
-        Assert.assertEquals(response.id, dbObject.id)
-        Assert.assertEquals(response.name, dbObject.name)
-        Assert.assertEquals(response.externalId, dbObject.externalId)
-        Assert.assertEquals(response.profileUrl, dbObject.profileUrl)
-        Assert.assertEquals(response.email, dbObject.email)
-        Assert.assertEquals(responseCustom, dbObject.custom)
-        Assert.assertEquals(response.updated, dbObject.updated)
-        Assert.assertEquals(response.eTag, dbObject.eTag)
-        Assert.assertEquals("default", dbObject.type)
-        Assert.assertEquals(response.status, dbObject.status)
-    }
-
+            // Then
+            Assert.assertEquals(response.id, dbObject.id)
+            Assert.assertEquals(response.name, dbObject.name)
+            Assert.assertEquals(response.externalId, dbObject.externalId)
+            Assert.assertEquals(response.profileUrl, dbObject.profileUrl)
+            Assert.assertEquals(response.email, dbObject.email)
+            Assert.assertEquals(responseCustom, dbObject.custom)
+            Assert.assertEquals(response.updated, dbObject.updated)
+            Assert.assertEquals(response.eTag, dbObject.eTag)
+            Assert.assertEquals(response.type, dbObject.type)
+            Assert.assertEquals(response.status, dbObject.status)
+        }
 
     @Test
-    fun givenValidMinimalUserJson_whenIsReceived_thenNetworkMemberMapperReturnsValidDbObject() = runTest {
-        // Given
-        val networkMemberMapper = NetworkMemberMapper(pubNub.mapper)
-        val response: NetworkMember = pubNub.mapper.fromJson(userJsonMin, NetworkMember::class.java)
-        val responseCustom = pubNub.mapper.fromJson(pubNub.mapper.toJson(response.custom), DBMember.CustomData::class.java)
+    fun givenValidUserJsonWithoutType_whenIsReceived_thenNetworkMemberMapperReturnsValidDbObjectWithDefaultType() =
+        runTest {
+            // Given
+            val networkMemberMapper = NetworkMemberMapper(pubNub.mapper)
+            val response: NetworkMember =
+                pubNub.mapper.fromJson(userJsonNoType, NetworkMember::class.java)
+            val responseCustom = pubNub.mapper.fromJson(pubNub.mapper.toJson(response.custom),
+                DBMember.CustomData::class.java)
 
-        // When
-        val dbObject = networkMemberMapper.map(response)
+            // When
+            val dbObject = networkMemberMapper.map(response)
 
-        // Then
-        Assert.assertEquals(response.id, dbObject.id)
-        Assert.assertEquals(response.name, dbObject.name)
-        Assert.assertEquals(response.externalId, dbObject.externalId)
-        Assert.assertEquals(response.profileUrl, dbObject.profileUrl)
-        Assert.assertEquals(response.email, dbObject.email)
-        Assert.assertEquals(responseCustom, dbObject.custom)
-        Assert.assertEquals(response.updated, dbObject.updated)
-        Assert.assertEquals(response.eTag, dbObject.eTag)
-        Assert.assertEquals("default", dbObject.type)
-        Assert.assertEquals(response.status, dbObject.status)
-    }
+            // Then
+            Assert.assertEquals(response.id, dbObject.id)
+            Assert.assertEquals(response.name, dbObject.name)
+            Assert.assertEquals(response.externalId, dbObject.externalId)
+            Assert.assertEquals(response.profileUrl, dbObject.profileUrl)
+            Assert.assertEquals(response.email, dbObject.email)
+            Assert.assertEquals(responseCustom, dbObject.custom)
+            Assert.assertEquals(response.updated, dbObject.updated)
+            Assert.assertEquals(response.eTag, dbObject.eTag)
+            Assert.assertEquals("default", dbObject.type)
+            Assert.assertEquals(response.status, dbObject.status)
+        }
+
+
+    @Test
+    fun givenValidMinimalUserJson_whenIsReceived_thenNetworkMemberMapperReturnsValidDbObject() =
+        runTest {
+            // Given
+            val networkMemberMapper = NetworkMemberMapper(pubNub.mapper)
+            val response: NetworkMember =
+                pubNub.mapper.fromJson(userJsonMin, NetworkMember::class.java)
+            val responseCustom = pubNub.mapper.fromJson(pubNub.mapper.toJson(response.custom),
+                DBMember.CustomData::class.java)
+
+            // When
+            val dbObject = networkMemberMapper.map(response)
+
+            // Then
+            Assert.assertEquals(response.id, dbObject.id)
+            Assert.assertEquals(response.name, dbObject.name)
+            Assert.assertEquals(response.externalId, dbObject.externalId)
+            Assert.assertEquals(response.profileUrl, dbObject.profileUrl)
+            Assert.assertEquals(response.email, dbObject.email)
+            Assert.assertEquals(responseCustom, dbObject.custom)
+            Assert.assertEquals(response.updated, dbObject.updated)
+            Assert.assertEquals(response.eTag, dbObject.eTag)
+            Assert.assertEquals("default", dbObject.type)
+            Assert.assertEquals(response.status, dbObject.status)
+        }
 
     // endregion
 
     // region Channel
 
     @Test
-    fun givenValidChannelJson_whenIsReceived_thenNetworkChannelMapperReturnsValidDbObject() = runTest {
-        // Given
-        val networkMapper = NetworkChannelMapper(pubNub.mapper)
-        val response: NetworkChannelMetadata = pubNub.mapper.fromJson(channelJson, NetworkChannelMetadata::class.java)
-        val responseCustom: ChannelCustomData? = response.custom.asObject<ChannelCustomData?>(pubNub.mapper)?.apply {
-            // profileUrl field is extracted
-            remove("profileUrl")
+    fun givenValidChannelJson_whenIsReceived_thenNetworkChannelMapperReturnsValidDbObject() =
+        runTest {
+            // Given
+            val networkMapper = NetworkChannelMapper(pubNub.mapper)
+            val response: NetworkChannelMetadata =
+                pubNub.mapper.fromJson(channelJson, NetworkChannelMetadata::class.java)
+            val responseCustom: ChannelCustomData? =
+                response.custom.asObject<ChannelCustomData?>(pubNub.mapper)?.apply {
+                    // profileUrl field is extracted
+                    remove("profileUrl")
+                }
+
+            // When
+            val dbObject = networkMapper.map(response)
+
+            // Then
+            Assert.assertEquals(response.id, dbObject.id)
+            Assert.assertEquals(response.name, dbObject.name)
+            Assert.assertEquals(response.description, dbObject.description)
+            Assert.assertEquals(responseCustom, dbObject.custom)
+            Assert.assertEquals(response.updated, dbObject.updated)
+            Assert.assertEquals(response.eTag, dbObject.eTag)
+            Assert.assertEquals(response.type, dbObject.type)
+            Assert.assertEquals(response.status, dbObject.status)
         }
 
-        // When
-        val dbObject = networkMapper.map(response)
-
-        // Then
-        Assert.assertEquals(response.id, dbObject.id)
-        Assert.assertEquals(response.name, dbObject.name)
-        Assert.assertEquals(response.description, dbObject.description)
-        Assert.assertEquals(responseCustom, dbObject.custom)
-        Assert.assertEquals(response.updated, dbObject.updated)
-        Assert.assertEquals(response.eTag, dbObject.eTag)
-        Assert.assertEquals(response.type, dbObject.type)
-        Assert.assertEquals(response.status, dbObject.status)
-    }
-
     @Test
-    fun givenValidMinimalChannelJson_whenIsReceived_thenNetworkChannelMapperReturnsValidDbObject() = runTest {
-        // Given
-        val networkMapper = NetworkChannelMapper(pubNub.mapper)
-        val response: NetworkChannelMetadata = pubNub.mapper.fromJson(channelJsonMin, NetworkChannelMetadata::class.java)
+    fun givenValidMinimalChannelJson_whenIsReceived_thenNetworkChannelMapperReturnsValidDbObject() =
+        runTest {
+            // Given
+            val networkMapper = NetworkChannelMapper(pubNub.mapper)
+            val response: NetworkChannelMetadata =
+                pubNub.mapper.fromJson(channelJsonMin, NetworkChannelMetadata::class.java)
 
-        // When
-        val dbObject = networkMapper.map(response)
+            // When
+            val dbObject = networkMapper.map(response)
 
-        // Then
-        Assert.assertEquals(response.id, dbObject.id)
-        Assert.assertEquals(response.name, dbObject.name)
-        Assert.assertEquals(response.description, dbObject.description)
-        Assert.assertEquals(response.custom, dbObject.custom)
-        Assert.assertEquals(response.updated, dbObject.updated)
-        Assert.assertEquals(response.eTag, dbObject.eTag)
-        Assert.assertEquals(response.type, dbObject.type)
-        Assert.assertEquals(response.status, dbObject.status)
-    }
+            // Then
+            Assert.assertEquals(response.id, dbObject.id)
+            Assert.assertEquals(response.name, dbObject.name)
+            Assert.assertEquals(response.description, dbObject.description)
+            Assert.assertEquals(response.custom, dbObject.custom)
+            Assert.assertEquals(response.updated, dbObject.updated)
+            Assert.assertEquals(response.eTag, dbObject.eTag)
+            Assert.assertEquals(response.type, dbObject.type)
+            Assert.assertEquals(response.status, dbObject.status)
+        }
 
     // endregion
 
     // region Message
 
     @Test
-    fun givenValidMessageJson_whenIsReceived_thenNetworkMessageMapperReturnsValidDbObject() = runTest {
-        // Given
-        val networkMapper = NetworkMessageMapper(pubNub.mapper)
-        val response: NetworkMessage = mockk(relaxed = true, relaxUnitFun = true)
-        every { response.message } returns JsonParser.parseString(messageJson)
+    fun givenValidMessageJson_whenIsReceived_thenNetworkMessageMapperReturnsValidDbObject() =
+        runTest {
+            // Given
+            val networkMapper = NetworkMessageMapper(pubNub.mapper)
+            val response: NetworkMessage = mockk(relaxed = true, relaxUnitFun = true)
+            every { response.message } returns JsonParser.parseString(messageJson)
 
-        val responsePayload: NetworkMessagePayload = pubNub.mapper.fromJson(pubNub.mapper.toJson(response.message), NetworkMessagePayload::class.java)
+            val responsePayload: NetworkMessagePayload =
+                pubNub.mapper.fromJson(pubNub.mapper.toJson(response.message),
+                    NetworkMessagePayload::class.java)
 
-        // When
-        val dbObject = networkMapper.map(response)
+            // When
+            val dbObject = networkMapper.map(response)
 
-        // Then
-        Assert.assertEquals(responsePayload.id, dbObject.id)
-        Assert.assertEquals(responsePayload.text, dbObject.text)
-        Assert.assertEquals(responsePayload.contentType, dbObject.contentType)
-        Assert.assertEquals(responsePayload.content, dbObject.content)
-        Assert.assertEquals(responsePayload.createdAt, dbObject.createdAt)
-        Assert.assertEquals(responsePayload.custom, dbObject.custom)
-    }
+            // Then
+            Assert.assertEquals(responsePayload.id, dbObject.id)
+            Assert.assertEquals(responsePayload.text, dbObject.text)
+            Assert.assertEquals(responsePayload.contentType, dbObject.contentType)
+            Assert.assertEquals(responsePayload.content, dbObject.content)
+            Assert.assertEquals(responsePayload.createdAt, dbObject.createdAt)
+            Assert.assertEquals(responsePayload.custom, dbObject.custom)
+        }
 
     @Test
-    fun givenValidMiminalMessageJson_whenIsReceived_thenNetworkMessageMapperReturnsValidDbObject() = runTest {
-        // Given
-        val networkMapper = NetworkMessageMapper(pubNub.mapper)
-        val response: NetworkMessage = mockk(relaxed = true, relaxUnitFun = true)
-        every { response.message } returns JsonParser.parseString(messageJsonMin)
+    fun givenValidMiminalMessageJson_whenIsReceived_thenNetworkMessageMapperReturnsValidDbObject() =
+        runTest {
+            // Given
+            val networkMapper = NetworkMessageMapper(pubNub.mapper)
+            val response: NetworkMessage = mockk(relaxed = true, relaxUnitFun = true)
+            every { response.message } returns JsonParser.parseString(messageJsonMin)
 
-        val responsePayload: NetworkMessagePayload = pubNub.mapper.fromJson(pubNub.mapper.toJson(response.message), NetworkMessagePayload::class.java)
+            val responsePayload: NetworkMessagePayload =
+                pubNub.mapper.fromJson(pubNub.mapper.toJson(response.message),
+                    NetworkMessagePayload::class.java)
 
-        // When
-        val dbObject = networkMapper.map(response)
+            // When
+            val dbObject = networkMapper.map(response)
 
-        // Then
-        Assert.assertEquals(responsePayload.id, dbObject.id)
-        Assert.assertEquals(responsePayload.text, dbObject.text)
-        Assert.assertEquals(responsePayload.contentType, dbObject.contentType)
-        Assert.assertEquals(responsePayload.content, dbObject.content)
-        Assert.assertEquals(responsePayload.createdAt, dbObject.createdAt)
-        Assert.assertEquals(responsePayload.custom, dbObject.custom)
-    }
+            // Then
+            Assert.assertEquals(responsePayload.id, dbObject.id)
+            Assert.assertEquals(responsePayload.text, dbObject.text)
+            Assert.assertEquals(responsePayload.contentType, dbObject.contentType)
+            Assert.assertEquals(responsePayload.content, dbObject.content)
+            Assert.assertEquals(responsePayload.createdAt, dbObject.createdAt)
+            Assert.assertEquals(responsePayload.custom, dbObject.custom)
+        }
 
     // endregion
 

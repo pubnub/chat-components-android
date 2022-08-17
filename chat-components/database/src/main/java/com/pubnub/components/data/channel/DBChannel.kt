@@ -30,5 +30,5 @@ data class DBChannelWithMembers(
         entityColumn = "memberId",
         associateBy = Junction(DBMembership::class)
     )
-    val members: List<DBMember>
+    val members: List<DBMember>,
 ) : Channel by channel

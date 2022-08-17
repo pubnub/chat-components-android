@@ -4,8 +4,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.pubnub.components.chat.provider.ChatProvider
+import com.pubnub.components.chat.ui.component.input.TypingUi
 import com.pubnub.components.chat.ui.component.input.renderer.DefaultTypingIndicatorRenderer
-import com.pubnub.framework.data.Typing
+import com.pubnub.components.chat.ui.component.member.MemberUi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -37,7 +38,7 @@ class TypingIndicatorTest : BaseTest() {
     fun whenTypingDataWillBePassed_andTypingWillBeTrue_thenTypingIndicatorWillBeShown() = runTest {
         // Given
         val typingIndicator = context.getString(R.string.typing_indicator)
-        val typingData = listOf(Typing("userId", "channelId", true))
+        val typingData = listOf(TypingUi(MemberUi.Data("userId", "User Nr 1"), true))
 
         val expectedText = context.getString(
             R.string.is_typing,
@@ -63,7 +64,7 @@ class TypingIndicatorTest : BaseTest() {
         runTest {
             // Given
             val typingIndicator = context.getString(R.string.typing_indicator)
-            val typingData = listOf(Typing("userId", "channelId", false))
+            val typingData = listOf(TypingUi(MemberUi.Data("userId", "User Nr 1"), false))
 
             val expectedText = context.getString(
                 R.string.is_typing,
@@ -87,8 +88,8 @@ class TypingIndicatorTest : BaseTest() {
     fun whenTypingIsShowing_andTypingFalseIsReceived_thenTypingIndicatorWillBeHide() = runTest {
         // Given
         val typingIndicator = context.getString(R.string.typing_indicator)
-        val typingData = listOf(Typing("userId", "channelId", true))
-        val notTypingData = listOf(Typing("userId", "channelId", false))
+        val typingData = listOf(TypingUi(MemberUi.Data("userId", "User Nr 1"), true))
+        val notTypingData = listOf(TypingUi(MemberUi.Data("userId", "User Nr 1"), false))
         val typingState = mutableStateOf(typingData)
 
         val expectedText = context.getString(
@@ -121,8 +122,9 @@ class TypingIndicatorTest : BaseTest() {
     fun whenTypingIsNotShowing_andTypingTrueIsReceived_thenTypingIndicatorWillBeShown() = runTest {
         // Given
         val typingIndicator = context.getString(R.string.typing_indicator)
-        val typingData = listOf(Typing("userId", "channelId", true))
-        val notTypingData = listOf(Typing("userId", "channelId", false))
+        val user = MemberUi.Data("userId", "User Nr 1")
+        val typingData = listOf(TypingUi(user, true))
+        val notTypingData = listOf(TypingUi(user, false))
         val typingState = mutableStateOf(notTypingData)
 
         val expectedText = context.getString(

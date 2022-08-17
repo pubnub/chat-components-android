@@ -10,5 +10,5 @@ import com.pubnub.api.models.consumer.PNStatus
  */
 data class PNResult<Output>(
     val result: Output?,
-    val status: PNStatus
+    val status: PNStatus,
 )

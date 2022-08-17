@@ -28,7 +28,7 @@ object DefaultMemberRenderer : MemberRenderer {
         profileUrl: String,
         online: Boolean?,
         onClick: () -> Unit,
-        modifier: Modifier
+        modifier: Modifier,
     ) {
         MemberItemView(
             name = name,
@@ -56,9 +56,9 @@ object DefaultMemberRenderer : MemberRenderer {
         description: String?,
         profileUrl: String,
         clickAction: () -> Unit,
+        modifier: Modifier = Modifier,
         online: Boolean? = null,
         placeholder: Boolean = false,
-        modifier: Modifier = Modifier,
     ) {
         val context = LocalContext.current
         val theme = LocalMemberListTheme.current
@@ -143,7 +143,7 @@ object DefaultMemberRenderer : MemberRenderer {
         activeColor: Color,
         inactiveColor: Color,
         borderStroke: BorderStroke,
-        modifier: Modifier = Modifier
+        modifier: Modifier = Modifier,
     ) {
         val context = LocalContext.current
         val color: Color = if (isOnline) activeColor else inactiveColor

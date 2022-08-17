@@ -26,7 +26,7 @@ object ButtonThemeDefaults {
         colors: ButtonColors = ButtonDefaults.buttonColors(),
         contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
         text: TextTheme = TextThemeDefaults.text(),
-        modifier: Modifier = Modifier
+        modifier: Modifier = Modifier,
     ) = ButtonTheme(elevation, shape, border, colors, contentPadding, text, modifier)
 
     @Composable

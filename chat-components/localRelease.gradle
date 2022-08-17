@@ -1,0 +1,178 @@
+import java.util.regex.Pattern
+
+/**
+ * Local Release tasks
+ *
+ * These tasks are used for modifying properties - setting the release version and allowing to
+ * release unsigned builds.
+ *
+ * Usage:
+ * `./gradlew setVersion [-Pv=9.9.9-rc99]`
+ * `./gradlew localRelease [-PskipTests]`
+ *
+ * Arguments:
+ * -v           Version of the release
+ * -skipTests   Ignore tests during the release. Not recommended.
+ *
+ * `createBackup` and `restoreBackup` tasks are created. They can be called manually when needed:
+ * `./gradlew restoreBackup`
+ */
+def buildFiles = [
+        "chat-components/database/build.gradle",
+        "chat-components/framework/build.gradle",
+        "chat-components/ui/build.gradle",
+        "chat-components/build.gradle"
+]
+def backupFiles = buildFiles + "gradle.properties"
+
+task createBackup {
+    group 'Release'
+    description 'Create backup of gradle files'
+
+    doFirst {
+        createBackupFiles(backupFiles)
+    }
+}
+
+task restoreBackup {
+    group 'Release'
+    description 'Restore backup of gradle files'
+
+    doLast {
+        restoreBackupFiles(backupFiles)
+    }
+}
+
+task tests {
+    group 'Release'
+    description 'Run Unit & Android tests'
+
+    doFirst {
+        if(project.hasProperty("skipTests"))
+            println 'Skipping tests'
+        else
+            println 'Running tests'
+    }
+}
+
+task localPublish {
+    group 'Release'
+    description 'Publish package to local maven'
+
+    doFirst {
+        println 'Publishing package'
+    }
+}
+
+task setVersion {
+    group 'Release'
+    description 'Modify gradle.properties, set new library version and publish to local maven'
+
+    afterEvaluate {
+        doFirst {
+            if (project.hasProperty("v")) {
+                def version = project.getProperty("v")
+
+                releaseSigningEnabled("gradle.properties", false)
+                releasePropertiesVersionName("gradle.properties", version)
+                buildFiles.each { fileName -> releaseVersionName(fileName, version) }
+
+            } else {
+                def error = "Missing version parameter. Please pass '-Pv' with expected release version."
+                logger.error(error)
+                throw new TaskExecutionException( it, new Exception(error))
+            }
+        }
+    }
+}
+
+task localRelease {
+    group 'Release'
+    description 'Modify gradle.properties, set new library version and publish to local maven'
+
+    def tasks = [clean, build, tests, localPublish, restoreBackup]
+    placeTasksInOrder([localRelease] + tasks)
+}
+
+afterEvaluate {
+    setVersion.configure {
+        dependsOn createBackup
+    }
+
+    localPublish.configure {
+        mustRunAfter tests
+        dependsOn 'framework:publishToMavenLocal'
+        dependsOn 'database:publishToMavenLocal'
+        dependsOn 'ui:publishToMavenLocal'
+        dependsOn 'publishToMavenLocal'
+    }
+}
+
+static def releaseSigningEnabled(propertiesFile, value) {
+    println 'Setting RELEASE_SIGNING_ENABLED = '+value+' in \''+propertiesFile+'\''
+    def regex = Pattern.compile("RELEASE_SIGNING_ENABLED.*")
+    def updatedContent = new File(propertiesFile).getText('UTF-8').replaceAll(regex, "") + ("RELEASE_SIGNING_ENABLED="+value+"\n")
+    new File(propertiesFile).write(updatedContent, 'UTF-8')
+}
+
+static def releasePropertiesVersionName(buildFile, value) {
+    println 'Setting VERSION_NAME = '+value+' in \''+buildFile+'\''
+    def regex = "(.*?VERSION_NAME\\s*?=\\s*?)(\\d\\.\\d\\.\\d.*)"
+    def newVersion = "\$1"+value
+    def updatedContent = new File(buildFile).getText('UTF-8').replaceAll(regex, newVersion)
+    new File(buildFile).write(updatedContent, 'UTF-8')
+}
+
+static def releaseVersionName(buildFile, value) {
+    println 'Setting versionName = '+value+' in \''+buildFile+'\''
+    def regex = "(.*?versionName\\s*?=\\s*?)(\"\\d\\.\\d\\.\\d.*\")"
+    def newVersion = "\$1\""+value+"\""
+    def updatedContent = new File(buildFile).getText('UTF-8').replaceAll(regex, newVersion)
+    new File(buildFile).write(updatedContent, 'UTF-8')
+}
+
+static def createBackupFiles(files) {
+    files.each { fileName ->
+        println 'Create backup of \''+fileName+'\''
+        def src = new File(fileName)
+        def dest = new File(fileName+".backup")
+        dest.write(src.text)
+    }
+}
+
+static def restoreBackupFiles(files) {
+    files.each { fileName ->
+        def src = new File(fileName+".backup")
+        if(src.exists()) {
+            def dest = new File(fileName)
+
+            println 'Restore backup of \'' + fileName + '\''
+            dest.write(src.text)
+            src.delete()
+        }
+    }
+}
+
+static def placeTasksInOrder(tasks) {
+    for (int i=0; i < tasks.size() -1; i++) {
+        def earlierTask = tasks.get(i)
+        def laterTask   = tasks.get(i +1)
+        earlierTask.finalizedBy laterTask
+        laterTask.mustRunAfter(earlierTask)
+    }
+}
+
+gradle.taskGraph.whenReady { taskGraph ->
+    if(!project.hasProperty("skipTests")){
+        tests.configure {
+            dependsOn 'test'
+            dependsOn 'database:test'
+            dependsOn 'framework:test'
+            dependsOn 'ui:test'
+            dependsOn 'connectedAndroidTest'
+            dependsOn 'database:connectedAndroidTest'
+            dependsOn 'framework:connectedAndroidTest'
+            dependsOn 'ui:connectedAndroidTest'
+        }
+    }
+}

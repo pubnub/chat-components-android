@@ -11,7 +11,7 @@ object Database {
 
     fun initialize(
         applicationContext: Context,
-        builder: (RoomDatabase.Builder<DefaultDatabase>) -> RoomDatabase.Builder<DefaultDatabase> = { it }
+        builder: (RoomDatabase.Builder<DefaultDatabase>) -> RoomDatabase.Builder<DefaultDatabase> = { it },
     ): DefaultDatabase =
         Room.databaseBuilder(applicationContext, DefaultDatabase::class.java, DATABASE_NAME)
             .addMigrations(MESSAGE_REACTION_MIGRATION)

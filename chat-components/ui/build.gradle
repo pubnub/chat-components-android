@@ -6,12 +6,12 @@ plugins {
 }
 
 android {
-    compileSdk = 31
+    compileSdk = 32
     buildToolsVersion = "30.0.3"
 
     defaultConfig {
         minSdk = 21
-        targetSdk = 31
+        targetSdk = 32
         versionCode = 1
         versionName = "0.4.0"
 
@@ -76,9 +76,6 @@ dependencies {
 
     implementation Libs.Coil.coil
     implementation Libs.Accompanist.placeholder
-
-    implementation Libs.JakeWharton.timber
-    implementation Libs.Jsoup.jsoup
 
     api platform(Libs.PubNub.bom)
     implementation Libs.PubNub.kotlin

@@ -18,7 +18,7 @@ interface MessageActionDao<Data : MessageAction> {
         channel: ChannelId,
         messageTimetoken: Timetoken,
         type: String,
-        value: String
+        value: String,
     ): Data?
 
     @Query("SELECT * FROM message_action WHERE messageTimestamp LIKE :messageTimestamp")

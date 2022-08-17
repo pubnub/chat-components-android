@@ -103,7 +103,7 @@ fun LazyListScope.MemberListContent(
     member: MemberUi?,
     useStickyHeader: Boolean,
     presence: Presence?,
-    onSelected: (MemberUi.Data) -> Unit
+    onSelected: (MemberUi.Data) -> Unit,
 ) {
     when (member) {
         null -> {
