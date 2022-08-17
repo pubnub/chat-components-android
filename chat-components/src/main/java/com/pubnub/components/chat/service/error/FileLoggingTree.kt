@@ -9,7 +9,6 @@ import org.jetbrains.annotations.Nullable
 import timber.log.Timber
 import java.io.File
 import java.io.FileWriter
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 

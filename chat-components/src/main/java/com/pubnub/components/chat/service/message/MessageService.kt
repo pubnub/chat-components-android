@@ -1,11 +1,10 @@
 package com.pubnub.components.chat.service.message
 
 import androidx.compose.runtime.staticCompositionLocalOf
-import com.pubnub.components.data.message.DBMessage
+import com.pubnub.components.chat.network.data.NetworkMessagePayload
 import com.pubnub.components.data.message.Message
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.util.Timetoken
-import timber.log.Timber
 
 interface MessageService<Data : Message> {
     fun bind()
@@ -13,7 +12,7 @@ interface MessageService<Data : Message> {
 
     @Suppress("NAME_SHADOWING")
     suspend fun send(
-        id: ChannelId,
+        channelId: ChannelId,
         message: Data,
         meta: Any? = null,
         store: Boolean = true,
@@ -32,7 +31,7 @@ interface MessageService<Data : Message> {
 }
 
 val LocalMessageService =
-    staticCompositionLocalOf<MessageService<DBMessage>> { throw MessageServiceNotInitializedException() }
+    staticCompositionLocalOf<MessageService<NetworkMessagePayload>> { throw MessageServiceNotInitializedException() }
 
 class MessageServiceNotInitializedException :
     Exception("Message Service not initialized")

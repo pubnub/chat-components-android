@@ -11,7 +11,6 @@ import com.pubnub.framework.util.Timetoken
 import com.pubnub.framework.util.timetoken
 import com.pubnub.framework.util.toIsoString
 import com.pubnub.framework.util.toTimetoken
-import kotlin.time.Duration.Companion.milliseconds
 
 @Keep
 @Entity(

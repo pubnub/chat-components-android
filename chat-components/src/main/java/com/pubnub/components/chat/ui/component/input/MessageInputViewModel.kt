@@ -5,11 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.pubnub.components.chat.network.data.NetworkMessagePayload
 import com.pubnub.components.chat.provider.LocalLogger
 import com.pubnub.components.chat.service.message.LocalMessageService
 import com.pubnub.components.chat.service.message.MessageService
 import com.pubnub.components.chat.ui.component.provider.LocalUser
-import com.pubnub.components.data.message.DBMessage
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.service.LocalTypingService
@@ -29,7 +29,7 @@ import java.util.*
  */
 class MessageInputViewModel(
     private val id: UserId,
-    private val messageService: MessageService<DBMessage>,
+    private val messageService: MessageService<NetworkMessagePayload>,
     private val typingService: TypingService? = null,
     private val logger: Logger,
     ) : ViewModel() {
@@ -49,7 +49,7 @@ class MessageInputViewModel(
         @Composable
         fun default(
             id: UserId = LocalUser.current,
-            messageService: MessageService<DBMessage> = LocalMessageService.current,
+            messageService: MessageService<NetworkMessagePayload> = LocalMessageService.current,
             logger: Logger = LocalLogger.current,
             typingService: TypingService? = null,
         ): MessageInputViewModel =
@@ -68,7 +68,7 @@ class MessageInputViewModel(
         @Composable
         fun defaultWithTypingService(
             id: UserId = LocalUser.current,
-            messageService: MessageService<DBMessage> = LocalMessageService.current,
+            messageService: MessageService<NetworkMessagePayload> = LocalMessageService.current,
         ): MessageInputViewModel =
             default(id, messageService, LocalLogger.current, LocalTypingService.current)
     }
@@ -80,8 +80,6 @@ class MessageInputViewModel(
      *
      * @param id ID of the channel
      * @param message Text to send
-     * @param contentType Type of a message content
-     * @param content Map of extra data
      * @param onSuccess Action to be fired after a successful sent
      * @param onError Action to be fired after an error
      */
@@ -89,17 +87,16 @@ class MessageInputViewModel(
     fun send(
         id: ChannelId,
         message: String,
-        contentType: String? = null,
-        content: Map<String, Any?>? = null,
+        onBeforeSend: (String) -> NetworkMessagePayload = { text -> create(text) },
         onSuccess: (String, Timetoken) -> Unit = { _: String, _: Timetoken -> },
-        onError: (Exception) -> Unit = { _: Exception -> }
+        onError: (Exception) -> Unit = { _: Exception -> },
     ) {
         logger.i("Sending message '$message' to channel '$id'")
-        val data = create(id, message, contentType, content)
+
         viewModelScope.launch(Dispatchers.IO) {
             messageService.send(
-                id = id,
-                message = data,
+                channelId = id,
+                message = onBeforeSend(message),
                 meta = hashMapOf("uuid" to this@MessageInputViewModel.id),
                 onSuccess = { message: String, timetoken: Timetoken ->
                     logger.d("Message sent successfully at ${timetoken.toIsoString()}")
@@ -113,23 +110,27 @@ class MessageInputViewModel(
         }
     }
 
-    private fun create(
-        id: ChannelId,
+    /**
+     * Constructs the network message payload
+     *
+     * @param text Text of the message
+     * @param contentType Type of a message content
+     * @param content Map of extra data
+     * @param custom Custom payload
+     */
+    fun create(
         text: String,
         contentType: String? = null,
         content: Map<String, Any?>? = null,
+        custom: Any? = null,
     ) =
-        DBMessage(
+        NetworkMessagePayload(
             id = UUID.randomUUID().toString(),
             text = text,
             contentType = contentType,
             content = content,
             createdAt = time.toIsoString(),
-            publisher = this.id,
-            channel = id,
-            custom = null,
-            timetoken = time,
-            isSent = false,
+            custom = custom,
         )
 
     /**
@@ -147,7 +148,7 @@ class MessageInputViewModel(
 
 class MessageInputViewModelFactory(
     private val id: UserId,
-    private val messageService: MessageService<DBMessage>,
+    private val messageService: MessageService<NetworkMessagePayload>,
     private val logger: Logger,
     private val typingService: TypingService? = null,
 ) :

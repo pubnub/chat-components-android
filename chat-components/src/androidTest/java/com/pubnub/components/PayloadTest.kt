@@ -1,7 +1,6 @@
 package com.pubnub.components
 
 import com.google.gson.JsonParser
-import com.google.gson.reflect.TypeToken
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
 import com.pubnub.components.chat.network.data.NetworkChannelMetadata
@@ -17,7 +16,10 @@ import com.pubnub.framework.util.asObject
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.junit.*
+import org.junit.After
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PayloadTest {

@@ -4,6 +4,7 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
+import com.pubnub.components.chat.network.data.NetworkMessagePayload
 import com.pubnub.components.chat.service.message.MessageService
 import com.pubnub.components.data.message.DBMessage
 import com.pubnub.components.data.message.action.DBMessageWithActions
@@ -15,7 +16,7 @@ import java.io.IOException
 @OptIn(ExperimentalPagingApi::class, DelicateCoroutinesApi::class)
 class MessageRemoteMediator constructor(
     private val channelId: ChannelId,
-    private val service: MessageService<DBMessage>,
+    private val service: MessageService<NetworkMessagePayload>,
     private val messageRepository: MessageRepository<DBMessage, DBMessageWithActions>,
     private val messageCount: Int = 10,
     private val coroutineScope: CoroutineScope = GlobalScope,

@@ -1,10 +1,7 @@
 package com.pubnub.framework.util
 
 import java.text.SimpleDateFormat
-import java.time.Instant
 import java.util.*
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 typealias Timetoken = Long
 

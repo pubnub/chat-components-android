@@ -14,7 +14,6 @@ import com.pubnub.components.chat.service.channel.DefaultChannelService
 import com.pubnub.components.chat.service.channel.DefaultOccupancyService
 import com.pubnub.components.chat.service.channel.LocalChannelService
 import com.pubnub.components.chat.service.channel.LocalOccupancyService
-import com.pubnub.components.chat.service.error.TimberLogger
 import com.pubnub.components.chat.service.message.DefaultMessageService
 import com.pubnub.components.chat.service.message.LocalMessageService
 import com.pubnub.components.chat.service.message.action.DefaultMessageReactionService
@@ -158,6 +157,7 @@ fun WithServices(
     CompositionLocalProvider(
         LocalMessageService provides DefaultMessageService(
             LocalPubNub.current,
+            LocalUser.current,
             LocalMessageRepository.current,
             LocalMessageActionRepository.current,
             NetworkMessageMapper(mapper),
