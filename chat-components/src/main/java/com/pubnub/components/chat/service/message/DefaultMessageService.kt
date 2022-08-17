@@ -9,13 +9,13 @@ import com.pubnub.components.chat.network.data.NetworkMessagePayload
 import com.pubnub.components.chat.network.mapper.NetworkMessageActionHistoryMapper
 import com.pubnub.components.chat.network.mapper.NetworkMessageHistoryMapper
 import com.pubnub.components.chat.network.mapper.NetworkMessageMapper
+import com.pubnub.framework.service.error.Logger
 import com.pubnub.components.data.message.DBMessage
 import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.data.message.action.DBMessageWithActions
 import com.pubnub.components.repository.message.MessageRepository
 import com.pubnub.components.repository.message.action.MessageActionRepository
 import com.pubnub.framework.data.ChannelId
-import com.pubnub.framework.service.error.ErrorHandler
 import com.pubnub.framework.util.Timetoken
 import com.pubnub.framework.util.data.PNException
 import com.pubnub.framework.util.flow.single
@@ -36,7 +36,7 @@ class DefaultMessageService(
     private val networkMapper: NetworkMessageMapper,
     private val networkHistoryMapper: NetworkMessageHistoryMapper,
     private val messageActionHistoryMapper: NetworkMessageActionHistoryMapper,
-    private val errorHandler: ErrorHandler,
+    private val logger: Logger,
     private val coroutineScope: CoroutineScope = GlobalScope,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : MessageService<DBMessage> {
@@ -47,6 +47,7 @@ class DefaultMessageService(
      * Start listening for messages
      */
     override fun bind() {
+        logger.d("Start listening for incoming messages")
         listenForMessages()
     }
 
@@ -54,8 +55,10 @@ class DefaultMessageService(
      * Stop listening for messages
      */
     override fun unbind() {
-        if (::messageJob.isInitialized)
+        if (::messageJob.isInitialized) {
             stopListenForMessages()
+            logger.d("Stopped listening for incoming messages")
+        }
     }
 
     /**
@@ -65,6 +68,8 @@ class DefaultMessageService(
      * @param message object to send
      * @param meta additional metadata to send
      * @param store flag to keep the message in history
+     * @param onSuccess Action to be fired after a successful sent
+     * @param onError Action to be fired after an error
      */
     override suspend fun send(
         id: ChannelId,
@@ -124,7 +129,7 @@ class DefaultMessageService(
                                 if (exception is PNException)
                                     onError(exception)
                             }
-                            errorHandler.e(exception)
+                            logger.e(exception)
                         }
                     },
                 )
@@ -138,6 +143,8 @@ class DefaultMessageService(
      * @param start of time window, newest date (in microseconds)
      * @param end of time window, last known message timestamp + 1 (in microseconds)
      * @param count of messages, default and maximum is 100
+     * @param withActions
+     * @param withUUID
      */
     override suspend fun fetchAll(
         id: ChannelId,
@@ -166,7 +173,7 @@ class DefaultMessageService(
                                 val message = networkHistoryMapper.map(channel, it)
                                 insertOrUpdate(message)
                             } catch (e: Exception) {
-                                errorHandler.e(
+                                logger.e(
                                     e,
                                     "Cannot map message ${it.message.toJson(pubNub.mapper)}"
                                 )
@@ -176,7 +183,7 @@ class DefaultMessageService(
                                 insertMessageAction(*actions)
 
                             } catch (e: Exception) {
-                                errorHandler.e(
+                                logger.e(
                                     e,
                                     "Cannot map message action ${it.toJson(pubNub.mapper)}"
                                 )
@@ -185,7 +192,7 @@ class DefaultMessageService(
                     }
                 },
                 onError = { exception ->
-                    errorHandler.e(exception, "Cannot pull history")
+                    logger.e(exception, "Cannot pull history")
                 }
             )
     }
@@ -234,7 +241,7 @@ class DefaultMessageService(
             try {
                 handleIncomingMessage(this@processMessage)
             } catch (e: Exception) {
-                errorHandler.e(e, "Cannot map message")
+                logger.e(e, "Cannot map message")
             }
         }
     }
@@ -245,11 +252,11 @@ class DefaultMessageService(
     private fun handleIncomingMessage(result: NetworkMessage) {
         with(result) {
             if (publisher == null) {
-                errorHandler.e(RuntimeException("User cannot be null"))
+                logger.e(RuntimeException("User cannot be null"))
                 return
             }
             if (timetoken == null) {
-                errorHandler.e(RuntimeException("Timestamp cannot be null"))
+                logger.e(RuntimeException("Timestamp cannot be null"))
                 return
             }
 
