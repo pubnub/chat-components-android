@@ -11,6 +11,7 @@ def backupFiles = buildFiles + "gradle.properties"
 task createBackup {
     group 'Release'
     description 'Create backup of gradle files'
+
     doFirst {
         createBackupFiles(backupFiles)
     }
@@ -19,51 +20,38 @@ task createBackup {
 task restoreBackup {
     group 'Release'
     description 'Restore backup of gradle files'
+
     doLast {
         restoreBackupFiles(backupFiles)
     }
 }
 
 task tests {
-    dependsOn 'test'
-    dependsOn 'database:test'
-    dependsOn 'framework:test'
-    dependsOn 'ui:test'
-    dependsOn 'connectedAndroidTest'
-    dependsOn 'database:connectedAndroidTest'
-    dependsOn 'framework:connectedAndroidTest'
-    dependsOn 'ui:connectedAndroidTest'
-}
+    group 'Release'
+    description 'Run Unit & Android tests'
 
-task localPublish {
-
-    finalizedBy 'framework:publishToMavenLocal'
-    finalizedBy 'database:publishToMavenLocal'
-    finalizedBy'ui:publishToMavenLocal'
-    finalizedBy 'publishToMavenLocal'
-
-    doLast {
-        println 'Publish to Maven Local: '+project.name
+    doFirst {
+        println 'Running tests'
     }
 }
 
-task localRelease {
+task localPublish {
+    group 'Release'
+    description 'Publish package to local maven'
+
+    doFirst {
+        println 'Publishing package'
+    }
+}
+
+task setVersion {
     group 'Release'
     description 'Modify gradle.properties, set new library version and publish to local maven'
 
-
-    dependsOn createBackup
-
-    def tasks = [tests, localPublish, restoreBackup]
-    placeTasksInOrder([localRelease] + tasks)
-
-
     afterEvaluate {
-
         doFirst {
             if (project.hasProperty("v")) {
                 def version = project.getProperty("v")
-                println 'Release version '+version+' to local maven'
 
                 releaseSigningEnabled("gradle.properties", false)
                 releasePropertiesVersionName("gradle.properties", version)
@@ -78,17 +66,40 @@ task localRelease {
     }
 }
 
-localRelease.configure {
-    mustRunAfter createBackup
+task localRelease {
+    group 'Release'
+    description 'Modify gradle.properties, set new library version and publish to local maven'
+
+    def tasks = [clean, build, tests, localPublish, restoreBackup]
+    placeTasksInOrder([localRelease] + tasks)
 }
 
-localPublish.configure {
-    mustRunAfter tests
+afterEvaluate {
+    setVersion.configure {
+        dependsOn createBackup
+    }
+    tests.configure {
+        onlyIf { !project.hasProperty('skipTests') }
+
+        dependsOn 'test'
+        dependsOn 'database:test'
+        dependsOn 'framework:test'
+        dependsOn 'ui:test'
+        dependsOn 'connectedAndroidTest'
+        dependsOn 'database:connectedAndroidTest'
+        dependsOn 'framework:connectedAndroidTest'
+        dependsOn 'ui:connectedAndroidTest'
+    }
+
+    localPublish.configure {
+        mustRunAfter tests
+        dependsOn 'framework:publishToMavenLocal'
+        dependsOn 'database:publishToMavenLocal'
+        dependsOn 'ui:publishToMavenLocal'
+        dependsOn 'publishToMavenLocal'
+    }
 }
 
-restoreBackup.configure {
-    mustRunAfter localPublish
-}
 
 static def releaseSigningEnabled(propertiesFile, value) {
     println 'Setting RELEASE_SIGNING_ENABLED = '+value+' in \''+propertiesFile+'\''
@@ -99,7 +110,6 @@ static def releaseSigningEnabled(propertiesFile, value) {
 
 static def releasePropertiesVersionName(buildFile, value) {
     println 'Setting VERSION_NAME = '+value+' in \''+buildFile+'\''
-    // VERSION_NAME=0.5.0-rc01
     def regex = "(.*?VERSION_NAME\\s*?=\\s*?)(\\d\\.\\d\\.\\d.*)"
     def newVersion = "\$1"+value
     def updatedContent = new File(buildFile).getText('UTF-8').replaceAll(regex, newVersion)
@@ -125,11 +135,14 @@ static def createBackupFiles(files) {
 
 static def restoreBackupFiles(files) {
     files.each { fileName ->
-        println 'Restore backup of \''+fileName+'\''
         def src = new File(fileName+".backup")
-        def dest = new File(fileName)
-        dest.write(src.text)
-        src.delete()
+        if(src.exists()) {
+            def dest = new File(fileName)
+
+            println 'Restore backup of \'' + fileName + '\''
+            dest.write(src.text)
+            src.delete()
+        }
     }
 }
 
