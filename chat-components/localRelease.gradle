@@ -1,5 +1,22 @@
 import java.util.regex.Pattern
 
+/**
+ * Local Release tasks
+ *
+ * These tasks are used for modifying properties - setting the release version and allowing to
+ * release unsigned builds.
+ *
+ * Usage:
+ * `./gradlew setVersion [-Pv=9.9.9-rc99]`
+ * `./gradlew localRelease [-PskipTests]`
+ *
+ * Arguments:
+ * -v           Version of the release
+ * -skipTests   Ignore tests during the release. Not recommended.
+ *
+ * `createBackup` and `restoreBackup` tasks are created. They can be called manually when needed:
+ * `./gradlew restoreBackup`
+ */
 def buildFiles = [
         "chat-components/database/build.gradle",
         "chat-components/framework/build.gradle",
@@ -31,7 +48,10 @@ task tests {
     description 'Run Unit & Android tests'
 
     doFirst {
-        println 'Running tests'
+        if(project.hasProperty("skipTests"))
+            println 'Skipping tests'
+        else
+            println 'Running tests'
     }
 }
 
@@ -78,18 +98,6 @@ afterEvaluate {
     setVersion.configure {
         dependsOn createBackup
     }
-    tests.configure {
-        onlyIf { !project.hasProperty('skipTests') }
-
-        dependsOn 'test'
-        dependsOn 'database:test'
-        dependsOn 'framework:test'
-        dependsOn 'ui:test'
-        dependsOn 'connectedAndroidTest'
-        dependsOn 'database:connectedAndroidTest'
-        dependsOn 'framework:connectedAndroidTest'
-        dependsOn 'ui:connectedAndroidTest'
-    }
 
     localPublish.configure {
         mustRunAfter tests
@@ -99,7 +107,6 @@ afterEvaluate {
         dependsOn 'publishToMavenLocal'
     }
 }
-
 
 static def releaseSigningEnabled(propertiesFile, value) {
     println 'Setting RELEASE_SIGNING_ENABLED = '+value+' in \''+propertiesFile+'\''
@@ -152,5 +159,20 @@ static def placeTasksInOrder(tasks) {
         def laterTask   = tasks.get(i +1)
         earlierTask.finalizedBy laterTask
         laterTask.mustRunAfter(earlierTask)
+    }
+}
+
+gradle.taskGraph.whenReady { taskGraph ->
+    if(!project.hasProperty("skipTests")){
+        tests.configure {
+            dependsOn 'test'
+            dependsOn 'database:test'
+            dependsOn 'framework:test'
+            dependsOn 'ui:test'
+            dependsOn 'connectedAndroidTest'
+            dependsOn 'database:connectedAndroidTest'
+            dependsOn 'framework:connectedAndroidTest'
+            dependsOn 'ui:connectedAndroidTest'
+        }
     }
 }
