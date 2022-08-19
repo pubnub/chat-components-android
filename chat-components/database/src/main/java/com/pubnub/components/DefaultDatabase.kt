@@ -11,7 +11,6 @@ import com.pubnub.components.data.member.DefaultMemberDao
 import com.pubnub.components.data.member.MemberDataCustomConverter
 import com.pubnub.components.data.membership.DBMembership
 import com.pubnub.components.data.membership.DefaultMembershipDao
-import com.pubnub.components.data.message.CustomContentConverter
 import com.pubnub.components.data.message.DBMessage
 import com.pubnub.components.data.message.DefaultMessageDao
 import com.pubnub.components.data.message.action.DBMessageAction
@@ -37,7 +36,6 @@ import com.pubnub.components.data.message.action.DefaultMessageActionDao
     ChannelCustomDataConverter::class,
     DateConverter::class,
     MemberDataCustomConverter::class,
-    CustomContentConverter::class,
 )
 abstract class DefaultDatabase : RoomDatabase(),
     PubNubDatabase<DefaultMessageDao, DefaultMessageActionDao, DefaultChannelDao, DefaultMemberDao, DefaultMembershipDao> {

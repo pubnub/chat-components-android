@@ -87,7 +87,7 @@ class MessageInputViewModel(
     fun send(
         id: ChannelId,
         message: String,
-        onBeforeSend: (String) -> NetworkMessagePayload = { text -> create(text) },
+        onBeforeSend: (String) -> NetworkMessagePayload = { text: String -> create(text) },
         onSuccess: (String, Timetoken) -> Unit = { _: String, _: Timetoken -> },
         onError: (Exception) -> Unit = { _: Exception -> },
     ) {

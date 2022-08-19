@@ -12,6 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import com.pubnub.components.R
+import com.pubnub.components.chat.network.data.NetworkMessagePayload
 import com.pubnub.components.chat.provider.LocalMemberFormatter
 import com.pubnub.components.chat.ui.component.input.renderer.AnimatedTypingIndicatorRenderer
 import com.pubnub.components.chat.ui.component.provider.LocalChannel
@@ -28,6 +29,7 @@ fun MessageInput(
     typingIndicatorContent: @Composable ColumnScope.(List<TypingUi>) -> Unit = { typing ->
         TypingIndicatorContent(typing)
     },
+    onBeforeSend: ((String) -> NetworkMessagePayload)? = null,
     onSuccess: (String, Timetoken) -> Unit = { _, _ -> },
     onError: (Exception) -> Unit = {},
 ) {
@@ -49,12 +51,22 @@ fun MessageInput(
         typingAction("")
 
         // Send message
-        viewModel.send(
-            id = channel,
-            message = message,
-            onSuccess = onSuccess,
-            onError = onError,
-        )
+        if(onBeforeSend != null){
+            viewModel.send(
+                id = channel,
+                message = message,
+                onBeforeSend = onBeforeSend,
+                onSuccess = onSuccess,
+                onError = onError,
+            )
+        } else {
+            viewModel.send(
+                id = channel,
+                message = message,
+                onSuccess = onSuccess,
+                onError = onError,
+            )
+        }
     }
     // endregion
 

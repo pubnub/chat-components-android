@@ -9,7 +9,6 @@ import com.pubnub.components.chat.network.data.NetworkMessagePayload
 import com.pubnub.components.chat.network.mapper.NetworkMessageActionHistoryMapper
 import com.pubnub.components.chat.network.mapper.NetworkMessageHistoryMapper
 import com.pubnub.components.chat.network.mapper.NetworkMessageMapper
-import com.pubnub.components.data.message.DBCustomContent
 import com.pubnub.components.data.message.DBMessage
 import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.data.message.action.DBMessageWithActions
@@ -90,8 +89,8 @@ class DefaultMessageService(
             id = message.id,
             text = message.text,
             contentType = message.contentType,
-            content = message.content as DBCustomContent?,
-            custom = message.custom as DBCustomContent?,
+            content = message.content,
+            custom = message.custom,
             publisher = userId,
             channel = channelId,
             timetoken = message.createdAt.toTimetoken(),
