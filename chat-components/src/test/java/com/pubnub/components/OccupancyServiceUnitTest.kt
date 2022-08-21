@@ -3,7 +3,7 @@ package com.pubnub.components
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
 import com.pubnub.components.chat.network.mapper.NetworkOccupancyMapper
 import com.pubnub.components.chat.service.channel.DefaultOccupancyService
-import com.pubnub.components.chat.service.error.NoErrorHandler
+import com.pubnub.components.chat.service.error.NoLogger
 import com.pubnub.framework.data.OccupancyMap
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -51,7 +51,7 @@ class OccupancyServiceUnitTest {
                 mockk(relaxUnitFun = true, relaxed = true),
                 "userId",
                 NetworkOccupancyMapper(),
-                NoErrorHandler(),
+                NoLogger(),
                 testCoroutineScope,
             ), recordPrivateCalls = true
         )

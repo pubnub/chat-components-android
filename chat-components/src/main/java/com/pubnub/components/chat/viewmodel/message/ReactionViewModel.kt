@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.ExperimentalPagingApi
-import com.pubnub.components.chat.provider.LocalErrorHandler
+import com.pubnub.components.chat.provider.LocalLogger
 import com.pubnub.components.chat.provider.LocalMessageActionRepository
 import com.pubnub.components.chat.service.message.action.DefaultMessageReactionService
 import com.pubnub.components.chat.service.message.action.LocalMessageReactionService
@@ -16,7 +16,7 @@ import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.repository.message.action.MessageActionRepository
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
-import com.pubnub.framework.service.error.ErrorHandler
+import com.pubnub.framework.service.error.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
@@ -30,8 +30,8 @@ class ReactionViewModel constructor(
     private val channelId: ChannelId,
     private val messageActionRepository: MessageActionRepository<DBMessageAction>,
     private val messageReactionService: DefaultMessageReactionService?,
-    private val errorHandler: ErrorHandler,
-) : ViewModel() {
+    private val logger: Logger,
+    ) : ViewModel() {
 
     companion object {
         /**
@@ -50,7 +50,7 @@ class ReactionViewModel constructor(
                 channelId = id,
                 messageActionRepository = LocalMessageActionRepository.current,
                 messageReactionService = LocalMessageReactionService.current as DefaultMessageReactionService,
-                errorHandler = LocalErrorHandler.current,
+                logger = LocalLogger.current,
             )
             return viewModel(factory = factory)
         }
@@ -67,9 +67,9 @@ class ReactionViewModel constructor(
      * @param react Selected reaction for the message
      */
     fun reactionSelected(react: React) {
-        errorHandler.i("On Reaction: $react")
+        logger.i("Reaction selected: '$react'")
         viewModelScope.launch {
-            errorHandler.v("Looking for reaction '$react' ")
+            logger.v("Looking for reaction: '$react'")
             val storedReaction = messageActionRepository.get(
                 userId,
                 channelId,
@@ -78,8 +78,8 @@ class ReactionViewModel constructor(
                 react.reaction.value,
             )
 
-            errorHandler.v("Stored action: $storedReaction")
-            if (storedReaction?.user == userId)
+            if (storedReaction?.user == userId) {
+                logger.v("Removing action: '$storedReaction")
                 messageReactionService?.remove(
                     storedReaction.channel,
                     storedReaction.messageTimestamp,
@@ -87,13 +87,15 @@ class ReactionViewModel constructor(
                     storedReaction.type,
                     storedReaction.value
                 )
-            else
+            } else {
+                logger.v("Adding action: '$react'")
                 messageReactionService?.add(
                     channelId,
                     react.message.timetoken,
                     react.reaction.type,
                     react.reaction.value,
                 )
+            }
         }
     }
 

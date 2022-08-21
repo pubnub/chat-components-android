@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.pubnub.components.chat.provider.LocalErrorHandler
+import com.pubnub.components.chat.provider.LocalLogger
 import com.pubnub.components.chat.service.message.LocalMessageService
 import com.pubnub.components.chat.service.message.MessageService
 import com.pubnub.components.chat.ui.component.provider.LocalUser
@@ -14,7 +14,7 @@ import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.service.LocalTypingService
 import com.pubnub.framework.service.TypingService
-import com.pubnub.framework.service.error.ErrorHandler
+import com.pubnub.framework.service.error.Logger
 import com.pubnub.framework.util.Timetoken
 import com.pubnub.framework.util.timetoken
 import com.pubnub.framework.util.toIsoString
@@ -31,16 +31,17 @@ class MessageInputViewModel(
     private val id: UserId,
     private val messageService: MessageService<DBMessage>,
     private val typingService: TypingService? = null,
-    private val errorHandler: ErrorHandler,
-) : ViewModel() {
+    private val logger: Logger,
+    ) : ViewModel() {
 
     companion object {
         /**
          * Returns default implementation of [MessageInputViewModel]. To use
          * predefined [TypingService], @see [defaultWithTypingService()]
          *
-         * @param messageService Message Service implementation
          * @param id ID of current user
+         * @param messageService Message Service implementation
+         * @param logger Logger implementation
          * @param typingService Typing Service implementation
          *
          * @return ViewModel instance
@@ -49,21 +50,18 @@ class MessageInputViewModel(
         fun default(
             id: UserId = LocalUser.current,
             messageService: MessageService<DBMessage> = LocalMessageService.current,
-            errorHandler: ErrorHandler = LocalErrorHandler.current,
+            logger: Logger = LocalLogger.current,
             typingService: TypingService? = null,
         ): MessageInputViewModel =
             viewModel(
-                factory = MessageInputViewModelFactory(id,
-                    messageService,
-                    errorHandler,
-                    typingService)
+                factory = MessageInputViewModelFactory(id, messageService, logger, typingService)
             )
 
         /**
          * Returns default implementation of [MessageInputViewModel] with predefined [TypingService]
          *
-         * @param messageService Message Service implementation
          * @param id ID of current user
+         * @param messageService Message Service implementation
          *
          * @return ViewModel instance
          */
@@ -72,7 +70,7 @@ class MessageInputViewModel(
             id: UserId = LocalUser.current,
             messageService: MessageService<DBMessage> = LocalMessageService.current,
         ): MessageInputViewModel =
-            default(id, messageService, LocalErrorHandler.current, LocalTypingService.current)
+            default(id, messageService, LocalLogger.current, LocalTypingService.current)
     }
 
     private val time: Timetoken get() = System.currentTimeMillis().timetoken
@@ -82,8 +80,8 @@ class MessageInputViewModel(
      *
      * @param id ID of the channel
      * @param message Text to send
-     * @param contentType Type of a content
-     * @param content Custom message content
+     * @param contentType Type of a message content
+     * @param content Map of extra data
      * @param onSuccess Action to be fired after a successful sent
      * @param onError Action to be fired after an error
      */
@@ -94,17 +92,23 @@ class MessageInputViewModel(
         contentType: String? = null,
         content: Map<String, Any?>? = null,
         onSuccess: (String, Timetoken) -> Unit = { _: String, _: Timetoken -> },
-        onError: (Exception) -> Unit = { _: Exception -> },
+        onError: (Exception) -> Unit = { _: Exception -> }
     ) {
-        errorHandler.i("Sending message '$message' to channel '$id'")
+        logger.i("Sending message '$message' to channel '$id'")
         val data = create(id, message, contentType, content)
         viewModelScope.launch(Dispatchers.IO) {
             messageService.send(
                 id = id,
                 message = data,
                 meta = hashMapOf("uuid" to this@MessageInputViewModel.id),
-                onSuccess = onSuccess,
-                onError = onError,
+                onSuccess = { message: String, timetoken: Timetoken ->
+                    logger.d("Message sent successfully at ${timetoken.toIsoString()}")
+                    onSuccess(message, timetoken)
+                },
+                onError = { exception: Exception ->
+                    logger.e(exception, "Message cannot be sent")
+                    onError(exception)
+                },
             )
         }
     }
@@ -144,13 +148,13 @@ class MessageInputViewModel(
 class MessageInputViewModelFactory(
     private val id: UserId,
     private val messageService: MessageService<DBMessage>,
-    private val errorHandler: ErrorHandler,
+    private val logger: Logger,
     private val typingService: TypingService? = null,
 ) :
     ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return MessageInputViewModel(id, messageService, typingService, errorHandler) as T
+        return MessageInputViewModel(id, messageService, typingService, logger) as T
     }
 }
 
