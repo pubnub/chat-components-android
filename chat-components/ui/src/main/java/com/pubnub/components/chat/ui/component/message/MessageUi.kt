@@ -19,6 +19,7 @@ sealed class MessageUi {
         val reactions: List<ReactionUi>,
         val contentType: String = "default",
         val content: Any? = null,
+        val custom: Any? = null,
     ) : MessageUi()
 
     data class Separator(val text: String) : MessageUi()
