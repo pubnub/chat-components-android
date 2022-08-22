@@ -93,7 +93,6 @@ class MessageViewModel constructor(
         fun defaultWithMediator(id: ChannelId = LocalChannel.current): MessageViewModel {
             val repository = LocalMessageRepository.current
 
-            // region Message View Model
             val mediator = MessageRemoteMediator(
                 channelId = id,
                 service = LocalMessageService.current,

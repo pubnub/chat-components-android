@@ -14,9 +14,9 @@ class DomainMessageMapper : Mapper<MessageUi.Data, DBMessageWithActions> {
                 id = input.uuid,
                 text = input.text,
                 contentType = input.contentType,
-                content = null,
+                content = input.content,
                 createdAt = input.timetoken.toIsoString(),
-                custom = null,
+                custom = input.custom,
 
                 publisher = input.publisher.id,
                 channel = input.channel,

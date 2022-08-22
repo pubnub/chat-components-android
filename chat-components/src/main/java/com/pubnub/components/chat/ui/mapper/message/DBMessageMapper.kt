@@ -25,6 +25,7 @@ class DBMessageMapper(
             reactions = input.actions.toUi(),
             contentType = input.message.contentType ?: "default",
             content = input.message.content,
+            custom = input.custom,
         )
 
     private fun List<DBMessageAction>.toUi(): List<ReactionUi> =

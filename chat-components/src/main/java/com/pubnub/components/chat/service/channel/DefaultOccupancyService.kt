@@ -4,13 +4,13 @@ import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.SubscribeCallback
 import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
-import com.pubnub.framework.service.error.Logger
 import com.pubnub.components.chat.ui.component.presence.Presence
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.Occupancy
 import com.pubnub.framework.data.OccupancyMap
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.mapper.OccupancyMapper
+import com.pubnub.framework.service.error.Logger
 import com.pubnub.framework.util.flow.coroutine
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow

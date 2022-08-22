@@ -1,6 +1,7 @@
 package com.pubnub.components
 
 import androidx.paging.*
+import com.pubnub.components.chat.network.data.NetworkMessagePayload
 import com.pubnub.components.chat.network.paging.MessageRemoteMediator
 import com.pubnub.components.chat.service.message.MessageService
 import com.pubnub.components.data.message.DBMessage
@@ -38,7 +39,7 @@ class MessageRemoteMediatorUnitTest {
     private val testCoroutineScope = TestScope(testCoroutineDispatcher)
 
     @MockK(relaxed = true)
-    lateinit var service: MessageService<DBMessage>
+    lateinit var service: MessageService<NetworkMessagePayload>
 
     @MockK(relaxed = true)
     lateinit var messageRepository: MessageRepository<DBMessage, DBMessageWithActions>

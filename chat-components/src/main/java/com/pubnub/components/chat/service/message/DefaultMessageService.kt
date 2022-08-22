@@ -9,17 +9,19 @@ import com.pubnub.components.chat.network.data.NetworkMessagePayload
 import com.pubnub.components.chat.network.mapper.NetworkMessageActionHistoryMapper
 import com.pubnub.components.chat.network.mapper.NetworkMessageHistoryMapper
 import com.pubnub.components.chat.network.mapper.NetworkMessageMapper
-import com.pubnub.framework.service.error.Logger
 import com.pubnub.components.data.message.DBMessage
 import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.data.message.action.DBMessageWithActions
 import com.pubnub.components.repository.message.MessageRepository
 import com.pubnub.components.repository.message.action.MessageActionRepository
 import com.pubnub.framework.data.ChannelId
+import com.pubnub.framework.data.UserId
+import com.pubnub.framework.service.error.Logger
 import com.pubnub.framework.util.Timetoken
 import com.pubnub.framework.util.data.PNException
 import com.pubnub.framework.util.flow.single
 import com.pubnub.framework.util.toJson
+import com.pubnub.framework.util.toTimetoken
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
@@ -31,6 +33,7 @@ import kotlinx.coroutines.flow.onEach
 @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
 class DefaultMessageService(
     private val pubNub: PubNub,
+    private val userId: UserId,
     private val messageRepository: MessageRepository<DBMessage, DBMessageWithActions>,
     private val messageActionRepository: MessageActionRepository<DBMessageAction>,
     private val networkMapper: NetworkMessageMapper,
@@ -39,7 +42,7 @@ class DefaultMessageService(
     private val logger: Logger,
     private val coroutineScope: CoroutineScope = GlobalScope,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-) : MessageService<DBMessage> {
+) : MessageService<NetworkMessagePayload> {
 
     private lateinit var messageJob: Job
 
@@ -64,42 +67,47 @@ class DefaultMessageService(
     /**
      * Send a message to all subscribers of a channel.
      *
-     * @param id ID of channel to send a message to
-     * @param message object to send
+     * @param channelId ID of channel to send a message to
+     * @param message payload to send
      * @param meta additional metadata to send
      * @param store flag to keep the message in history
      * @param onSuccess Action to be fired after a successful sent
      * @param onError Action to be fired after an error
      */
+    @Suppress("UNCHECKED_CAST")
     override suspend fun send(
-        id: ChannelId,
-        message: DBMessage,
+        channelId: ChannelId,
+        message: NetworkMessagePayload,
         meta: Any?,
         store: Boolean,
         onSuccess: (String, Timetoken) -> Unit,
         onError: (Exception) -> Unit,
     ) {
-        // Just override status
-        val newMessage = message.copy(isSent = false, exception = null)
+
+        // Create DB object with status not sent
+        val dbMessage = DBMessage(
+            id = message.id,
+            text = message.text,
+            contentType = message.contentType,
+            content = message.content,
+            custom = message.custom,
+            publisher = userId,
+            channel = channelId,
+            timetoken = message.createdAt.toTimetoken(),
+            isSent = false,
+            exception = null,
+        )
 
         // Add message to repository
-        messageRepository.insertOrUpdate(newMessage)
+        messageRepository.insertOrUpdate(dbMessage)
 
         coroutineScope.launch(dispatcher) {
 
-            val networkMessage = NetworkMessagePayload(
-                id = newMessage.id,
-                text = newMessage.text,
-                contentType = newMessage.contentType,
-                content = newMessage.content,
-                createdAt = newMessage.createdAt,
-                custom = newMessage.custom,
-            )
             // Publish a message
             pubNub
                 .publish(
-                    channel = id,
-                    message = networkMessage,
+                    channel = channelId,
+                    message = message,
                     shouldStore = store,
                     meta = meta,
                 )
@@ -109,12 +117,12 @@ class DefaultMessageService(
                         coroutineScope.launch(dispatcher) {
 
                             messageRepository.setSent(
-                                newMessage.id,
+                                message.id,
                                 result.timetoken
                             )
 
                             coroutineScope.launch(Dispatchers.Main) {
-                                onSuccess(newMessage.text, result.timetoken)
+                                onSuccess(message.text, result.timetoken)
                             }
                         }
                     },
@@ -122,7 +130,7 @@ class DefaultMessageService(
                         // Set message status in repository
                         coroutineScope.launch(dispatcher) {
                             messageRepository.setSendingError(
-                                newMessage.id,
+                                message.id,
                                 exception.message
                             )
                             coroutineScope.launch(Dispatchers.Main) {
