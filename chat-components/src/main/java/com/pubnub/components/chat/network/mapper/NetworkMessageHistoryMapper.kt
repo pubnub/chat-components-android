@@ -25,10 +25,10 @@ class NetworkMessageHistoryMapper(private val mapper: MapperManager) :
             text = messagePayload.text,
             contentType = messagePayload.contentType,
             content = messagePayload.content,
+            createdAt = messagePayload.createdAt,
             custom = messagePayload.custom,
             publisher = input.uuid!!,
             channel = id,
-            timetoken = input.timetoken,
             isSent = true,
             exception = null,
         )
