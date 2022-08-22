@@ -26,10 +26,10 @@ class NetworkMessageHistoryMapper(private val mapper: MapperManager) :
             text = messagePayload.text,
             contentType = messagePayload.contentType,
             content = messagePayload.content as DBCustomContent?,
+            createdAt = messagePayload.createdAt,
             custom = messagePayload.custom as DBCustomContent?,
             publisher = input.uuid!!,
             channel = id,
-            timetoken = input.timetoken,
             isSent = true,
             exception = null,
         )

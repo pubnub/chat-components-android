@@ -79,3 +79,5 @@ dependencies {
 }
 
 apply plugin: "com.vanniktech.maven.publish"
+tasks.withType(PublishToMavenLocal) { it.dependsOn test }
+tasks.withType(PublishToMavenLocal) { it.dependsOn connectedAndroidTest }
