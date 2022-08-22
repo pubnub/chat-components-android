@@ -13,7 +13,7 @@ class ShapeTheme(
     shape: Shape,
     tint: Color,
     padding: PaddingValues,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
 
     var shape by mutableStateOf(shape, structuralEqualityPolicy())

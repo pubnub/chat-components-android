@@ -23,7 +23,7 @@ interface MessageReactionService<IN : MessageAction> {
         messageTimetoken: Timetoken,
         published: Timetoken,
         type: String,
-        value: String
+        value: String,
     )
     // endregion
 }

@@ -16,10 +16,7 @@ import com.pubnub.components.chat.service.message.MessageServiceNotInitializedEx
 import com.pubnub.components.chat.ui.component.common.ThemeDefaults
 import com.pubnub.components.chat.ui.component.input.LocalMessageInputTheme
 import com.pubnub.components.chat.ui.component.input.MessageInput
-import com.pubnub.components.chat.ui.component.provider.LocalChannel
-import com.pubnub.components.chat.ui.component.provider.LocalPubNub
-import com.pubnub.components.chat.ui.component.provider.MissingChannelException
-import com.pubnub.components.chat.ui.component.provider.MissingPubNubException
+import com.pubnub.components.chat.ui.component.provider.*
 import com.pubnub.framework.service.LocalTypingService
 import com.pubnub.framework.service.TypingServiceNotInitializedException
 import com.pubnub.framework.util.Timetoken
@@ -61,6 +58,7 @@ class MessageInputTest : BaseTest() {
         composeTestRule.setContent {
             CompositionLocalProvider(
                 LocalChannel provides "channel",
+                LocalUser provides pubNub!!.configuration.userId.value,
                 LocalTypingService provides mockk(),
                 LocalMessageInputTheme provides ThemeDefaults.messageInput(),
             ) {
@@ -79,7 +77,7 @@ class MessageInputTest : BaseTest() {
                     LocalPubNub provides pubNub!!,
                     LocalMessageService provides mockk(),
                 ) {
-                    MessageInput(typingIndicator = true)
+                    MessageInput(typingIndicatorEnabled = true)
                 }
             }
         }
@@ -90,7 +88,7 @@ class MessageInputTest : BaseTest() {
             // Given
             composeTestRule.setContent {
                 ChatProvider(pubNub = pubNub!!) {
-                    MessageInput(typingIndicator = true)
+                    MessageInput(typingIndicatorEnabled = true)
                 }
             }
         }
@@ -101,6 +99,7 @@ class MessageInputTest : BaseTest() {
         composeTestRule.setContent {
             CompositionLocalProvider(
                 LocalChannel provides "channel",
+                LocalUser provides pubNub!!.configuration.userId.value,
                 LocalTypingService provides mockk(),
                 LocalPubNub provides mockk(),
             ) {
@@ -115,20 +114,6 @@ class MessageInputTest : BaseTest() {
         composeTestRule.setContent {
             CompositionLocalProvider(
                 LocalPubNub provides mockk(),
-                LocalMessageService provides mockk(),
-            ) {
-                MessageInput()
-            }
-        }
-    }
-
-    @Test(expected = MissingPubNubException::class)
-    fun whenPubNubProviderIsNotUsed_thenAnExceptionIsThrown() = runTest {
-        // Given
-        composeTestRule.setContent {
-            CompositionLocalProvider(
-                LocalChannel provides "channel",
-                LocalTypingService provides mockk(),
                 LocalMessageService provides mockk(),
             ) {
                 MessageInput()

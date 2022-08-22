@@ -32,7 +32,7 @@ class DefaultMessageActionRepository(
         channel: ChannelId,
         messageTimetoken: Timetoken,
         type: String,
-        value: String
+        value: String,
     ): DBMessageAction? =
         messageActionDao.get(user, channel, messageTimetoken, type, value)
 

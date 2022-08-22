@@ -45,6 +45,7 @@ fun MenuItem(
         ThemedText(
             text = stringResource(id = state.title),
             theme = theme.text,
+            modifier = theme.modifier,
         )
     }
 }

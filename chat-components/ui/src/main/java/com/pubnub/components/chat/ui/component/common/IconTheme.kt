@@ -13,7 +13,7 @@ class IconTheme(
     icon: ImageVector?,
     shape: Shape,
     tint: Color,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     var icon by mutableStateOf(icon, structuralEqualityPolicy())
         internal set

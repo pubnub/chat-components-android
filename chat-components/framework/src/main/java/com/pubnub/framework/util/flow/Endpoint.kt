@@ -21,7 +21,7 @@ import kotlin.coroutines.suspendCoroutine
 suspend fun <Input, Output> Endpoint<Input, Output>.single(
     onComplete: (Output) -> Unit,
     onError: (Exception) -> Unit = {},
-    onStatus: (PNStatus) -> Unit = {}
+    onStatus: (PNStatus) -> Unit = {},
 ) = try {
     val result = singleResult()
     onComplete.invoke(result.result!!)
@@ -39,7 +39,7 @@ suspend fun <Input, Output> Endpoint<Input, Output>.single(
 @OptIn(ExperimentalCoroutinesApi::class)
 suspend fun <Input, Output> Endpoint<Input, Output>.singleResult(
     onComplete: (Output, PNStatus) -> Unit,
-    onError: (Exception) -> Unit = {}
+    onError: (Exception) -> Unit = {},
 ) = try {
     val result = singleResult()
     onComplete.invoke(result.result!!, result.status)

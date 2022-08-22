@@ -150,7 +150,7 @@ fun ChatProvider(
 @Composable
 fun WithServices(
     sync: Boolean,
-    content: @Composable() () -> Unit
+    content: @Composable() () -> Unit,
 ) {
     val mapper = LocalPubNub.current.mapper
     val actionService = ActionService(LocalPubNub.current, LocalLogger.current)
@@ -200,7 +200,9 @@ fun PubNubPreview(
 ) {
     val context = LocalContext.current
     val pubNub =
-        PubNub(PNConfiguration(com.pubnub.api.UserId("previewUUID")).apply { publishKey = ""; subscribeKey = "" })
+        PubNub(PNConfiguration(com.pubnub.api.UserId("previewUUID")).apply {
+            publishKey = ""; subscribeKey = ""
+        })
     Database.initialize(context)
     ChatProvider(pubNub, synchronize = false) {
         content()

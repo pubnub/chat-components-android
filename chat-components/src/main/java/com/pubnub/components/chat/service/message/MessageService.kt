@@ -5,7 +5,6 @@ import com.pubnub.components.data.message.DBMessage
 import com.pubnub.components.data.message.Message
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.util.Timetoken
-import timber.log.Timber
 
 interface MessageService<Data : Message> {
     fun bind()

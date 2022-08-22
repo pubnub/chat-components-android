@@ -23,7 +23,7 @@ data class DBMember(
 ) : Member {
     @Keep
     data class CustomData(
-        val description: String
+        val description: String,
     )
 }
 
@@ -34,5 +34,5 @@ data class DBMemberWithChannels(
         entityColumn = "channelId",
         associateBy = Junction(DBMembership::class)
     )
-    val channels: List<DBChannel>
+    val channels: List<DBChannel>,
 ) : Member by member
