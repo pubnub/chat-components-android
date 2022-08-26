@@ -48,7 +48,7 @@ class PayloadTest {
         val networkMemberMapper = NetworkMemberMapper(pubNub.mapper)
         val response: NetworkMember = pubNub.mapper.fromJson(userJson, NetworkMember::class.java)
         val responseCustom = pubNub.mapper.fromJson(pubNub.mapper.toJson(response.custom),
-            DBMember.CustomData::class.java)
+            BaseTest.CustomData::class.java)
 
         // When
         val dbObject = networkMemberMapper.map(response)
@@ -74,7 +74,7 @@ class PayloadTest {
             val response: NetworkMember =
                 pubNub.mapper.fromJson(userJsonNoName, NetworkMember::class.java)
             val responseCustom = pubNub.mapper.fromJson(pubNub.mapper.toJson(response.custom),
-                DBMember.CustomData::class.java)
+                BaseTest.CustomData::class.java)
 
             // When
             val dbObject = networkMemberMapper.map(response)
@@ -100,7 +100,7 @@ class PayloadTest {
             val response: NetworkMember =
                 pubNub.mapper.fromJson(userJsonNoType, NetworkMember::class.java)
             val responseCustom = pubNub.mapper.fromJson(pubNub.mapper.toJson(response.custom),
-                DBMember.CustomData::class.java)
+                BaseTest.CustomData::class.java)
 
             // When
             val dbObject = networkMemberMapper.map(response)
@@ -127,7 +127,7 @@ class PayloadTest {
             val response: NetworkMember =
                 pubNub.mapper.fromJson(userJsonMin, NetworkMember::class.java)
             val responseCustom = pubNub.mapper.fromJson(pubNub.mapper.toJson(response.custom),
-                DBMember.CustomData::class.java)
+                BaseTest.CustomData::class.java)
 
             // When
             val dbObject = networkMemberMapper.map(response)
@@ -153,7 +153,7 @@ class PayloadTest {
     fun givenValidChannelJson_whenIsReceived_thenNetworkChannelMapperReturnsValidDbObject() =
         runTest {
             // Given
-            val networkMapper = NetworkChannelMapper(pubNub.mapper)
+            val networkMapper = NetworkChannelMapper()
             val response: NetworkChannelMetadata =
                 pubNub.mapper.fromJson(channelJson, NetworkChannelMetadata::class.java)
             val responseCustom: CustomDataMap? =
@@ -180,7 +180,7 @@ class PayloadTest {
     fun givenValidMinimalChannelJson_whenIsReceived_thenNetworkChannelMapperReturnsValidDbObject() =
         runTest {
             // Given
-            val networkMapper = NetworkChannelMapper(pubNub.mapper)
+            val networkMapper = NetworkChannelMapper()
             val response: NetworkChannelMetadata =
                 pubNub.mapper.fromJson(channelJsonMin, NetworkChannelMetadata::class.java)
 

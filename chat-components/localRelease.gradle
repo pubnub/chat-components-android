@@ -48,7 +48,7 @@ task tests {
     description 'Run Unit & Android tests'
 
     doFirst {
-        if(project.hasProperty("skipTests"))
+        if (project.hasProperty("skipTests"))
             println 'Skipping tests'
         else
             println 'Running tests'
@@ -80,7 +80,7 @@ task setVersion {
             } else {
                 def error = "Missing version parameter. Please pass '-Pv' with expected release version."
                 logger.error(error)
-                throw new TaskExecutionException( it, new Exception(error))
+                throw new TaskExecutionException(it, new Exception(error))
             }
         }
     }
@@ -109,41 +109,41 @@ afterEvaluate {
 }
 
 static def releaseSigningEnabled(propertiesFile, value) {
-    println 'Setting RELEASE_SIGNING_ENABLED = '+value+' in \''+propertiesFile+'\''
+    println 'Setting RELEASE_SIGNING_ENABLED = ' + value + ' in \'' + propertiesFile + '\''
     def regex = Pattern.compile("RELEASE_SIGNING_ENABLED.*")
-    def updatedContent = new File(propertiesFile).getText('UTF-8').replaceAll(regex, "") + ("RELEASE_SIGNING_ENABLED="+value+"\n")
+    def updatedContent = new File(propertiesFile).getText('UTF-8').replaceAll(regex, "") + ("RELEASE_SIGNING_ENABLED=" + value + "\n")
     new File(propertiesFile).write(updatedContent, 'UTF-8')
 }
 
 static def releasePropertiesVersionName(buildFile, value) {
-    println 'Setting VERSION_NAME = '+value+' in \''+buildFile+'\''
+    println 'Setting VERSION_NAME = ' + value + ' in \'' + buildFile + '\''
     def regex = "(.*?VERSION_NAME\\s*?=\\s*?)(\\d\\.\\d\\.\\d.*)"
-    def newVersion = "\$1"+value
+    def newVersion = "\$1" + value
     def updatedContent = new File(buildFile).getText('UTF-8').replaceAll(regex, newVersion)
     new File(buildFile).write(updatedContent, 'UTF-8')
 }
 
 static def releaseVersionName(buildFile, value) {
-    println 'Setting versionName = '+value+' in \''+buildFile+'\''
+    println 'Setting versionName = ' + value + ' in \'' + buildFile + '\''
     def regex = "(.*?versionName\\s*?=\\s*?)(\"\\d\\.\\d\\.\\d.*\")"
-    def newVersion = "\$1\""+value+"\""
+    def newVersion = "\$1\"" + value + "\""
     def updatedContent = new File(buildFile).getText('UTF-8').replaceAll(regex, newVersion)
     new File(buildFile).write(updatedContent, 'UTF-8')
 }
 
 static def createBackupFiles(files) {
     files.each { fileName ->
-        println 'Create backup of \''+fileName+'\''
+        println 'Create backup of \'' + fileName + '\''
         def src = new File(fileName)
-        def dest = new File(fileName+".backup")
+        def dest = new File(fileName + ".backup")
         dest.write(src.text)
     }
 }
 
 static def restoreBackupFiles(files) {
     files.each { fileName ->
-        def src = new File(fileName+".backup")
-        if(src.exists()) {
+        def src = new File(fileName + ".backup")
+        if (src.exists()) {
             def dest = new File(fileName)
 
             println 'Restore backup of \'' + fileName + '\''
@@ -154,16 +154,16 @@ static def restoreBackupFiles(files) {
 }
 
 static def placeTasksInOrder(tasks) {
-    for (int i=0; i < tasks.size() -1; i++) {
+    for (int i = 0; i < tasks.size() - 1; i++) {
         def earlierTask = tasks.get(i)
-        def laterTask   = tasks.get(i +1)
+        def laterTask = tasks.get(i + 1)
         earlierTask.finalizedBy laterTask
         laterTask.mustRunAfter(earlierTask)
     }
 }
 
 gradle.taskGraph.whenReady { taskGraph ->
-    if(!project.hasProperty("skipTests")){
+    if (!project.hasProperty("skipTests")) {
         tests.configure {
             dependsOn 'test'
             dependsOn 'database:test'

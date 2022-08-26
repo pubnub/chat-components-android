@@ -1,7 +1,10 @@
 package com.pubnub.components.chat.provider
 
+import android.view.View
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
@@ -116,6 +119,12 @@ fun ChatProvider(
         LocalPubNub provides pubNub,
         LocalUser provides pubNub.configuration.userId.value,
         LocalChannel provides channel,
+
+        // RTL support by locale
+        LocalLayoutDirection provides
+                if (LocalConfiguration.current.layoutDirection == View.LAYOUT_DIRECTION_RTL)
+                        androidx.compose.ui.unit.LayoutDirection.Rtl
+                else androidx.compose.ui.unit.LayoutDirection.Ltr,
 
         // Themes
         LocalMessageInputTheme provides DefaultLocalMessageInputTheme,
