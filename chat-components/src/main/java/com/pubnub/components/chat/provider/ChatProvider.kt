@@ -138,7 +138,7 @@ fun ChatProvider(
 
         // Utils
         LocalMemberFormatter provides memberFormatter,
-        ) {
+    ) {
         WithServices(synchronize) {
             content()
         }

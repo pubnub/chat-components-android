@@ -37,7 +37,7 @@ class TimberLogger(vararg trees: Timber.Tree = arrayOf(DebugTree())) : Logger {
             TimberLogger::class.java.name,
             DebugTree::class.java.name,
             Logger::class.java.name,
-            Logger::class.java.name+"\$DefaultImpls",
+            Logger::class.java.name + "\$DefaultImpls",
         )
 
         /**

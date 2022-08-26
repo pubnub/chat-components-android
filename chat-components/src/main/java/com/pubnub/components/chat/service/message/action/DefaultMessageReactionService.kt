@@ -207,7 +207,7 @@ class DefaultMessageReactionService(
         channel: ChannelId,
         messageTimetoken: Timetoken,
         type: String,
-        value: String
+        value: String,
     ) {
         val action = messageActionRepository.get(user, channel, messageTimetoken, type, value)
         if (action != null)

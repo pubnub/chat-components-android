@@ -11,7 +11,7 @@ import com.pubnub.components.chat.network.data.NetworkMessagePayload
 import com.pubnub.components.chat.network.mapper.NetworkChannelMapper
 import com.pubnub.components.chat.network.mapper.NetworkMemberMapper
 import com.pubnub.components.chat.network.mapper.NetworkMessageMapper
-import com.pubnub.components.data.channel.ChannelCustomData
+import com.pubnub.components.data.channel.CustomDataMap
 import com.pubnub.components.data.member.DBMember
 import com.pubnub.framework.util.asObject
 import io.mockk.*
@@ -156,8 +156,8 @@ class PayloadTest {
             val networkMapper = NetworkChannelMapper(pubNub.mapper)
             val response: NetworkChannelMetadata =
                 pubNub.mapper.fromJson(channelJson, NetworkChannelMetadata::class.java)
-            val responseCustom: ChannelCustomData? =
-                response.custom.asObject<ChannelCustomData?>(pubNub.mapper)?.apply {
+            val responseCustom: CustomDataMap? =
+                response.custom.asObject<CustomDataMap?>(pubNub.mapper)?.apply {
                     // profileUrl field is extracted
                     remove("profileUrl")
                 }

@@ -22,6 +22,7 @@ import com.pubnub.components.chat.ui.mapper.message.DomainMessageMapper
 import com.pubnub.components.data.message.DBMessage
 import com.pubnub.components.data.message.action.DBMessageWithActions
 import com.pubnub.components.repository.message.MessageRepository
+import com.pubnub.components.repository.util.Query
 import com.pubnub.components.repository.util.Sorted
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.MessageId
@@ -123,6 +124,9 @@ class MessageViewModel constructor(
      * @return Flow of Message UI Paging Data
      */
     fun getAll(
+        filter: Query? = null,
+        sorted: Array<Sorted> = arrayOf(Sorted(MessageUi.Data::timetoken.name,
+            Sorted.Direction.DESC)),
         transform: PagingData<MessageUi>.() -> PagingData<MessageUi> = { this },
     ): Flow<PagingData<MessageUi>> =
         Pager(
@@ -130,7 +134,8 @@ class MessageViewModel constructor(
             pagingSourceFactory = {
                 messageRepository.getAll(
                     id = channelId,
-                    sorted = arrayOf(Sorted(MessageUi.Data::timetoken.name, Sorted.Direction.DESC)),
+                    filter = filter,
+                    sorted = sorted,
                 )
             },
             remoteMediator = remoteMediator,

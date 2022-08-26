@@ -4,6 +4,7 @@ import androidx.annotation.Keep
 import androidx.room.*
 import com.pubnub.components.data.channel.DBChannel
 import com.pubnub.components.data.membership.DBMembership
+import com.pubnub.components.data.message.CustomContentConverter
 import com.pubnub.framework.data.UserId
 
 @Keep
@@ -17,15 +18,11 @@ data class DBMember(
     @ColumnInfo(defaultValue = "default")
     override val type: String = "default",
     override val status: String? = null,
-    override val custom: CustomData? = null,
+    @field:TypeConverters(CustomContentConverter::class)
+    override val custom: Any? = null,
     override val eTag: String? = null,
     override val updated: String? = null,
-) : Member {
-    @Keep
-    data class CustomData(
-        val description: String,
-    )
-}
+) : Member
 
 data class DBMemberWithChannels(
     @Embedded val member: DBMember,

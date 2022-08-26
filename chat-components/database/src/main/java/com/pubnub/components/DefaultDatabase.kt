@@ -2,13 +2,11 @@ package com.pubnub.components
 
 import androidx.room.*
 import androidx.room.migration.AutoMigrationSpec
-import com.pubnub.components.data.channel.ChannelCustomDataConverter
 import com.pubnub.components.data.channel.DBChannel
 import com.pubnub.components.data.channel.DateConverter
 import com.pubnub.components.data.channel.DefaultChannelDao
 import com.pubnub.components.data.member.DBMember
 import com.pubnub.components.data.member.DefaultMemberDao
-import com.pubnub.components.data.member.MemberDataCustomConverter
 import com.pubnub.components.data.membership.DBMembership
 import com.pubnub.components.data.membership.DefaultMembershipDao
 import com.pubnub.components.data.message.DBMessage
@@ -33,9 +31,7 @@ import com.pubnub.components.data.message.action.DefaultMessageActionDao
     ]
 )
 @TypeConverters(
-    ChannelCustomDataConverter::class,
     DateConverter::class,
-    MemberDataCustomConverter::class,
 )
 abstract class DefaultDatabase : RoomDatabase(),
     PubNubDatabase<DefaultMessageDao, DefaultMessageActionDao, DefaultChannelDao, DefaultMemberDao, DefaultMembershipDao> {

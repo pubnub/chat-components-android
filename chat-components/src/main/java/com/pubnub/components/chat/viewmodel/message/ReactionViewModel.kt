@@ -31,7 +31,7 @@ class ReactionViewModel constructor(
     private val messageActionRepository: MessageActionRepository<DBMessageAction>,
     private val messageReactionService: DefaultMessageReactionService?,
     private val logger: Logger,
-    ) : ViewModel() {
+) : ViewModel() {
 
     companion object {
         /**

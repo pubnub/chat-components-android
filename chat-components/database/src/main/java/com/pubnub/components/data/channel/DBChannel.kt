@@ -4,6 +4,7 @@ import androidx.annotation.Keep
 import androidx.room.*
 import com.pubnub.components.data.member.DBMember
 import com.pubnub.components.data.membership.DBMembership
+import com.pubnub.components.data.message.CustomContentConverter
 import com.pubnub.framework.data.ChannelId
 
 @Keep
@@ -15,13 +16,14 @@ data class DBChannel(
     @ColumnInfo(defaultValue = "default")
     override val type: String = "default",
     override val status: String? = null,
-    override val custom: ChannelCustomData? = null,
+    @field:TypeConverters(CustomContentConverter::class)
+    override val custom: Any? = null,
     override val profileUrl: String? = null,
     override val eTag: String? = null,
     override val updated: String? = null,
 ) : Channel
 
-typealias ChannelCustomData = HashMap<String, Any>
+typealias CustomDataMap = HashMap<String, Any>
 
 data class DBChannelWithMembers(
     @Embedded val channel: DBChannel,

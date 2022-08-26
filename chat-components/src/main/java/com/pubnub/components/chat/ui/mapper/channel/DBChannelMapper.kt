@@ -4,6 +4,7 @@ import com.pubnub.components.chat.ui.component.channel.ChannelUi
 import com.pubnub.components.chat.ui.component.member.MemberUi
 import com.pubnub.components.data.channel.DBChannelWithMembers
 import com.pubnub.components.data.member.DBMember
+import com.pubnub.components.data.message.asMap
 import com.pubnub.framework.mapper.Mapper
 import kotlinx.datetime.toInstant
 
@@ -25,7 +26,7 @@ class DBChannelMapper : Mapper<DBChannelWithMembers, ChannelUi.Data> {
                 input.id,
                 input.name,
                 input.profileUrl,
-                input.custom?.description
+                input.custom.asMap()?.get("description") as? String?
             )
         }
 }

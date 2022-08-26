@@ -58,6 +58,8 @@ class DefaultChannelRepository(
 
         // Filtering
         if (filter != null) {
+            if (id != null)
+                stringQuery += " AND "
             stringQuery += filter.first
             arguments.addAll(filter.second)
         }

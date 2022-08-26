@@ -32,7 +32,7 @@ class MessageInputViewModel(
     private val messageService: MessageService<NetworkMessagePayload>,
     private val typingService: TypingService? = null,
     private val logger: Logger,
-    ) : ViewModel() {
+) : ViewModel() {
 
     companion object {
         /**
