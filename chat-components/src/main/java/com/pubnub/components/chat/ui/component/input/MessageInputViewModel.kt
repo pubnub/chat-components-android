@@ -115,13 +115,13 @@ class MessageInputViewModel(
      *
      * @param text Text of the message
      * @param contentType Type of a message content
-     * @param content Map of extra data
+     * @param content Content data
      * @param custom Custom payload
      */
     fun create(
         text: String,
         contentType: String? = null,
-        content: Map<String, Any?>? = null,
+        content: Any? = null,
         custom: Any? = null,
     ) =
         NetworkMessagePayload(
