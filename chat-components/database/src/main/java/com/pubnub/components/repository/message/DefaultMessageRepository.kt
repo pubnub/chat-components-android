@@ -1,5 +1,6 @@
 package com.pubnub.components.repository.message
 
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingSource
 import androidx.sqlite.db.SimpleSQLiteQuery
@@ -95,7 +96,7 @@ class DefaultMessageRepository(
 
         // Filtering
         if (filter != null) {
-            if (id != null)
+            if (arguments.isNotEmpty())
                 stringQuery += " AND "
             stringQuery += filter.first
             arguments.addAll(filter.second)
