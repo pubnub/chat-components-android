@@ -22,6 +22,7 @@ import com.pubnub.components.chat.ui.mapper.message.DomainMessageMapper
 import com.pubnub.components.data.message.DBMessage
 import com.pubnub.components.data.message.action.DBMessageWithActions
 import com.pubnub.components.repository.message.MessageRepository
+import com.pubnub.components.repository.util.Query
 import com.pubnub.components.repository.util.Sorted
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.MessageId
@@ -117,12 +118,20 @@ class MessageViewModel constructor(
 
     /**
      * Get Messages for selected Channel
-     *
+     * @param filter Room filter query
+     * @param contentType Type of the message content. When not null, returned list contains only
+     *              messages with passed type. Otherwise all the Messages are returned.
+     *              Null by default.
+     * @param sorted Array of Sorted objects, result will be sorted by it. Default is descending by timetoken.
      * @param transform Transformer for a Paging Data
      *
      * @return Flow of Message UI Paging Data
      */
     fun getAll(
+        filter: Query? = null,
+        contentType: String? = null,
+        sorted: Array<Sorted> = arrayOf(Sorted(MessageUi.Data::timetoken.name,
+            Sorted.Direction.DESC)),
         transform: PagingData<MessageUi>.() -> PagingData<MessageUi> = { this },
     ): Flow<PagingData<MessageUi>> =
         Pager(
@@ -130,7 +139,9 @@ class MessageViewModel constructor(
             pagingSourceFactory = {
                 messageRepository.getAll(
                     id = channelId,
-                    sorted = arrayOf(Sorted(MessageUi.Data::timetoken.name, Sorted.Direction.DESC)),
+                    contentType = contentType,
+                    filter = filter,
+                    sorted = sorted,
                 )
             },
             remoteMediator = remoteMediator,

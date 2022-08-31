@@ -1,31 +1,16 @@
 package com.pubnub.components.chat.network.mapper
 
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.pubnub.api.managers.MapperManager
 import com.pubnub.api.models.consumer.objects.channel.PNChannelMetadata
 import com.pubnub.components.chat.network.data.NetworkChannelMetadata
-import com.pubnub.components.data.channel.ChannelCustomData
 import com.pubnub.components.data.channel.DBChannel
+import com.pubnub.components.data.message.asMap
 import com.pubnub.framework.mapper.Mapper
-import com.pubnub.framework.util.asObject
 
-class NetworkChannelMapper(private val mapper: MapperManager? = null) :
+class NetworkChannelMapper :
     Mapper<NetworkChannelMetadata, DBChannel> {
 
-    private fun getCustomData(custom: Any?): ChannelCustomData? =
-        if (mapper != null) {
-            custom.asObject(mapper)
-        } else {
-            val gson = Gson()
-            val typeToken = object : TypeToken<ChannelCustomData>() {}.type
-            gson.fromJson(gson.toJson(custom), typeToken)
-        }
-
-
     override fun map(input: PNChannelMetadata): DBChannel {
-        val custom: ChannelCustomData? = getCustomData(input.custom)
-
+        val custom = input.custom.asMap()
         val type = input.type ?: ((custom?.get("type") as? String?) ?: "default")
         val profileUrl = (custom?.get("profileUrl") as? String)
         val channelCustom = custom?.apply {

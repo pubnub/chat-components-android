@@ -135,7 +135,10 @@ object GroupMessageRenderer : MessageRenderer {
 //        }
     }
 
-    private fun Timetoken.formatDate(dateFormat: SimpleDateFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())) =
+    private fun Timetoken.formatDate(
+        dateFormat: SimpleDateFormat = SimpleDateFormat("hh:mm a",
+            Locale.getDefault()),
+    ) =
         dateFormat.format(this.seconds).uppercase()
 
     @Composable

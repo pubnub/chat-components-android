@@ -88,7 +88,7 @@ class DefaultMessageService(
         val dbMessage = DBMessage(
             id = message.id,
             text = message.text,
-            contentType = message.contentType,
+            contentType = message.contentType ?: "default",
             content = message.content,
             custom = message.custom,
             publisher = userId,

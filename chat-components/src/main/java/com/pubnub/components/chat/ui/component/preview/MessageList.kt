@@ -41,6 +41,22 @@ private fun GroupChatMessageOfflinePreview() {
 
 @Preview
 @Composable
+private fun GroupChatMessageShortOfflinePreview() {
+    PubNubPreview {
+        GroupChatMessage(
+            currentUserId = "userId2",
+            userId = "userId",
+            profileUrl = "url",
+            online = false,
+            title = "Lorem ipsum",
+            message = messageFormatter(text = "Lorem ipsum."),
+            timetoken = 0L,
+        )
+    }
+}
+
+@Preview
+@Composable
 private fun GroupChatMessagePlaceholderPreview() {
     PubNubPreview {
         GroupChatMessagePlaceholder()

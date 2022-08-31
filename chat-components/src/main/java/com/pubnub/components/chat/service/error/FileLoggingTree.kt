@@ -56,12 +56,17 @@ class FileLoggingTree(private val context: Context) : Timber.DebugTree() {
         /*  Helper method to create file*/
         @SuppressLint("LogNotTimber")
         @Nullable
-        private fun generateFile(context: Context, @NonNull path: String, @NonNull fileName: String): File? {
+        private fun generateFile(
+            context: Context,
+            @NonNull path: String,
+            @NonNull fileName: String,
+        ): File? {
             var file: File? = null
             if (isExternalStorageAvailable) {
 //                val root = File(Environment.getExternalStorageDirectory().absolutePath,
 //                    BuildConfig.APPLICATION_ID + File.separator.toString() + path)
-                val root = File(context.getExternalFilesDir(null)!!.absolutePath + File.separator.toString() + path)
+                val root =
+                    File(context.getExternalFilesDir(null)!!.absolutePath + File.separator.toString() + path)
                 var dirExists = true
                 if (!root.exists()) {
                     dirExists = root.mkdirs()

@@ -71,12 +71,16 @@ class DefaultMessageRepository(
      *
      * @param id When not null, returned list contains only Messages from passed channel.
      *              Otherwise all the Messages are returned.
+     * @param contentType Type of the message content. When not null, returned list contains only
+     *              messages with passed type. Otherwise all the Messages are returned.
+     *              Null by default.
      * @param filter Room filter query
      * @param sorted Array of Sorted objects, result will be sorted by it.
      * @return PagingSource of DBChannelWithMembers
      */
     override fun getAll(
         id: ChannelId?,
+        contentType: String?,
         filter: Query?,
         vararg sorted: Sorted,
     ): PagingSource<Int, DBMessageWithActions> {
@@ -93,8 +97,19 @@ class DefaultMessageRepository(
             arguments.add(id)
         }
 
+        // Filter by contentType
+        if (contentType != null) {
+            if (arguments.isNotEmpty())
+                stringQuery += " AND "
+
+            stringQuery += "contentType LIKE ?"
+            arguments.add(contentType)
+        }
+
         // Filtering
         if (filter != null) {
+            if (arguments.isNotEmpty())
+                stringQuery += " AND "
             stringQuery += filter.first
             arguments.addAll(filter.second)
         }

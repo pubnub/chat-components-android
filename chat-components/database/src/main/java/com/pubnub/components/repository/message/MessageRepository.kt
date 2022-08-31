@@ -22,6 +22,7 @@ interface MessageRepository<in IN : Message, OUT : Message> {
 
     fun getAll(
         id: ChannelId? = null,
+        contentType: String? = null,
         filter: Query? = null,
         vararg sorted: Sorted = emptyArray(),
     ): PagingSource<Int, OUT>

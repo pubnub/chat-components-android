@@ -74,7 +74,7 @@ open class BaseTest {
                                 DBMember(
                                     id = userId,
                                     name = "test",
-                                    custom = DBMember.CustomData("asd"),
+                                    custom = CustomData("asd"),
                                 ),
                             )
                         }
@@ -99,4 +99,8 @@ open class BaseTest {
             set(target, null)
         }
     }
+
+    data class CustomData(
+        val description: String,
+    )
 }

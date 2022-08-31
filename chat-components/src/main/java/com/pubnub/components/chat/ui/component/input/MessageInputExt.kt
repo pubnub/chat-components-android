@@ -51,7 +51,7 @@ fun MessageInput(
         typingAction("")
 
         // Send message
-        if(onBeforeSend != null){
+        if (onBeforeSend != null) {
             viewModel.send(
                 id = channel,
                 message = message,
