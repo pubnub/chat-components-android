@@ -1,6 +1,5 @@
 package com.pubnub.components.repository.message
 
-import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingSource
 import androidx.sqlite.db.SimpleSQLiteQuery

@@ -123,7 +123,7 @@ fun ChatProvider(
         // RTL support by locale
         LocalLayoutDirection provides
                 if (LocalConfiguration.current.layoutDirection == View.LAYOUT_DIRECTION_RTL)
-                        androidx.compose.ui.unit.LayoutDirection.Rtl
+                    androidx.compose.ui.unit.LayoutDirection.Rtl
                 else androidx.compose.ui.unit.LayoutDirection.Ltr,
 
         // Themes

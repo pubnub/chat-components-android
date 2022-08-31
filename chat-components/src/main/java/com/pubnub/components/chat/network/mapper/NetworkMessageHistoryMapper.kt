@@ -23,7 +23,7 @@ class NetworkMessageHistoryMapper(private val mapper: MapperManager) :
         return DBMessage(
             id = messagePayload.id,
             text = messagePayload.text,
-            contentType = messagePayload.contentType,
+            contentType = messagePayload.contentType ?: "default",
             content = messagePayload.content,
             createdAt = messagePayload.createdAt,
             custom = messagePayload.custom,

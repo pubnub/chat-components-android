@@ -12,7 +12,6 @@ import com.pubnub.components.chat.network.mapper.NetworkChannelMapper
 import com.pubnub.components.chat.network.mapper.NetworkMemberMapper
 import com.pubnub.components.chat.network.mapper.NetworkMessageMapper
 import com.pubnub.components.data.channel.CustomDataMap
-import com.pubnub.components.data.member.DBMember
 import com.pubnub.framework.util.asObject
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
