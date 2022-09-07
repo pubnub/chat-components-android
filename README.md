@@ -47,7 +47,7 @@ cases.
 
     ```kotlin
     implementation "com.pubnub:pubnub-kotlin:7.0.0"
-    implementation "com.pubnub.components:chat-android:0.4.0"
+    implementation "com.pubnub.components:chat-android:0.5.0"
     ```
 
 2. Click **Sync Now** or **Sync Project with Gradle Files** to build dependencies for your Android
