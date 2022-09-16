@@ -116,37 +116,37 @@ fun ChatProvider(
     // endregion
 
     CompositionLocalProvider(
-        LocalPubNub provides pubNub,
-        LocalUser provides pubNub.configuration.userId.value,
-        LocalChannel provides channel,
+        LocalPubNub providesDefault pubNub,
+        LocalUser providesDefault pubNub.configuration.userId.value,
+        LocalChannel providesDefault channel,
 
         // RTL support by locale
-        LocalLayoutDirection provides
+        LocalLayoutDirection providesDefault
                 if (LocalConfiguration.current.layoutDirection == View.LAYOUT_DIRECTION_RTL)
                     androidx.compose.ui.unit.LayoutDirection.Rtl
                 else androidx.compose.ui.unit.LayoutDirection.Ltr,
 
         // Themes
-        LocalMessageInputTheme provides DefaultLocalMessageInputTheme,
-        LocalTypingIndicatorTheme provides DefaultTypingIndicatorTheme,
-        LocalChannelListTheme provides DefaultChannelListTheme,
-        LocalMemberListTheme provides DefaultMemberListTheme,
-        LocalMessageListTheme provides DefaultMessageListTheme,
-        LocalMessageTheme provides DefaultLocalMessageTheme,
-        LocalReactionTheme provides DefaultReactionTheme,
-        LocalIndicatorTheme provides DefaultIndicatorTheme,
-        LocalProfileImageTheme provides DefaultProfileImageTheme,
-        LocalMenuItemTheme provides DefaultMenuItemTheme,
+        LocalMessageInputTheme providesDefault DefaultLocalMessageInputTheme,
+        LocalTypingIndicatorTheme providesDefault DefaultTypingIndicatorTheme,
+        LocalChannelListTheme providesDefault DefaultChannelListTheme,
+        LocalMemberListTheme providesDefault DefaultMemberListTheme,
+        LocalMessageListTheme providesDefault DefaultMessageListTheme,
+        LocalMessageTheme providesDefault DefaultLocalMessageTheme,
+        LocalReactionTheme providesDefault DefaultReactionTheme,
+        LocalIndicatorTheme providesDefault DefaultIndicatorTheme,
+        LocalProfileImageTheme providesDefault DefaultProfileImageTheme,
+        LocalMenuItemTheme providesDefault DefaultMenuItemTheme,
 
         // Repositories
-        LocalChannelRepository provides channelRepository,
-        LocalMessageRepository provides messageRepository,
-        LocalMessageActionRepository provides messageActionRepository,
-        LocalMemberRepository provides memberRepository,
-        LocalMembershipRepository provides membershipRepository,
+        LocalChannelRepository providesDefault channelRepository,
+        LocalMessageRepository providesDefault messageRepository,
+        LocalMessageActionRepository providesDefault messageActionRepository,
+        LocalMemberRepository providesDefault memberRepository,
+        LocalMembershipRepository providesDefault membershipRepository,
 
         // Utils
-        LocalMemberFormatter provides memberFormatter,
+        LocalMemberFormatter providesDefault memberFormatter,
     ) {
         WithServices(synchronize) {
             content()
@@ -162,9 +162,10 @@ fun WithServices(
 ) {
     val mapper = LocalPubNub.current.mapper
     val actionService = ActionService(LocalPubNub.current, LocalLogger.current)
+    val typingIndicator = TypingIndicator(LocalPubNub.current, LocalUser.current)
 
     CompositionLocalProvider(
-        LocalMessageService provides DefaultMessageService(
+        LocalMessageService providesDefault DefaultMessageService(
             LocalPubNub.current,
             LocalUser.current,
             LocalMessageRepository.current,
@@ -174,24 +175,24 @@ fun WithServices(
             NetworkMessageActionHistoryMapper(),
             LocalLogger.current,
         ),
-        LocalActionService provides actionService,
-        LocalMessageReactionService provides DefaultMessageReactionService(
+        LocalActionService providesDefault actionService,
+        LocalMessageReactionService providesDefault DefaultMessageReactionService(
             LocalUser.current,
             actionService,
             LocalMessageActionRepository.current,
             NetworkMessageActionMapper(),
             LocalLogger.current,
         ),
-        LocalChannelService provides DefaultChannelService(
+        LocalChannelService providesDefault DefaultChannelService(
             LocalPubNub.current,
             LocalLogger.current,
         ),
-        LocalTypingService provides TypingService(
+        LocalTypingService providesDefault TypingService(
             LocalUser.current,
-            TypingIndicator(LocalPubNub.current, LocalUser.current),
+            typingIndicator,
             LocalLogger.current,
         ),
-        LocalOccupancyService provides DefaultOccupancyService(
+        LocalOccupancyService providesDefault DefaultOccupancyService(
             LocalPubNub.current,
             LocalUser.current,
             NetworkOccupancyMapper(),

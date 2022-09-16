@@ -75,7 +75,7 @@ fun MessageInput(
             val typingService = LocalTypingService.current
             val typingMapper = DomainTypingMapper(LocalMemberFormatter.current)
 
-            DisposableEffect(channel) {
+            DisposableEffect(LocalTypingService.current, channel) {
                 typingService.bind(channel)
                 onDispose { typingService.unbind() }
             }
