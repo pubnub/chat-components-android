@@ -65,7 +65,6 @@ import com.pubnub.framework.service.ActionService
 import com.pubnub.framework.service.LocalTypingService
 import com.pubnub.framework.service.TypingService
 import com.pubnub.framework.util.TypingIndicator
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.runBlocking
 
 @Composable
@@ -154,50 +153,82 @@ fun ChatProvider(
     }
 }
 
-@OptIn(FlowPreview::class)
 @Composable
 fun WithServices(
     sync: Boolean,
     content: @Composable() () -> Unit,
 ) {
-    val mapper = LocalPubNub.current.mapper
-    val actionService = ActionService(LocalPubNub.current, LocalLogger.current)
-    val typingIndicator = TypingIndicator(LocalPubNub.current, LocalUser.current)
+    // Instances region
+    val pubNub = LocalPubNub.current
+    val logger = LocalLogger.current
+    val mapper = pubNub.mapper
+    val user = LocalUser.current
 
-    CompositionLocalProvider(
-        LocalMessageService providesDefault DefaultMessageService(
-            LocalPubNub.current,
-            LocalUser.current,
-            LocalMessageRepository.current,
-            LocalMessageActionRepository.current,
+    val messageRepository = LocalMessageRepository.current
+    val messageActionRepository = LocalMessageActionRepository.current
+
+
+    // endregion
+
+    // Services region
+    val actionService = remember { ActionService(pubNub, logger) }
+    val typingIndicator = remember { TypingIndicator(pubNub, user) }
+
+    val messageService = remember {
+        DefaultMessageService(
+            pubNub,
+            user,
+            messageRepository,
+            messageActionRepository,
             NetworkMessageMapper(mapper),
             NetworkMessageHistoryMapper(mapper),
             NetworkMessageActionHistoryMapper(),
-            LocalLogger.current,
-        ),
-        LocalActionService providesDefault actionService,
-        LocalMessageReactionService providesDefault DefaultMessageReactionService(
-            LocalUser.current,
+            logger,
+        )
+    }
+
+    val messageReactionService = remember {
+        DefaultMessageReactionService(
+            user,
             actionService,
-            LocalMessageActionRepository.current,
+            messageActionRepository,
             NetworkMessageActionMapper(),
-            LocalLogger.current,
-        ),
-        LocalChannelService providesDefault DefaultChannelService(
-            LocalPubNub.current,
-            LocalLogger.current,
-        ),
-        LocalTypingService providesDefault TypingService(
-            LocalUser.current,
+            logger,
+        )
+    }
+
+    val channelService = remember {
+        DefaultChannelService(
+            pubNub,
+            logger,
+        )
+    }
+
+    val typingService = remember {
+        TypingService(
+            user,
             typingIndicator,
-            LocalLogger.current,
-        ),
-        LocalOccupancyService providesDefault DefaultOccupancyService(
-            LocalPubNub.current,
-            LocalUser.current,
+            logger,
+        )
+    }
+
+    val occupancyService = remember {
+        DefaultOccupancyService(
+            pubNub,
+            user,
             NetworkOccupancyMapper(),
-            LocalLogger.current,
-        ),
+            logger,
+        )
+    }
+    // endregion
+
+    CompositionLocalProvider(
+        LocalMessageService providesDefault messageService,
+        LocalActionService providesDefault actionService,
+        LocalMessageReactionService providesDefault messageReactionService,
+        LocalChannelService providesDefault channelService,
+        LocalTypingService providesDefault typingService,
+        LocalOccupancyService providesDefault occupancyService,
     ) {
         if (sync) Synchronize()
         content()
@@ -219,7 +250,6 @@ fun PubNubPreview(
     }
 }
 
-@OptIn(FlowPreview::class)
 @Composable
 fun Synchronize() {
     val currentUser = LocalUser.current
@@ -228,7 +258,6 @@ fun Synchronize() {
     val messageService = LocalMessageService.current
     val occupancyService = LocalOccupancyService.current
     val actionService = LocalActionService.current
-    val messageActionService = LocalMessageReactionService.current
 
     val membershipRepository = LocalMembershipRepository.current
 
@@ -237,13 +266,11 @@ fun Synchronize() {
         messageService.bind()
         occupancyService.bind()
         actionService.bind()
-        messageActionService.bind()
 
         onDispose {
             messageService.unbind()
             occupancyService.unbind()
             actionService.unbind()
-            messageActionService.unbind()
         }
     }
 

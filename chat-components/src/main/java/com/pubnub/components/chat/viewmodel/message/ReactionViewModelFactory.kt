@@ -2,16 +2,13 @@ package com.pubnub.components.chat.viewmodel.message
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.paging.ExperimentalPagingApi
 import com.pubnub.components.chat.service.message.action.DefaultMessageReactionService
 import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.repository.message.action.MessageActionRepository
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.service.error.Logger
-import kotlinx.coroutines.FlowPreview
 
-@OptIn(ExperimentalPagingApi::class, FlowPreview::class)
 class ReactionViewModelFactory constructor(
     private val userId: UserId,
     private val channelId: ChannelId,

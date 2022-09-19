@@ -1,6 +1,6 @@
 package com.pubnub.components.chat.service.message
 
-import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.compositionLocalOf
 import com.pubnub.components.chat.network.data.NetworkMessagePayload
 import com.pubnub.components.data.message.Message
 import com.pubnub.framework.data.ChannelId
@@ -31,7 +31,7 @@ interface MessageService<Data : Message> {
 }
 
 val LocalMessageService =
-    staticCompositionLocalOf<MessageService<NetworkMessagePayload>> { throw MessageServiceNotInitializedException() }
+    compositionLocalOf<MessageService<NetworkMessagePayload>> { throw MessageServiceNotInitializedException() }
 
 class MessageServiceNotInitializedException :
     Exception("Message Service not initialized")

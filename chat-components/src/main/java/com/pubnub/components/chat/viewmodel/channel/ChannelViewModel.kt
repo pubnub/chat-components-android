@@ -30,7 +30,6 @@ import kotlinx.coroutines.withContext
  * [ChannelViewModel] contains the logic for getting the list of channels from the repository.
  * The returned object is mapped to UI data and contains only the data needed to be displayed.
  */
-@OptIn(ExperimentalPagingApi::class)
 class ChannelViewModel constructor(
     private val id: UserId,
     private val repository: ChannelRepository<DBChannel, DBChannelWithMembers>,

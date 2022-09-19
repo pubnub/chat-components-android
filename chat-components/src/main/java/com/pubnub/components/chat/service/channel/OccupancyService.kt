@@ -1,6 +1,6 @@
 package com.pubnub.components.chat.service.channel
 
-import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.compositionLocalOf
 import com.pubnub.components.chat.ui.component.presence.Presence
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.Occupancy
@@ -16,7 +16,7 @@ interface OccupancyService {
 }
 
 val LocalOccupancyService =
-    staticCompositionLocalOf<OccupancyService> { throw OccupancyServiceNotInitializedException() }
+    compositionLocalOf<OccupancyService> { throw OccupancyServiceNotInitializedException() }
 
 class OccupancyServiceNotInitializedException :
     Exception("Occupancy Service not initialized")

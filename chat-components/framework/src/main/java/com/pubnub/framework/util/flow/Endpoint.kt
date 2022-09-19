@@ -5,7 +5,6 @@ import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.framework.util.data.PNException
 import com.pubnub.framework.util.data.PNResult
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
@@ -17,7 +16,6 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 // region Flow
-@OptIn(ExperimentalCoroutinesApi::class)
 suspend fun <Input, Output> Endpoint<Input, Output>.single(
     onComplete: (Output) -> Unit,
     onError: (Exception) -> Unit = {},
@@ -36,7 +34,6 @@ suspend fun <Input, Output> Endpoint<Input, Output>.single(
     }
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
 suspend fun <Input, Output> Endpoint<Input, Output>.singleResult(
     onComplete: (Output, PNStatus) -> Unit,
     onError: (Exception) -> Unit = {},
@@ -52,15 +49,12 @@ suspend fun <Input, Output> Endpoint<Input, Output>.singleResult(
     }
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
 suspend fun <Input, Output> Endpoint<Input, Output>.single(): Output =
     this.flow().first()
 
-@OptIn(ExperimentalCoroutinesApi::class)
 suspend fun <Input, Output> Endpoint<Input, Output>.singleResult(): PNResult<Output> =
     this.flowResult().first()
 
-@OptIn(ExperimentalCoroutinesApi::class)
 private fun <Input, Output> Endpoint<Input, Output>.flow(): Flow<Output> =
     callbackFlow {
         val callback: (Output?, PNStatus) -> Unit = { result: Output?, status: PNStatus ->
@@ -73,7 +67,6 @@ private fun <Input, Output> Endpoint<Input, Output>.flow(): Flow<Output> =
         awaitClose { this@flow.silentCancel() }
     }
 
-@OptIn(ExperimentalCoroutinesApi::class)
 private fun <Input, Output> Endpoint<Input, Output>.flowResult(): Flow<PNResult<Output>> =
     callbackFlow {
         val callback: (Output?, PNStatus) -> Unit = { result, status ->

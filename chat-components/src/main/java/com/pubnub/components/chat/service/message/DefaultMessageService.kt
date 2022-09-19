@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-@OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
+@OptIn(DelicateCoroutinesApi::class)
 class DefaultMessageService(
     private val pubNub: PubNub,
     private val userId: UserId,

@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import coil.annotation.ExperimentalCoilApi
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
@@ -13,7 +12,6 @@ import com.pubnub.components.chat.ui.component.member.renderer.DefaultMemberRend
 import com.pubnub.components.chat.ui.component.message.LocalProfileImageTheme
 import com.pubnub.components.chat.util.CenterInside
 
-@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun ProfileImage(
     imageUrl: String?,

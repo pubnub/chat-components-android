@@ -3,9 +3,7 @@ package com.pubnub.components.chat.service.channel
 import com.pubnub.api.PubNub
 import com.pubnub.components.data.channel.DBChannel
 import com.pubnub.framework.service.error.Logger
-import kotlinx.coroutines.DelicateCoroutinesApi
 
-@OptIn(DelicateCoroutinesApi::class)
 class DefaultChannelService(
     private val pubNub: PubNub,
     private val logger: Logger,

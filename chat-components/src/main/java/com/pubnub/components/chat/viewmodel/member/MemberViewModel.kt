@@ -4,7 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.paging.*
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.pubnub.api.PubNub
 import com.pubnub.components.chat.provider.LocalMemberRepository
 import com.pubnub.components.chat.service.channel.LocalOccupancyService
@@ -22,15 +25,17 @@ import com.pubnub.components.repository.util.Sorted
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.mapper.Mapper
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 /**
  * [MemberViewModel] contains the logic for getting the list of members from the repository.
  * The returned object is mapped to UI data and contains only the data needed to be displayed.
  */
-@OptIn(ExperimentalPagingApi::class, FlowPreview::class)
 class MemberViewModel constructor(
     private val pubNub: PubNub,
     private val userId: UserId,

@@ -1,6 +1,6 @@
 package com.pubnub.framework.service
 
-import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.compositionLocalOf
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.Typing
 import com.pubnub.framework.data.TypingMap
@@ -209,7 +209,7 @@ class TypingService constructor(
 }
 
 val LocalTypingService =
-    staticCompositionLocalOf<TypingService> { throw TypingServiceNotInitializedException() }
+    compositionLocalOf<TypingService> { throw TypingServiceNotInitializedException() }
 
 class TypingServiceNotInitializedException :
     Exception("Typing Service not initialized")

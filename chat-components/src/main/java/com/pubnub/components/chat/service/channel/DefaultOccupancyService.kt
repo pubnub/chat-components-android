@@ -21,11 +21,7 @@ import kotlinx.coroutines.flow.map
 /**
  * Occupancy Service responsible for notifying about channels occupation changes
  */
-@OptIn(
-    ExperimentalCoroutinesApi::class,
-    DelicateCoroutinesApi::class,
-    FlowPreview::class
-)
+@OptIn(DelicateCoroutinesApi::class)
 class DefaultOccupancyService(
     private val pubNub: PubNub,
     private val userId: UserId,

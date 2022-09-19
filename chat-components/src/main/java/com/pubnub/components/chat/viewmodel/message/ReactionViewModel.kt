@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.paging.ExperimentalPagingApi
 import com.pubnub.components.chat.provider.LocalLogger
 import com.pubnub.components.chat.provider.LocalMessageActionRepository
 import com.pubnub.components.chat.service.message.action.DefaultMessageReactionService
@@ -18,13 +17,11 @@ import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.service.error.Logger
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
 
 /**
  * [ReactionViewModel] contains the logic for adding and removing message reactions.
  */
-@OptIn(ExperimentalPagingApi::class, FlowPreview::class)
 class ReactionViewModel constructor(
     private val userId: UserId,
     private val channelId: ChannelId,
@@ -57,7 +54,16 @@ class ReactionViewModel constructor(
     }
 
     init {
+        logger.i("Message Reaction VM Init $this")
         synchronize()
+    }
+
+    fun bind(types: Array<String> = arrayOf("reaction")){
+        messageReactionService?.bind(types)
+    }
+
+    fun unbind(){
+        messageReactionService?.unbind()
     }
 
     /**

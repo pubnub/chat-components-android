@@ -1,7 +1,6 @@
 package com.pubnub.components.chat.ui.component.input
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
@@ -20,7 +19,6 @@ import com.pubnub.components.chat.ui.mapper.typing.DomainTypingMapper
 import com.pubnub.framework.service.LocalTypingService
 import com.pubnub.framework.util.Timetoken
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MessageInput(
     initialText: String = "",
