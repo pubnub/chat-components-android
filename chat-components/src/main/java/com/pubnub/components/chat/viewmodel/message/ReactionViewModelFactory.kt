@@ -11,7 +11,6 @@ import com.pubnub.framework.service.error.Logger
 
 class ReactionViewModelFactory constructor(
     private val userId: UserId,
-    private val channelId: ChannelId,
     private val messageActionRepository: MessageActionRepository<DBMessageAction>,
     private val messageReactionService: DefaultMessageReactionService? = null,
     private val logger: Logger,
@@ -22,7 +21,6 @@ class ReactionViewModelFactory constructor(
         if (modelClass.isAssignableFrom(ReactionViewModel::class.java)) {
             return ReactionViewModel(
                 userId,
-                channelId,
                 messageActionRepository,
                 messageReactionService,
                 logger,

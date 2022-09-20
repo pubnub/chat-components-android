@@ -24,7 +24,6 @@ import kotlinx.coroutines.launch
  */
 class ReactionViewModel constructor(
     private val userId: UserId,
-    private val channelId: ChannelId,
     private val messageActionRepository: MessageActionRepository<DBMessageAction>,
     private val messageReactionService: DefaultMessageReactionService?,
     private val logger: Logger,
@@ -34,17 +33,12 @@ class ReactionViewModel constructor(
         /**
          * Returns default implementation of ReactionViewModel
          *
-         * @param id ID of the Channel
-         *
          * @return ViewModel instance
          */
         @Composable
-        fun default(
-            id: ChannelId = LocalChannel.current,
-        ): ReactionViewModel {
+        fun default(): ReactionViewModel {
             val factory = ReactionViewModelFactory(
                 userId = LocalUser.current,
-                channelId = id,
                 messageActionRepository = LocalMessageActionRepository.current,
                 messageReactionService = LocalMessageReactionService.current as DefaultMessageReactionService,
                 logger = LocalLogger.current,
@@ -53,13 +47,16 @@ class ReactionViewModel constructor(
         }
     }
 
+    private lateinit var channelId: ChannelId
+
     init {
         logger.i("Message Reaction VM Init $this")
-        synchronize()
     }
 
-    fun bind(types: Array<String> = arrayOf("reaction")){
+    fun bind(channelId: ChannelId, types: Array<String> = arrayOf("reaction")){
+        this.channelId = channelId
         messageReactionService?.bind(types)
+        synchronize()
     }
 
     fun unbind(){

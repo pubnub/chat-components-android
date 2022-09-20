@@ -48,12 +48,13 @@ class MessageRemoteMediatorUnitTest {
     private val channelId: ChannelId = "channel.lobby"
     private val messageRemoteMediator: MessageRemoteMediator by lazy {
         MessageRemoteMediator(
-            channelId,
             service,
             messageRepository,
             messageCount,
             testCoroutineScope,
-        )
+        ).apply {
+            setChannel(channelId)
+        }
     }
 
     @Before

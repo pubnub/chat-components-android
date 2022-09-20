@@ -43,7 +43,6 @@ import java.util.*
  */
 @OptIn(ExperimentalPagingApi::class)
 class MessageViewModel constructor(
-    private val channelId: ChannelId,
     private val messageRepository: MessageRepository<DBMessage, DBMessageWithActions>,
     private val remoteMediator: MessageRemoteMediator?,
     private val presenceService: OccupancyService?,
@@ -66,11 +65,9 @@ class MessageViewModel constructor(
          */
         @Composable
         fun default(
-            id: ChannelId = LocalChannel.current,
             mediator: MessageRemoteMediator? = null,
         ): MessageViewModel {
             val messageFactory = MessageViewModelFactory(
-                channelId = id,
                 messageRepository = LocalMessageRepository.current,
                 remoteMediator = mediator,
                 presenceService = LocalOccupancyService.current,
@@ -85,20 +82,17 @@ class MessageViewModel constructor(
          * Returns default implementation of MessageViewModel
          * This implementation allows to load a data from both database and network.
          *
-         * @param id ID of the Channel
-         *
          * @return ViewModel instance
          */
         @Composable
-        fun defaultWithMediator(id: ChannelId = LocalChannel.current): MessageViewModel {
+        fun defaultWithMediator(): MessageViewModel {
             val repository = LocalMessageRepository.current
 
             val mediator = MessageRemoteMediator(
-                channelId = id,
                 service = LocalMessageService.current,
                 messageRepository = repository,
             )
-            return default(id = id, mediator = mediator)
+            return default(mediator = mediator)
         }
     }
 
@@ -127,6 +121,7 @@ class MessageViewModel constructor(
      * @return Flow of Message UI Paging Data
      */
     fun getAll(
+        channelId: ChannelId,
         filter: Query? = null,
         contentType: String? = null,
         sorted: Array<Sorted> = arrayOf(
@@ -147,7 +142,7 @@ class MessageViewModel constructor(
                     sorted = sorted,
                 )
             },
-            remoteMediator = remoteMediator,
+            remoteMediator = remoteMediator?.apply { setChannel(channelId) },
         ).flow.map { paging ->
             paging.map { it.toMessageUi() }
                 .transform()
@@ -171,7 +166,7 @@ class MessageViewModel constructor(
     /**
      * Removes all the messages from repository
      */
-    fun removeAll() = viewModelScope.launch { messageRepository.removeAll(channelId) }
+    fun removeAll(channelId: ChannelId) = viewModelScope.launch { messageRepository.removeAll(channelId) }
 
     /**
      * Copy the content of the message to the clipboard
