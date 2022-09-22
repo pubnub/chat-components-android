@@ -18,7 +18,7 @@ import kotlin.time.Duration.Companion.seconds
 /**
  * Service to send and collect data about typing users
  */
-@OptIn(DelicateCoroutinesApi::class, FlowPreview::class)
+@OptIn(DelicateCoroutinesApi::class)
 @Framework
 class TypingService constructor(
     private val id: UserId,
