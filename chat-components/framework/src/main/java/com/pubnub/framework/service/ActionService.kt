@@ -25,11 +25,7 @@ import kotlinx.coroutines.flow.*
  *
  * Used to send / receive channel invitations
  */
-@OptIn(
-    ExperimentalCoroutinesApi::class,
-    DelicateCoroutinesApi::class,
-    FlowPreview::class
-)
+@OptIn(DelicateCoroutinesApi::class)
 @Framework
 class ActionService(
     private val pubNub: PubNub,
@@ -43,6 +39,10 @@ class ActionService(
     val actions: Flow<PNMessageActionResult> get() = _actions.asSharedFlow()
 
     private lateinit var actionJob: Job
+
+    init {
+        logger.d("Action Service init $this")
+    }
 
     /**
      * Send message action
@@ -162,7 +162,7 @@ class ActionService(
      * Start listening for Actions
      */
     fun bind() {
-        logger.d("Start listening for message actions")
+        logger.d("Start listening for message actions at $this")
         listenForActions()
     }
 
@@ -172,7 +172,7 @@ class ActionService(
     fun unbind() {
         if (::actionJob.isInitialized) {
             stopListenForActions()
-            logger.d("Stop listening for message actions")
+            logger.d("Stop listening for message actions at $this")
         }
     }
 
@@ -218,6 +218,7 @@ class ActionService(
      * Will check [PNMessageActionResult.messageAction] type and process it.
      */
     private suspend fun PNMessageActionResult.processAction() {
+        logger.d("Process action $this")
         _actions.emit(this@processAction)
     }
 

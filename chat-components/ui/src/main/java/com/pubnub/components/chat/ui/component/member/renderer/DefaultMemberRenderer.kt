@@ -1,6 +1,9 @@
 package com.pubnub.components.chat.ui.component.member.renderer
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,7 +22,6 @@ import com.pubnub.components.chat.ui.R
 import com.pubnub.components.chat.ui.component.member.LocalMemberListTheme
 import com.pubnub.components.chat.ui.component.member.ProfileImage
 
-@OptIn(ExperimentalFoundationApi::class)
 object DefaultMemberRenderer : MemberRenderer {
     @Composable
     override fun Member(

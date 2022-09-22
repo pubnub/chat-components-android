@@ -26,7 +26,6 @@ import com.pubnub.components.chat.ui.component.provider.LocalUser
 import com.pubnub.framework.data.UserId
 import kotlinx.coroutines.flow.Flow
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MessageList(
     messages: Flow<PagingData<MessageUi>>,

@@ -1,6 +1,5 @@
 package com.pubnub.components.repository.message
 
-import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingSource
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.pubnub.components.data.message.DBMessage
@@ -20,7 +19,6 @@ import kotlinx.coroutines.flow.firstOrNull
  * Parameters:
  * @param messageDao MessageDao implementation
  */
-@OptIn(ExperimentalPagingApi::class)
 class DefaultMessageRepository(
     private val messageDao: MessageDao<DBMessage, DBMessageWithActions>,
 ) : MessageRepository<DBMessage, DBMessageWithActions> {

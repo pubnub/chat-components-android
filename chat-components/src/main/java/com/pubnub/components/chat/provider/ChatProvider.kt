@@ -65,7 +65,6 @@ import com.pubnub.framework.service.ActionService
 import com.pubnub.framework.service.LocalTypingService
 import com.pubnub.framework.service.TypingService
 import com.pubnub.framework.util.TypingIndicator
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.runBlocking
 
 @Composable
@@ -116,37 +115,37 @@ fun ChatProvider(
     // endregion
 
     CompositionLocalProvider(
-        LocalPubNub provides pubNub,
-        LocalUser provides pubNub.configuration.userId.value,
-        LocalChannel provides channel,
+        LocalPubNub providesDefault pubNub,
+        LocalUser providesDefault pubNub.configuration.userId.value,
+        LocalChannel providesDefault channel,
 
         // RTL support by locale
-        LocalLayoutDirection provides
+        LocalLayoutDirection providesDefault
                 if (LocalConfiguration.current.layoutDirection == View.LAYOUT_DIRECTION_RTL)
                     androidx.compose.ui.unit.LayoutDirection.Rtl
                 else androidx.compose.ui.unit.LayoutDirection.Ltr,
 
         // Themes
-        LocalMessageInputTheme provides DefaultLocalMessageInputTheme,
-        LocalTypingIndicatorTheme provides DefaultTypingIndicatorTheme,
-        LocalChannelListTheme provides DefaultChannelListTheme,
-        LocalMemberListTheme provides DefaultMemberListTheme,
-        LocalMessageListTheme provides DefaultMessageListTheme,
-        LocalMessageTheme provides DefaultLocalMessageTheme,
-        LocalReactionTheme provides DefaultReactionTheme,
-        LocalIndicatorTheme provides DefaultIndicatorTheme,
-        LocalProfileImageTheme provides DefaultProfileImageTheme,
-        LocalMenuItemTheme provides DefaultMenuItemTheme,
+        LocalMessageInputTheme providesDefault DefaultLocalMessageInputTheme,
+        LocalTypingIndicatorTheme providesDefault DefaultTypingIndicatorTheme,
+        LocalChannelListTheme providesDefault DefaultChannelListTheme,
+        LocalMemberListTheme providesDefault DefaultMemberListTheme,
+        LocalMessageListTheme providesDefault DefaultMessageListTheme,
+        LocalMessageTheme providesDefault DefaultLocalMessageTheme,
+        LocalReactionTheme providesDefault DefaultReactionTheme,
+        LocalIndicatorTheme providesDefault DefaultIndicatorTheme,
+        LocalProfileImageTheme providesDefault DefaultProfileImageTheme,
+        LocalMenuItemTheme providesDefault DefaultMenuItemTheme,
 
         // Repositories
-        LocalChannelRepository provides channelRepository,
-        LocalMessageRepository provides messageRepository,
-        LocalMessageActionRepository provides messageActionRepository,
-        LocalMemberRepository provides memberRepository,
-        LocalMembershipRepository provides membershipRepository,
+        LocalChannelRepository providesDefault channelRepository,
+        LocalMessageRepository providesDefault messageRepository,
+        LocalMessageActionRepository providesDefault messageActionRepository,
+        LocalMemberRepository providesDefault memberRepository,
+        LocalMembershipRepository providesDefault membershipRepository,
 
         // Utils
-        LocalMemberFormatter provides memberFormatter,
+        LocalMemberFormatter providesDefault memberFormatter,
     ) {
         WithServices(synchronize) {
             content()
@@ -154,49 +153,82 @@ fun ChatProvider(
     }
 }
 
-@OptIn(FlowPreview::class)
 @Composable
 fun WithServices(
     sync: Boolean,
     content: @Composable() () -> Unit,
 ) {
-    val mapper = LocalPubNub.current.mapper
-    val actionService = ActionService(LocalPubNub.current, LocalLogger.current)
+    // Instances region
+    val pubNub = LocalPubNub.current
+    val logger = LocalLogger.current
+    val mapper = pubNub.mapper
+    val user = LocalUser.current
 
-    CompositionLocalProvider(
-        LocalMessageService provides DefaultMessageService(
-            LocalPubNub.current,
-            LocalUser.current,
-            LocalMessageRepository.current,
-            LocalMessageActionRepository.current,
+    val messageRepository = LocalMessageRepository.current
+    val messageActionRepository = LocalMessageActionRepository.current
+
+
+    // endregion
+
+    // Services region
+    val actionService = remember { ActionService(pubNub, logger) }
+    val typingIndicator = remember { TypingIndicator(pubNub, user) }
+
+    val messageService = remember {
+        DefaultMessageService(
+            pubNub,
+            user,
+            messageRepository,
+            messageActionRepository,
             NetworkMessageMapper(mapper),
             NetworkMessageHistoryMapper(mapper),
             NetworkMessageActionHistoryMapper(),
-            LocalLogger.current,
-        ),
-        LocalActionService provides actionService,
-        LocalMessageReactionService provides DefaultMessageReactionService(
-            LocalUser.current,
+            logger,
+        )
+    }
+
+    val messageReactionService = remember {
+        DefaultMessageReactionService(
+            user,
             actionService,
-            LocalMessageActionRepository.current,
+            messageActionRepository,
             NetworkMessageActionMapper(),
-            LocalLogger.current,
-        ),
-        LocalChannelService provides DefaultChannelService(
-            LocalPubNub.current,
-            LocalLogger.current,
-        ),
-        LocalTypingService provides TypingService(
-            LocalUser.current,
-            TypingIndicator(LocalPubNub.current, LocalUser.current),
-            LocalLogger.current,
-        ),
-        LocalOccupancyService provides DefaultOccupancyService(
-            LocalPubNub.current,
-            LocalUser.current,
+            logger,
+        )
+    }
+
+    val channelService = remember {
+        DefaultChannelService(
+            pubNub,
+            logger,
+        )
+    }
+
+    val typingService = remember {
+        TypingService(
+            user,
+            typingIndicator,
+            logger,
+        )
+    }
+
+    val occupancyService = remember {
+        DefaultOccupancyService(
+            pubNub,
+            user,
             NetworkOccupancyMapper(),
-            LocalLogger.current,
-        ),
+            logger,
+        )
+    }
+    // endregion
+
+    CompositionLocalProvider(
+        LocalMessageService providesDefault messageService,
+        LocalActionService providesDefault actionService,
+        LocalMessageReactionService providesDefault messageReactionService,
+        LocalChannelService providesDefault channelService,
+        LocalTypingService providesDefault typingService,
+        LocalOccupancyService providesDefault occupancyService,
     ) {
         if (sync) Synchronize()
         content()
@@ -218,7 +250,6 @@ fun PubNubPreview(
     }
 }
 
-@OptIn(FlowPreview::class)
 @Composable
 fun Synchronize() {
     val currentUser = LocalUser.current
@@ -227,7 +258,6 @@ fun Synchronize() {
     val messageService = LocalMessageService.current
     val occupancyService = LocalOccupancyService.current
     val actionService = LocalActionService.current
-    val messageActionService = LocalMessageReactionService.current
 
     val membershipRepository = LocalMembershipRepository.current
 
@@ -236,13 +266,11 @@ fun Synchronize() {
         messageService.bind()
         occupancyService.bind()
         actionService.bind()
-        messageActionService.bind()
 
         onDispose {
             messageService.unbind()
             occupancyService.unbind()
             actionService.unbind()
-            messageActionService.unbind()
         }
     }
 

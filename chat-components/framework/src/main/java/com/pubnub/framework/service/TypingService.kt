@@ -1,6 +1,6 @@
 package com.pubnub.framework.service
 
-import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.compositionLocalOf
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.Typing
 import com.pubnub.framework.data.TypingMap
@@ -18,7 +18,7 @@ import kotlin.time.Duration.Companion.seconds
 /**
  * Service to send and collect data about typing users
  */
-@OptIn(ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class, FlowPreview::class)
+@OptIn(DelicateCoroutinesApi::class, FlowPreview::class)
 @Framework
 class TypingService constructor(
     private val id: UserId,
@@ -34,7 +34,7 @@ class TypingService constructor(
     }
 
     init {
-        logger.i("Typing Service for User '$id' created")
+        logger.i("Typing Service $this for User '$id' created")
     }
 
     private val _typing: MutableSharedFlow<TypingMap> =
@@ -209,7 +209,7 @@ class TypingService constructor(
 }
 
 val LocalTypingService =
-    staticCompositionLocalOf<TypingService> { throw TypingServiceNotInitializedException() }
+    compositionLocalOf<TypingService> { throw TypingServiceNotInitializedException() }
 
 class TypingServiceNotInitializedException :
     Exception("Typing Service not initialized")

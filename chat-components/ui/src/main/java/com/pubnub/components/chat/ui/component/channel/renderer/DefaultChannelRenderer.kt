@@ -1,6 +1,5 @@
 package com.pubnub.components.chat.ui.component.channel.renderer
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,7 +18,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import coil.annotation.ExperimentalCoilApi
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
@@ -28,7 +26,6 @@ import com.pubnub.components.chat.ui.R
 import com.pubnub.components.chat.ui.component.channel.LocalChannelListTheme
 import com.pubnub.components.chat.util.CenterInside
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalCoilApi::class)
 object DefaultChannelRenderer : ChannelRenderer {
     @Composable
     override fun Channel(

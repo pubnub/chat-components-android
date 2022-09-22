@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Logout
@@ -55,7 +54,6 @@ object ThemeDefaults {
         ),
     ) = TypingIndicatorTheme(modifier, icon, text)
 
-    @OptIn(ExperimentalMaterialApi::class)
     @Composable
     fun reaction(
         pickerModifier: Modifier = Modifier

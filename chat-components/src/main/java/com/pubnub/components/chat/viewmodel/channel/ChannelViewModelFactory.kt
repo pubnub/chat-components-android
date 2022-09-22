@@ -3,7 +3,6 @@ package com.pubnub.components.chat.viewmodel.channel
 import android.content.res.Resources
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.paging.ExperimentalPagingApi
 import com.pubnub.components.chat.ui.component.channel.ChannelUi
 import com.pubnub.components.chat.ui.mapper.channel.DBChannelMapper
 import com.pubnub.components.data.channel.DBChannel
@@ -12,7 +11,6 @@ import com.pubnub.components.repository.channel.ChannelRepository
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.mapper.Mapper
 
-@OptIn(ExperimentalPagingApi::class)
 class ChannelViewModelFactory(
     private val userId: UserId,
     private val repository: ChannelRepository<DBChannel, DBChannelWithMembers>,

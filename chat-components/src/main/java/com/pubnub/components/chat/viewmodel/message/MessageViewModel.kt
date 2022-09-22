@@ -30,7 +30,6 @@ import com.pubnub.framework.mapper.Mapper
 import com.pubnub.framework.util.Timetoken
 import com.pubnub.framework.util.seconds
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -42,7 +41,7 @@ import java.util.*
  * [MessageViewModel] contains the logic for getting the list of messages from the repository.
  * The returned object is mapped to UI data and contains only the data needed to be displayed.
  */
-@OptIn(ExperimentalPagingApi::class, FlowPreview::class)
+@OptIn(ExperimentalPagingApi::class)
 class MessageViewModel constructor(
     private val channelId: ChannelId,
     private val messageRepository: MessageRepository<DBMessage, DBMessageWithActions>,
@@ -130,8 +129,12 @@ class MessageViewModel constructor(
     fun getAll(
         filter: Query? = null,
         contentType: String? = null,
-        sorted: Array<Sorted> = arrayOf(Sorted(MessageUi.Data::timetoken.name,
-            Sorted.Direction.DESC)),
+        sorted: Array<Sorted> = arrayOf(
+            Sorted(
+                MessageUi.Data::timetoken.name,
+                Sorted.Direction.DESC
+            )
+        ),
         transform: PagingData<MessageUi>.() -> PagingData<MessageUi> = { this },
     ): Flow<PagingData<MessageUi>> =
         Pager(

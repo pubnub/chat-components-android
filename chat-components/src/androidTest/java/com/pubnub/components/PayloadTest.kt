@@ -46,8 +46,10 @@ class PayloadTest {
         // Given
         val networkMemberMapper = NetworkMemberMapper(pubNub.mapper)
         val response: NetworkMember = pubNub.mapper.fromJson(userJson, NetworkMember::class.java)
-        val responseCustom = pubNub.mapper.fromJson(pubNub.mapper.toJson(response.custom),
-            BaseTest.CustomData::class.java)
+        val responseCustom = pubNub.mapper.fromJson(
+            pubNub.mapper.toJson(response.custom),
+            BaseTest.CustomData::class.java
+        )
 
         // When
         val dbObject = networkMemberMapper.map(response)
@@ -72,8 +74,10 @@ class PayloadTest {
             val networkMemberMapper = NetworkMemberMapper(pubNub.mapper)
             val response: NetworkMember =
                 pubNub.mapper.fromJson(userJsonNoName, NetworkMember::class.java)
-            val responseCustom = pubNub.mapper.fromJson(pubNub.mapper.toJson(response.custom),
-                BaseTest.CustomData::class.java)
+            val responseCustom = pubNub.mapper.fromJson(
+                pubNub.mapper.toJson(response.custom),
+                BaseTest.CustomData::class.java
+            )
 
             // When
             val dbObject = networkMemberMapper.map(response)
@@ -98,8 +102,10 @@ class PayloadTest {
             val networkMemberMapper = NetworkMemberMapper(pubNub.mapper)
             val response: NetworkMember =
                 pubNub.mapper.fromJson(userJsonNoType, NetworkMember::class.java)
-            val responseCustom = pubNub.mapper.fromJson(pubNub.mapper.toJson(response.custom),
-                BaseTest.CustomData::class.java)
+            val responseCustom = pubNub.mapper.fromJson(
+                pubNub.mapper.toJson(response.custom),
+                BaseTest.CustomData::class.java
+            )
 
             // When
             val dbObject = networkMemberMapper.map(response)
@@ -125,8 +131,10 @@ class PayloadTest {
             val networkMemberMapper = NetworkMemberMapper(pubNub.mapper)
             val response: NetworkMember =
                 pubNub.mapper.fromJson(userJsonMin, NetworkMember::class.java)
-            val responseCustom = pubNub.mapper.fromJson(pubNub.mapper.toJson(response.custom),
-                BaseTest.CustomData::class.java)
+            val responseCustom = pubNub.mapper.fromJson(
+                pubNub.mapper.toJson(response.custom),
+                BaseTest.CustomData::class.java
+            )
 
             // When
             val dbObject = networkMemberMapper.map(response)
@@ -210,8 +218,10 @@ class PayloadTest {
             every { response.message } returns JsonParser.parseString(messageJson)
 
             val responsePayload: NetworkMessagePayload =
-                pubNub.mapper.fromJson(pubNub.mapper.toJson(response.message),
-                    NetworkMessagePayload::class.java)
+                pubNub.mapper.fromJson(
+                    pubNub.mapper.toJson(response.message),
+                    NetworkMessagePayload::class.java
+                )
 
             // When
             val dbObject = networkMapper.map(response)
@@ -234,8 +244,10 @@ class PayloadTest {
             every { response.message } returns JsonParser.parseString(messageJsonMin)
 
             val responsePayload: NetworkMessagePayload =
-                pubNub.mapper.fromJson(pubNub.mapper.toJson(response.message),
-                    NetworkMessagePayload::class.java)
+                pubNub.mapper.fromJson(
+                    pubNub.mapper.toJson(response.message),
+                    NetworkMessagePayload::class.java
+                )
 
             // When
             val dbObject = networkMapper.map(response)

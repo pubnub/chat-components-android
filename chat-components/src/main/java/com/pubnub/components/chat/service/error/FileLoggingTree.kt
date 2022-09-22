@@ -17,10 +17,14 @@ class FileLoggingTree(private val context: Context) : Timber.DebugTree() {
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
         try {
             val path = "Log"
-            val fileNameTimeStamp: String = SimpleDateFormat("dd-MM-yyyy",
-                Locale.getDefault()).format(Date())
-            val logTimeStamp: String = SimpleDateFormat("E MMM dd yyyy 'at' hh:mm:ss:SSS aaa",
-                Locale.getDefault()).format(Date())
+            val fileNameTimeStamp: String = SimpleDateFormat(
+                "dd-MM-yyyy",
+                Locale.getDefault()
+            ).format(Date())
+            val logTimeStamp: String = SimpleDateFormat(
+                "E MMM dd yyyy 'at' hh:mm:ss:SSS aaa",
+                Locale.getDefault()
+            ).format(Date())
             val fileName = "$fileNameTimeStamp.html"
 
             // Create file
@@ -29,8 +33,10 @@ class FileLoggingTree(private val context: Context) : Timber.DebugTree() {
             // If file created or exists save logs
             if (file != null) {
                 val writer = FileWriter(file, true)
-                writer.append("<p style=\"background:lightgray;\"><strong "
-                        + "style=\"background:lightblue;\">&nbsp&nbsp")
+                writer.append(
+                    "<p style=\"background:lightgray;\"><strong "
+                            + "style=\"background:lightblue;\">&nbsp&nbsp"
+                )
                     .append(logTimeStamp)
                     .append(" :&nbsp&nbsp</strong><strong>&nbsp&nbsp")
                     .append(tag)

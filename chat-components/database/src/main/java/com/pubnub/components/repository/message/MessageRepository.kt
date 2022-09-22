@@ -1,6 +1,5 @@
 package com.pubnub.components.repository.message
 
-import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingSource
 import com.pubnub.components.data.message.Message
 import com.pubnub.components.repository.util.Query
@@ -10,7 +9,6 @@ import com.pubnub.framework.data.MessageId
 import com.pubnub.framework.util.Timetoken
 import kotlinx.coroutines.flow.Flow
 
-@OptIn(ExperimentalPagingApi::class)
 interface MessageRepository<in IN : Message, OUT : Message> {
     suspend fun get(id: MessageId): OUT?
     suspend fun getList(

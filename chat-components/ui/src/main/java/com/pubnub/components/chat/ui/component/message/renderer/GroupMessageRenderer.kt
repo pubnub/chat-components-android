@@ -3,7 +3,6 @@ package com.pubnub.components.chat.ui.component.message.renderer
 import android.annotation.SuppressLint
 import android.util.Patterns.EMAIL_ADDRESS
 import android.webkit.URLUtil
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.PressGestureScope
@@ -34,7 +33,6 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil.annotation.ExperimentalCoilApi
 import com.google.accompanist.placeholder.placeholder
 import com.pubnub.components.chat.ui.component.common.TextTheme
 import com.pubnub.components.chat.ui.component.member.ProfileImage
@@ -58,9 +56,7 @@ import kotlin.random.Random
 
 @OptIn(
     ExperimentalFoundationApi::class,
-    DelicateCoroutinesApi::class,
-    ExperimentalAnimationApi::class,
-    ExperimentalCoilApi::class,
+    DelicateCoroutinesApi::class
 )
 
 object GroupMessageRenderer : MessageRenderer {
@@ -136,8 +132,10 @@ object GroupMessageRenderer : MessageRenderer {
     }
 
     private fun Timetoken.formatDate(
-        dateFormat: SimpleDateFormat = SimpleDateFormat("hh:mm a",
-            Locale.getDefault()),
+        dateFormat: SimpleDateFormat = SimpleDateFormat(
+            "hh:mm a",
+            Locale.getDefault()
+        ),
     ) =
         dateFormat.format(this.seconds).uppercase()
 

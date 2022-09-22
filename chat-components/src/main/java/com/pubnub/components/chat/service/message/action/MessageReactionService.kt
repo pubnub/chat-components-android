@@ -1,6 +1,6 @@
 package com.pubnub.components.chat.service.message.action
 
-import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.compositionLocalOf
 import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.data.message.action.MessageAction
 import com.pubnub.framework.data.ChannelId
@@ -29,7 +29,7 @@ interface MessageReactionService<IN : MessageAction> {
 }
 
 val LocalMessageReactionService =
-    staticCompositionLocalOf<MessageReactionService<DBMessageAction>> { throw MessageActionServiceNotInitializedException() }
+    compositionLocalOf<MessageReactionService<DBMessageAction>> { throw MessageActionServiceNotInitializedException() }
 
 class MessageActionServiceNotInitializedException :
     Exception("MessageAction Service not initialized")
