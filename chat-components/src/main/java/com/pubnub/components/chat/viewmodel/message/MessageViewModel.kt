@@ -142,7 +142,7 @@ class MessageViewModel constructor(
                     sorted = sorted,
                 )
             },
-            remoteMediator = remoteMediator?.apply { setChannel(channelId) },
+            remoteMediator = remoteMediator?.apply { setChannel(channelId) }, // awful workaround but currently there's no way to combine composable, pager and vm's
         ).flow.map { paging ->
             paging.map { it.toMessageUi() }
                 .transform()
