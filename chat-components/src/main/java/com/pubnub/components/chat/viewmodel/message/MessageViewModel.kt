@@ -149,6 +149,8 @@ class MessageViewModel constructor(
 
     /**
      * Get Messages for selected Channel
+     *
+     * @param channelId ID of the Channel
      * @param filter Room filter query
      * @param contentType Type of the message content. When not null, returned list contains only
      *              messages with passed type. Otherwise all the Messages are returned.
@@ -203,6 +205,7 @@ class MessageViewModel constructor(
 
     /**
      * Removes all the messages from repository
+     * @param channelId ID of the Channel
      */
     fun removeAll(channelId: ChannelId) = viewModelScope.launch { messageRepository.removeAll(channelId) }
 
