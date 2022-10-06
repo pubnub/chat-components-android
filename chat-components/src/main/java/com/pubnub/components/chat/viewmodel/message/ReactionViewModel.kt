@@ -45,6 +45,22 @@ class ReactionViewModel constructor(
             )
             return viewModel(factory = factory)
         }
+
+        /**
+         * Returns default implementation of ReactionViewModel
+         *
+         * @param id ID of the Channel
+         * @return ViewModel instance
+         */
+        @Deprecated(
+            message = "This method is no longer supported. Please pass ChannelId directly to the [bind] method.",
+            replaceWith = ReplaceWith("default()"),
+            level = DeprecationLevel.ERROR,
+        )
+        @Composable
+        fun default(
+            @Suppress("UNUSED_PARAMETER") id: ChannelId,
+        ): ReactionViewModel = default()
     }
 
     private lateinit var channelId: ChannelId
