@@ -58,7 +58,6 @@ class MessageViewModel constructor(
          * This implementation allows to load a data from database only. For loading the historical
          * messages from network, @see [defaultWithMediator()]
          *
-         * @param id ID of the Channel
          * @param mediator Remote Mediator implementation, null by default
          *
          * @return ViewModel instance
@@ -80,6 +79,27 @@ class MessageViewModel constructor(
 
         /**
          * Returns default implementation of MessageViewModel
+         * This implementation allows to load a data from database only. For loading the historical
+         * messages from network, @see [defaultWithMediator()]
+         *
+         * @param id ID of the Channel
+         * @param mediator Remote Mediator implementation, null by default
+         *
+         * @return ViewModel instance
+         */
+        @Deprecated(
+            message = "This method is no longer supported. Please pass ChannelId directly to the corresponding methods.",
+            replaceWith = ReplaceWith("default(mediator)"),
+            level = DeprecationLevel.ERROR,
+        )
+        @Composable
+        fun default(
+            @Suppress("UNUSED_PARAMETER") id: ChannelId = LocalChannel.current,
+            mediator: MessageRemoteMediator? = null,
+        ): MessageViewModel = default(mediator)
+
+        /**
+         * Returns default implementation of MessageViewModel
          * This implementation allows to load a data from both database and network.
          *
          * @return ViewModel instance
@@ -94,6 +114,24 @@ class MessageViewModel constructor(
             )
             return default(mediator = mediator)
         }
+
+        /**
+         * Returns default implementation of MessageViewModel
+         * This implementation allows to load a data from both database and network.
+         *
+         * @param id ID of the Channel
+         *
+         * @return ViewModel instance
+         */
+        @Deprecated(
+            message = "This method is no longer supported. Please pass ChannelId directly to the corresponding methods.",
+            replaceWith = ReplaceWith("defaultWithMediator()"),
+            level = DeprecationLevel.ERROR,
+        )
+        @Composable
+        fun defaultWithMediator(@Suppress("UNUSED_PARAMETER") id: ChannelId): MessageViewModel = defaultWithMediator()
+
+
     }
 
     private val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())

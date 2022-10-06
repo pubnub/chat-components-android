@@ -18,7 +18,7 @@ import kotlin.time.Duration.Companion.seconds
 /**
  * Service to send and collect data about typing users
  */
-@OptIn(DelicateCoroutinesApi::class)
+De@OptIn(DelicateCoroutinesApi::class, FlowPreview::class)
 @Framework
 class TypingService constructor(
     private val id: UserId,
@@ -39,7 +39,7 @@ class TypingService constructor(
 
     private val _typing: MutableSharedFlow<TypingMap> =
         MutableSharedFlow(replay = 1)
-    @OptIn(FlowPreview::class)
+
     private val typing: Flow<List<Typing>>
         get() = _typing.asSharedFlow()
             .map { it.values.toList() }
