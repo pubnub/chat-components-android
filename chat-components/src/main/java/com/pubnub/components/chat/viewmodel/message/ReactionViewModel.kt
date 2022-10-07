@@ -61,8 +61,6 @@ class ReactionViewModel constructor(
         ): ReactionViewModel = default()
     }
 
-    private lateinit var channelId: ChannelId
-
     init {
         logger.i("Message Reaction VM Init $this")
     }
