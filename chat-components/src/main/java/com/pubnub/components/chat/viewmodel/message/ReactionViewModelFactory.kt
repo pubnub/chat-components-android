@@ -10,7 +10,6 @@ import com.pubnub.framework.data.UserId
 import com.pubnub.framework.service.error.Logger
 
 class ReactionViewModelFactory constructor(
-    private val userId: UserId,
     private val messageActionRepository: MessageActionRepository<DBMessageAction>,
     private val messageReactionService: DefaultMessageReactionService? = null,
     private val logger: Logger,
@@ -20,7 +19,6 @@ class ReactionViewModelFactory constructor(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ReactionViewModel::class.java)) {
             return ReactionViewModel(
-                userId,
                 messageActionRepository,
                 messageReactionService,
                 logger,

@@ -23,7 +23,6 @@ import kotlinx.coroutines.launch
  * [ReactionViewModel] contains the logic for adding and removing message reactions.
  */
 class ReactionViewModel constructor(
-    private val userId: UserId,
     private val messageActionRepository: MessageActionRepository<DBMessageAction>,
     private val messageReactionService: DefaultMessageReactionService?,
     private val logger: Logger,
@@ -38,7 +37,6 @@ class ReactionViewModel constructor(
         @Composable
         fun default(): ReactionViewModel {
             val factory = ReactionViewModelFactory(
-                userId = LocalUser.current,
                 messageActionRepository = LocalMessageActionRepository.current,
                 messageReactionService = LocalMessageReactionService.current as DefaultMessageReactionService,
                 logger = LocalLogger.current,
@@ -70,9 +68,8 @@ class ReactionViewModel constructor(
     }
 
     fun bind(channelId: ChannelId, types: Array<String> = arrayOf("reaction")){
-        this.channelId = channelId
         messageReactionService?.bind(types)
-        synchronize()
+        synchronize(channelId)
     }
 
     fun unbind(){
@@ -90,14 +87,14 @@ class ReactionViewModel constructor(
         viewModelScope.launch {
             logger.v("Looking for reaction: '$react'")
             val storedReaction = messageActionRepository.get(
-                userId,
-                channelId,
+                react.message.publisher.id,
+                react.message.channel,
                 react.message.timetoken,
                 react.reaction.type,
                 react.reaction.value,
             )
 
-            if (storedReaction?.user == userId) {
+            if (storedReaction?.user == react.message.publisher.id) {
                 logger.v("Removing action: '$storedReaction")
                 messageReactionService?.remove(
                     storedReaction.channel,
@@ -109,7 +106,7 @@ class ReactionViewModel constructor(
             } else {
                 logger.v("Adding action: '$react'")
                 messageReactionService?.add(
-                    channelId,
+                    react.message.channel,
                     react.message.timetoken,
                     react.reaction.type,
                     react.reaction.value,
@@ -121,7 +118,7 @@ class ReactionViewModel constructor(
     /**
      * Synchronize message reactions for current channel
      */
-    private fun synchronize() {
+    private fun synchronize(channelId: ChannelId) {
         if (messageReactionService == null) return
         viewModelScope.launch(Dispatchers.IO) {
             messageReactionService.synchronize(channelId)
