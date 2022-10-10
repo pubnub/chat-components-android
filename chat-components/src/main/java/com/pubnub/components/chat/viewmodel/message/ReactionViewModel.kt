@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
  * [ReactionViewModel] contains the logic for adding and removing message reactions.
  */
 class ReactionViewModel constructor(
+    private val userId: UserId,
     private val messageActionRepository: MessageActionRepository<DBMessageAction>,
     private val messageReactionService: DefaultMessageReactionService?,
     private val logger: Logger,
@@ -37,6 +38,7 @@ class ReactionViewModel constructor(
         @Composable
         fun default(): ReactionViewModel {
             val factory = ReactionViewModelFactory(
+                userId = LocalUser.current,
                 messageActionRepository = LocalMessageActionRepository.current,
                 messageReactionService = LocalMessageReactionService.current as DefaultMessageReactionService,
                 logger = LocalLogger.current,
@@ -85,14 +87,14 @@ class ReactionViewModel constructor(
         viewModelScope.launch {
             logger.v("Looking for reaction: '$react'")
             val storedReaction = messageActionRepository.get(
-                react.message.publisher.id,
+                userId,
                 react.message.channel,
                 react.message.timetoken,
                 react.reaction.type,
                 react.reaction.value,
             )
 
-            if (storedReaction?.user == react.message.publisher.id) {
+            if (storedReaction?.user == userId) {
                 logger.v("Removing action: '$storedReaction")
                 messageReactionService?.remove(
                     storedReaction.channel,
