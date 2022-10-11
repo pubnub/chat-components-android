@@ -15,7 +15,6 @@ import java.io.IOException
 
 @OptIn(ExperimentalPagingApi::class, DelicateCoroutinesApi::class)
 class MessageRemoteMediator constructor(
-    private val channelId: ChannelId,
     private val service: MessageService<NetworkMessagePayload>,
     private val messageRepository: MessageRepository<DBMessage, DBMessageWithActions>,
     private val messageCount: Int = 10,
@@ -28,8 +27,14 @@ class MessageRemoteMediator constructor(
     private var firstMessageTimestamp: Long? = 0L
     private var lastMessageTimestamp: Long? = 0L
 
+    private lateinit var channelId: ChannelId
+
     fun refresh() {
         coroutineScope.launch(dispatcher) { load(LoadType.REFRESH, lastState) }
+    }
+
+    fun setChannel(channelId: ChannelId) {
+        this.channelId = channelId
     }
 
     override suspend fun load(

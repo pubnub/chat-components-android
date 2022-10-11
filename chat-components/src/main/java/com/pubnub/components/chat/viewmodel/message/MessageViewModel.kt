@@ -43,7 +43,6 @@ import java.util.*
  */
 @OptIn(ExperimentalPagingApi::class)
 class MessageViewModel constructor(
-    private val channelId: ChannelId,
     private val messageRepository: MessageRepository<DBMessage, DBMessageWithActions>,
     private val remoteMediator: MessageRemoteMediator?,
     private val presenceService: OccupancyService?,
@@ -59,18 +58,15 @@ class MessageViewModel constructor(
          * This implementation allows to load a data from database only. For loading the historical
          * messages from network, @see [defaultWithMediator()]
          *
-         * @param id ID of the Channel
          * @param mediator Remote Mediator implementation, null by default
          *
          * @return ViewModel instance
          */
         @Composable
         fun default(
-            id: ChannelId = LocalChannel.current,
             mediator: MessageRemoteMediator? = null,
         ): MessageViewModel {
             val messageFactory = MessageViewModelFactory(
-                channelId = id,
                 messageRepository = LocalMessageRepository.current,
                 remoteMediator = mediator,
                 presenceService = LocalOccupancyService.current,
@@ -83,23 +79,59 @@ class MessageViewModel constructor(
 
         /**
          * Returns default implementation of MessageViewModel
+         * This implementation allows to load a data from database only. For loading the historical
+         * messages from network, @see [defaultWithMediator()]
+         *
+         * @param id ID of the Channel
+         * @param mediator Remote Mediator implementation, null by default
+         *
+         * @return ViewModel instance
+         */
+        @Deprecated(
+            message = "This method is no longer supported. Please pass ChannelId directly to the corresponding methods.",
+            replaceWith = ReplaceWith("default(mediator)"),
+            level = DeprecationLevel.ERROR,
+        )
+        @Composable
+        fun default(
+            @Suppress("UNUSED_PARAMETER") id: ChannelId = LocalChannel.current,
+            mediator: MessageRemoteMediator? = null,
+        ): MessageViewModel = default(mediator)
+
+        /**
+         * Returns default implementation of MessageViewModel
+         * This implementation allows to load a data from both database and network.
+         *
+         * @return ViewModel instance
+         */
+        @Composable
+        fun defaultWithMediator(): MessageViewModel {
+            val repository = LocalMessageRepository.current
+
+            val mediator = MessageRemoteMediator(
+                service = LocalMessageService.current,
+                messageRepository = repository,
+            )
+            return default(mediator = mediator)
+        }
+
+        /**
+         * Returns default implementation of MessageViewModel
          * This implementation allows to load a data from both database and network.
          *
          * @param id ID of the Channel
          *
          * @return ViewModel instance
          */
+        @Deprecated(
+            message = "This method is no longer supported. Please pass ChannelId directly to the corresponding methods.",
+            replaceWith = ReplaceWith("defaultWithMediator()"),
+            level = DeprecationLevel.ERROR,
+        )
         @Composable
-        fun defaultWithMediator(id: ChannelId = LocalChannel.current): MessageViewModel {
-            val repository = LocalMessageRepository.current
+        fun defaultWithMediator(@Suppress("UNUSED_PARAMETER") id: ChannelId): MessageViewModel = defaultWithMediator()
 
-            val mediator = MessageRemoteMediator(
-                channelId = id,
-                service = LocalMessageService.current,
-                messageRepository = repository,
-            )
-            return default(id = id, mediator = mediator)
-        }
+
     }
 
     private val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
@@ -117,6 +149,8 @@ class MessageViewModel constructor(
 
     /**
      * Get Messages for selected Channel
+     *
+     * @param channelId ID of the Channel
      * @param filter Room filter query
      * @param contentType Type of the message content. When not null, returned list contains only
      *              messages with passed type. Otherwise all the Messages are returned.
@@ -127,6 +161,7 @@ class MessageViewModel constructor(
      * @return Flow of Message UI Paging Data
      */
     fun getAll(
+        channelId: ChannelId,
         filter: Query? = null,
         contentType: String? = null,
         sorted: Array<Sorted> = arrayOf(
@@ -147,7 +182,7 @@ class MessageViewModel constructor(
                     sorted = sorted,
                 )
             },
-            remoteMediator = remoteMediator,
+            remoteMediator = remoteMediator?.apply { setChannel(channelId) }, // awful workaround but currently there's no way to combine composable, pager and vm's
         ).flow.map { paging ->
             paging.map { it.toMessageUi() }
                 .transform()
@@ -170,8 +205,9 @@ class MessageViewModel constructor(
 
     /**
      * Removes all the messages from repository
+     * @param channelId ID of the Channel
      */
-    fun removeAll() = viewModelScope.launch { messageRepository.removeAll(channelId) }
+    fun removeAll(channelId: ChannelId) = viewModelScope.launch { messageRepository.removeAll(channelId) }
 
     /**
      * Copy the content of the message to the clipboard

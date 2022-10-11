@@ -14,7 +14,6 @@ import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.mapper.Mapper
 
 class MessageViewModelFactory constructor(
-    private val channelId: ChannelId,
     private val messageRepository: MessageRepository<DBMessage, DBMessageWithActions>,
     private val config: PagingConfig = PagingConfig(pageSize = 10, enablePlaceholders = true),
     private val remoteMediator: MessageRemoteMediator? = null,
@@ -28,7 +27,6 @@ class MessageViewModelFactory constructor(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MessageViewModel::class.java)) {
             return MessageViewModel(
-                channelId,
                 messageRepository,
                 remoteMediator,
                 presenceService,

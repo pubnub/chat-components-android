@@ -16,11 +16,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-@OptIn(
-    ExperimentalCoroutinesApi::class,
-    FlowPreview::class,
-    DelicateCoroutinesApi::class,
-)
+@OptIn(DelicateCoroutinesApi::class)
 class DefaultMessageReactionService(
     private val userId: UserId,
     private val actionService: ActionService,
@@ -34,13 +30,17 @@ class DefaultMessageReactionService(
     private var actionJob: Job? = null
     private lateinit var types: Array<String>
 
+    init {
+        logger.d("DefaultMessageReactionService instance $this")
+    }
+
     /**
      * Start listening for Actions
      *
      * @param types Accepted types of message actions, which will be stored in database
      */
     override fun bind(types: Array<String>) {
-        logger.d("Start listening for actions for: '${types.joinToString()}'")
+        logger.d("Start listening for actions for: '${types.joinToString()}' at $this")
         this.types = types
         listenForActions()
     }
@@ -49,7 +49,7 @@ class DefaultMessageReactionService(
      * Stop listening for Actions
      */
     override fun unbind() {
-        logger.d("Stop listening for actions")
+        logger.d("Stop listening for actions at $this")
         stopListenForActions()
     }
 

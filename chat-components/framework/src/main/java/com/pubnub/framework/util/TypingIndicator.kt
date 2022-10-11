@@ -9,7 +9,6 @@ import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.Typing
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.util.flow.single
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
@@ -17,7 +16,6 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class TypingIndicator(private val pubNub: PubNub, private val userId: UserId) {
     companion object {
         private const val TYPING_ON = "typing_on"

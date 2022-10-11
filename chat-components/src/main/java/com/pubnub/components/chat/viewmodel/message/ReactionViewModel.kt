@@ -24,7 +24,6 @@ import kotlinx.coroutines.launch
  */
 class ReactionViewModel constructor(
     private val userId: UserId,
-    private val channelId: ChannelId,
     private val messageActionRepository: MessageActionRepository<DBMessageAction>,
     private val messageReactionService: DefaultMessageReactionService?,
     private val logger: Logger,
@@ -34,32 +33,43 @@ class ReactionViewModel constructor(
         /**
          * Returns default implementation of ReactionViewModel
          *
-         * @param id ID of the Channel
-         *
          * @return ViewModel instance
          */
         @Composable
-        fun default(
-            id: ChannelId = LocalChannel.current,
-        ): ReactionViewModel {
+        fun default(): ReactionViewModel {
             val factory = ReactionViewModelFactory(
                 userId = LocalUser.current,
-                channelId = id,
                 messageActionRepository = LocalMessageActionRepository.current,
                 messageReactionService = LocalMessageReactionService.current as DefaultMessageReactionService,
                 logger = LocalLogger.current,
             )
             return viewModel(factory = factory)
         }
+
+        /**
+         * Returns default implementation of ReactionViewModel
+         *
+         * @param id ID of the Channel
+         * @return ViewModel instance
+         */
+        @Deprecated(
+            message = "This method is no longer supported. Please pass ChannelId directly to the [bind] method.",
+            replaceWith = ReplaceWith("default()"),
+            level = DeprecationLevel.ERROR,
+        )
+        @Composable
+        fun default(
+            @Suppress("UNUSED_PARAMETER") id: ChannelId,
+        ): ReactionViewModel = default()
     }
 
     init {
         logger.i("Message Reaction VM Init $this")
-        synchronize()
     }
 
-    fun bind(types: Array<String> = arrayOf("reaction")){
+    fun bind(channelId: ChannelId, types: Array<String> = arrayOf("reaction")){
         messageReactionService?.bind(types)
+        synchronize(channelId)
     }
 
     fun unbind(){
@@ -78,7 +88,7 @@ class ReactionViewModel constructor(
             logger.v("Looking for reaction: '$react'")
             val storedReaction = messageActionRepository.get(
                 userId,
-                channelId,
+                react.message.channel,
                 react.message.timetoken,
                 react.reaction.type,
                 react.reaction.value,
@@ -96,7 +106,7 @@ class ReactionViewModel constructor(
             } else {
                 logger.v("Adding action: '$react'")
                 messageReactionService?.add(
-                    channelId,
+                    react.message.channel,
                     react.message.timetoken,
                     react.reaction.type,
                     react.reaction.value,
@@ -108,7 +118,7 @@ class ReactionViewModel constructor(
     /**
      * Synchronize message reactions for current channel
      */
-    private fun synchronize() {
+    private fun synchronize(channelId: ChannelId) {
         if (messageReactionService == null) return
         viewModelScope.launch(Dispatchers.IO) {
             messageReactionService.synchronize(channelId)

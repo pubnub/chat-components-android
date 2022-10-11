@@ -37,7 +37,6 @@ import kotlinx.coroutines.withContext
  * The returned object is mapped to UI data and contains only the data needed to be displayed.
  */
 class MemberViewModel constructor(
-    private val pubNub: PubNub,
     private val userId: UserId,
     private val repository: MemberRepository<DBMember, DBMemberWithChannels>,
     private val presenceService: OccupancyService?,
@@ -57,14 +56,13 @@ class MemberViewModel constructor(
          */
         @Composable
         fun default(
-            pubNub: PubNub = LocalPubNub.current,
             userId: UserId = LocalUser.current,
             repository: MemberRepository<DBMember, DBMemberWithChannels> = LocalMemberRepository.current,
             occupancyService: OccupancyService = LocalOccupancyService.current,
             dbMapper: Mapper<DBMemberWithChannels, MemberUi.Data> = DBMemberMapper(),
         ): MemberViewModel {
             val memberFactory =
-                MemberViewModelFactory(pubNub, userId, repository, occupancyService, dbMapper)
+                MemberViewModelFactory(userId, repository, occupancyService, dbMapper)
             return viewModel(factory = memberFactory)
         }
     }
