@@ -129,7 +129,8 @@ class MessageViewModel constructor(
             level = DeprecationLevel.ERROR,
         )
         @Composable
-        fun defaultWithMediator(@Suppress("UNUSED_PARAMETER") id: ChannelId): MessageViewModel = defaultWithMediator()
+        fun defaultWithMediator(@Suppress("UNUSED_PARAMETER") id: ChannelId): MessageViewModel =
+            defaultWithMediator()
 
 
     }
@@ -207,7 +208,8 @@ class MessageViewModel constructor(
      * Removes all the messages from repository
      * @param channelId ID of the Channel
      */
-    fun removeAll(channelId: ChannelId) = viewModelScope.launch { messageRepository.removeAll(channelId) }
+    fun removeAll(channelId: ChannelId) =
+        viewModelScope.launch { messageRepository.removeAll(channelId) }
 
     /**
      * Copy the content of the message to the clipboard

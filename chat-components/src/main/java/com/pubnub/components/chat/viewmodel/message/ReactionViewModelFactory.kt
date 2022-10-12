@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.pubnub.components.chat.service.message.action.DefaultMessageReactionService
 import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.repository.message.action.MessageActionRepository
-import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.service.error.Logger
 

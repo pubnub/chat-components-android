@@ -8,13 +8,11 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
-import com.pubnub.api.PubNub
 import com.pubnub.components.chat.provider.LocalMemberRepository
 import com.pubnub.components.chat.service.channel.LocalOccupancyService
 import com.pubnub.components.chat.service.channel.OccupancyService
 import com.pubnub.components.chat.ui.component.member.MemberUi
 import com.pubnub.components.chat.ui.component.presence.Presence
-import com.pubnub.components.chat.ui.component.provider.LocalPubNub
 import com.pubnub.components.chat.ui.component.provider.LocalUser
 import com.pubnub.components.chat.ui.mapper.member.DBMemberMapper
 import com.pubnub.components.data.member.DBMember
