@@ -32,11 +32,11 @@ cases.
 
 | Name | Requirement |
 | :--- | :------ |
-| [Android Studio](https://developer.android.com/studio/preview) | > = Bumblebee 2021.1.1 |
+| [Android Studio](https://developer.android.com/studio/preview) | > = Dolphin 2021.3.1 |
 | Platform | Android |
 | Language | Kotlin |
 | UI Toolkit | Jetpack Compose |
-| [PubNub Kotlin SDK](https://github.com/pubnub/kotlin) | > = 7.0.0 |
+| [PubNub Kotlin SDK](https://github.com/pubnub/kotlin) | > = 7.3.2 |
 
 ## Usage
 
@@ -46,8 +46,8 @@ cases.
    SDK and PubNub Chat Components for Android implementations:
 
     ```kotlin
-    implementation "com.pubnub:pubnub-kotlin:7.0.0"
-    implementation "com.pubnub.components:chat-android:0.5.0"
+    implementation "com.pubnub:pubnub-kotlin:7.3.2"
+    implementation "com.pubnub.components:chat-android:0.5.1"
     ```
 
 2. Click **Sync Now** or **Sync Project with Gradle Files** to build dependencies for your Android
