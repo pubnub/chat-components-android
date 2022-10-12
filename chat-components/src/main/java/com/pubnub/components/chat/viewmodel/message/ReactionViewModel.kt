@@ -9,7 +9,6 @@ import com.pubnub.components.chat.provider.LocalMessageActionRepository
 import com.pubnub.components.chat.service.message.action.DefaultMessageReactionService
 import com.pubnub.components.chat.service.message.action.LocalMessageReactionService
 import com.pubnub.components.chat.ui.component.menu.React
-import com.pubnub.components.chat.ui.component.provider.LocalChannel
 import com.pubnub.components.chat.ui.component.provider.LocalUser
 import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.repository.message.action.MessageActionRepository
@@ -67,12 +66,12 @@ class ReactionViewModel constructor(
         logger.i("Message Reaction VM Init $this")
     }
 
-    fun bind(channelId: ChannelId, types: Array<String> = arrayOf("reaction")){
+    fun bind(channelId: ChannelId, types: Array<String> = arrayOf("reaction")) {
         messageReactionService?.bind(types)
         synchronize(channelId)
     }
 
-    fun unbind(){
+    fun unbind() {
         messageReactionService?.unbind()
     }
 

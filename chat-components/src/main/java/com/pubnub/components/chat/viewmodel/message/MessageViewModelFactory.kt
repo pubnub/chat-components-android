@@ -10,7 +10,6 @@ import com.pubnub.components.chat.ui.component.message.MessageUi
 import com.pubnub.components.data.message.DBMessage
 import com.pubnub.components.data.message.action.DBMessageWithActions
 import com.pubnub.components.repository.message.MessageRepository
-import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.mapper.Mapper
 
 class MessageViewModelFactory constructor(
