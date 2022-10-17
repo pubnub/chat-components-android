@@ -6,16 +6,11 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import com.pubnub.components.R
 import com.pubnub.components.chat.network.data.NetworkMessagePayload
-import com.pubnub.components.chat.provider.LocalMemberFormatter
 import com.pubnub.components.chat.ui.component.input.renderer.AnimatedTypingIndicatorRenderer
 import com.pubnub.components.chat.ui.component.provider.LocalChannel
-import com.pubnub.components.chat.ui.mapper.typing.DomainTypingMapper
 import com.pubnub.framework.service.LocalTypingService
 import com.pubnub.framework.util.Timetoken
 
@@ -24,9 +19,7 @@ fun MessageInput(
     initialText: String = "",
     placeholder: String = stringResource(id = R.string.type_message),
     typingIndicatorEnabled: Boolean = false,
-    typingIndicatorContent: @Composable ColumnScope.(List<TypingUi>) -> Unit = { typing ->
-        TypingIndicatorContent(typing)
-    },
+    typingIndicator: @Composable () -> Unit = { TypingIndicator() },
     onBeforeSend: ((String) -> NetworkMessagePayload)? = null,
     onSuccess: (String, Timetoken) -> Unit = { _, _ -> },
     onError: (Exception) -> Unit = {},
@@ -70,16 +63,7 @@ fun MessageInput(
 
     Column {
         if (typingIndicatorEnabled) {
-            val typingService = LocalTypingService.current
-            val typingMapper = DomainTypingMapper(LocalMemberFormatter.current)
-
-            DisposableEffect(LocalTypingService.current, channel) {
-                typingService.bind(channel)
-                onDispose { typingService.unbind() }
-            }
-
-            val typing by typingService.getTyping(channel).collectAsState(initial = emptyList())
-            typingIndicatorContent(typing.map { typingMapper.map(it) })
+            typingIndicator()
         }
         MessageInput(
             placeholder = placeholder,
