@@ -48,7 +48,9 @@ class OccupancyServiceUnitTest {
         )
         service = spyk(
             DefaultOccupancyService(
-                mockk(relaxUnitFun = true, relaxed = true),
+                mockk(relaxUnitFun = true, relaxed = true){
+                  every { configuration.maximumConnections } returns null
+                },
                 "userId",
                 NetworkOccupancyMapper(),
                 NoLogger(),

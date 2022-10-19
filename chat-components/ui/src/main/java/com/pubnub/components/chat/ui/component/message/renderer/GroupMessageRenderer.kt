@@ -58,7 +58,6 @@ import kotlin.random.Random
     ExperimentalFoundationApi::class,
     DelicateCoroutinesApi::class
 )
-
 object GroupMessageRenderer : MessageRenderer {
 
     @Composable

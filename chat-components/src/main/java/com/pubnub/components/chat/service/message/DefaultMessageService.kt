@@ -46,6 +46,8 @@ class DefaultMessageService(
 
     private lateinit var messageJob: Job
 
+    private val newPubNub: com.pubnub.api.coroutine.PubNub = com.pubnub.api.coroutine.PubNub(pubNub.configuration)
+
     /**
      * Start listening for messages
      */
@@ -104,29 +106,29 @@ class DefaultMessageService(
         coroutineScope.launch(dispatcher) {
 
             // Publish a message
-            pubNub
+            val result = newPubNub
                 .publish(
                     channel = channelId,
                     message = message,
                     shouldStore = store,
                     meta = meta,
                 )
-                .single(
-                    onComplete = { result ->
-                        // Set message status in repository
-                        coroutineScope.launch(dispatcher) {
 
-                            messageRepository.setSent(
-                                message.id,
-                                result.timetoken
-                            )
+            if(result.isSuccess) {
+                // Set message status in repository
+                coroutineScope.launch(dispatcher) {
 
-                            coroutineScope.launch(Dispatchers.Main) {
-                                onSuccess(message.text, result.timetoken)
-                            }
-                        }
-                    },
-                    onError = { exception ->
+                    messageRepository.setSent(
+                        message.id,
+                        result.getOrNull()
+                    )
+
+                    coroutineScope.launch(Dispatchers.Main) {
+                        onSuccess(message.text, result.getOrNull()!!)
+                    }
+                }
+            } else {
+                val exception = result.exceptionOrNull()!!
                         // Set message status in repository
                         coroutineScope.launch(dispatcher) {
                             messageRepository.setSendingError(
@@ -139,8 +141,8 @@ class DefaultMessageService(
                             }
                             logger.e(exception)
                         }
-                    },
-                )
+                    }
+
         }
     }
 
@@ -163,17 +165,16 @@ class DefaultMessageService(
         withUUID: Boolean,
     ) {
 
-        pubNub
-            .fetchMessages(
+            val result = newPubNub.fetchMessages(
                 channels = listOf(id),
                 page = PNBoundedPage(start = start, end = end, limit = count),
                 includeMessageActions = withActions,
                 includeUUID = withUUID,
             )
-            .single(
-                onComplete = { result ->
+
+            if(result.isSuccess) {
                     // Store messages
-                    result.channels.forEach { (channel, messages) ->
+                    result.getOrNull()!!.channels.forEach { (channel, messages) ->
 
                         // Just in case of message mapper issue
                         messages.sortedByDescending { it.timetoken }.onEach {
@@ -198,11 +199,11 @@ class DefaultMessageService(
                             }
                         }
                     }
-                },
-                onError = { exception ->
-                    logger.e(exception, "Cannot pull history")
                 }
-            )
+        else {
+
+                logger.e(result.exceptionOrNull(), "Cannot pull history")
+            }
     }
 
     private fun insertMessageAction(vararg action: DBMessageAction) {

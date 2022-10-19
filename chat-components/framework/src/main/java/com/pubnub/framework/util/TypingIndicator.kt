@@ -22,24 +22,26 @@ class TypingIndicator(private val pubNub: PubNub, private val userId: UserId) {
         private const val TYPING_OFF = "typing_off"
     }
 
+    private val newPubNub: com.pubnub.api.coroutine.PubNub = com.pubnub.api.coroutine.PubNub(pubNub.configuration)
+
+
     /**
      * Set typing state for channel ID
      */
     suspend fun setTyping(
         channelId: ChannelId,
         isTyping: Boolean,
-        onComplete: (PNPublishResult) -> Unit = {},
-        onError: (Exception) -> Unit,
+        onComplete: (Long) -> Unit = {},
+        onError: (Throwable) -> Unit,
     ) {
-        pubNub
+        val result = newPubNub
             .signal(
                 channel = channelId,
                 message = if (isTyping) TYPING_ON else TYPING_OFF
             )
-            .single(
-                onError = { onError(it) },
-                onComplete = { onComplete(it) }
-            )
+
+        if(result.isSuccess) onComplete(result.getOrNull()!!)
+        else onError(result.exceptionOrNull()!!)
     }
 
     /**

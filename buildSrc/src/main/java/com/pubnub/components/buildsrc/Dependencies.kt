@@ -8,7 +8,7 @@ object Libs {
     const val androidGradlePlugin = "com.android.tools.build:gradle:7.2.1"
     const val ktLint = "com.pinterest:ktlint:${Versions.ktLint}"
     const val jdkDesugar = "com.android.tools:desugar_jdk_libs:1.1.5"
-    const val gradleMavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.20.0"
+    const val gradleMavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.22.0"
     const val gradleVersionsPlugin = "com.github.ben-manes:gradle-versions-plugin:0.42.0"
 
     object Accompanist {
@@ -133,10 +133,11 @@ object Libs {
     }
 
     object PubNub {
-        private const val version = "0.2.1"
+        private const val version = "0.3.3"
         const val bom = "com.pubnub:pubnub-kotlin-bom:$version"
         const val kotlin = "com.pubnub:pubnub-kotlin"
         const val memberships = "com.pubnub:pubnub-memberships"
+        const val coroutines = "com.pubnub:pubnub-coroutines"
     }
 
     object JakeWharton {

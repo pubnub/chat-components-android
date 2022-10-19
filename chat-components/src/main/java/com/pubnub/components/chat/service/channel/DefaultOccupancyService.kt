@@ -31,6 +31,8 @@ class DefaultOccupancyService(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : OccupancyService {
 
+    private val newPubNub: com.pubnub.api.coroutine.PubNub = com.pubnub.api.coroutine.PubNub(pubNub.configuration)
+
     private val _occupancy: MutableSharedFlow<OccupancyMap> = MutableSharedFlow(replay = 1)
     val occupancy: Flow<OccupancyMap>
         get() = _occupancy.asSharedFlow()
@@ -140,14 +142,15 @@ class DefaultOccupancyService(
     /**
      * Global Here Now
      */
-    private suspend fun getOccupancy(): OccupancyMap? =
-        pubNub.hereNow(
+    private suspend fun getOccupancy(): OccupancyMap? {
+        val result = newPubNub.hereNow(
             includeUUIDs = true
         )
-            .coroutine()
-            .let { result ->
-                occupancyMapper.map(result.channels)
-            }
+
+        return if(result.isSuccess){
+            occupancyMapper.map(result.getOrNull()?.channels)
+        } else null
+    }
 
     private suspend fun setOccupancy(occupancy: OccupancyMap) {
         logger.i("Set occupancy '$occupancy'")
