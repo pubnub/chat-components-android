@@ -37,7 +37,6 @@ class DefaultMessageService(
     private val messageRepository: MessageRepository<DBMessage, DBMessageWithActions>,
     private val messageActionRepository: MessageActionRepository<DBMessageAction>,
     private val networkMapper: NetworkMessageMapper,
-    private val networkHistoryMapper: NetworkMessageHistoryMapper,
     private val messageActionHistoryMapper: NetworkMessageActionHistoryMapper,
     private val logger: Logger,
     private val coroutineScope: CoroutineScope = GlobalScope,
@@ -47,7 +46,6 @@ class DefaultMessageService(
     private lateinit var messageJob: Job
 
     private val newPubNub: com.pubnub.api.coroutine.PubNub = com.pubnub.api.coroutine.PubNub(pubNub.configuration)
-    private val newSubscribe: com.pubnub.api.coroutine.Subscribe = com.pubnub.api.coroutine.Subscribe(pubNub)
 
     /**
      * Start listening for messages
@@ -175,31 +173,29 @@ class DefaultMessageService(
 
             if(result.isSuccess) {
                     // Store messages
-                    result.getOrNull()!!.channels.forEach { (channel, messages) ->
+                    result.getOrNull()!!.messages.sortedByDescending { it.timetoken }.forEach { event ->
 
-                        // Just in case of message mapper issue
-                        messages.sortedByDescending { it.timetoken }.onEach {
                             try {
-                                val message = networkHistoryMapper.map(channel, it)
+                                val message = networkMapper.map(event)
                                 insertOrUpdate(message)
                             } catch (e: Exception) {
                                 logger.e(
                                     e,
-                                    "Cannot map message ${it.message.toJson(pubNub.mapper)}"
+                                    "Cannot map message ${event.message.toJson(pubNub.mapper)}"
                                 )
                             }
                             try {
-                                val actions = messageActionHistoryMapper.map(id, it)
+                                val actions = messageActionHistoryMapper.map(id, event)
                                 insertMessageAction(*actions)
 
                             } catch (e: Exception) {
                                 logger.e(
                                     e,
-                                    "Cannot map message action ${it.toJson(pubNub.mapper)}"
+                                    "Cannot map message action ${event.toJson(pubNub.mapper)}"
                                 )
                             }
                         }
-                    }
+
                 }
         else {
                 logger.e(result.exceptionOrNull(), "Cannot pull history")
@@ -215,7 +211,7 @@ class DefaultMessageService(
     // region Inner binding
     private fun listenForMessages(vararg channels: String) {
         coroutineScope.launch(dispatcher) {
-            messageJob = newSubscribe.messageFlow(channels.toList())
+            messageJob = newPubNub.messageFlow(*channels)
                 .onEach { it.processMessage() }
                 .launchIn(this)
         }

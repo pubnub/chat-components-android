@@ -2,6 +2,7 @@ package com.pubnub.components.chat.service.channel
 
 import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.SubscribeCallback
+import com.pubnub.api.coroutine.model.PresenceEvent
 import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
 import com.pubnub.components.chat.ui.component.presence.Presence
@@ -31,7 +32,6 @@ class DefaultOccupancyService(
     private lateinit var presenceJob: Job
 
     private val newPubNub: com.pubnub.api.coroutine.PubNub = com.pubnub.api.coroutine.PubNub(pubNub.configuration)
-    private val newSubscribe: com.pubnub.api.coroutine.Subscribe = com.pubnub.api.coroutine.Subscribe(pubNub)
 
     private val _occupancy: MutableSharedFlow<OccupancyMap> = MutableSharedFlow(replay = 1)
     val occupancy: Flow<OccupancyMap>
@@ -118,7 +118,7 @@ class DefaultOccupancyService(
      */
     private fun listenForPresence(vararg channels: String) {
         coroutineScope.launch(dispatcher) {
-            presenceJob = newSubscribe.presenceFlow(channels.toList())
+            presenceJob = newPubNub.presenceFlow(*channels)
                 .onEach { it.processAction() }
                 .launchIn(this)
         }
@@ -149,7 +149,7 @@ class DefaultOccupancyService(
         _occupancy.emit(occupancy)
     }
 
-    private suspend fun PNPresenceEventResult.processAction() {
+    private suspend fun PresenceEvent.processAction() {
         logger.d("Process action: '$this'")
         val occupancyMap = _occupancy.replayCache.lastOrNull() ?: OccupancyMap()
         val previousOccupants = occupancyMap[this.channel]
@@ -162,7 +162,7 @@ class DefaultOccupancyService(
         setOccupancy(map)
     }
 
-    private fun PNPresenceEventResult.getOccupants(occupancy: Occupancy?): List<String> =
+    private fun PresenceEvent.getOccupants(occupancy: Occupancy?): List<String> =
         (occupancy?.list ?: listOf()).toMutableList().apply {
             when (event) {
                 "join" -> add(uuid!!)

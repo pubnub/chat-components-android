@@ -1,6 +1,6 @@
 package com.pubnub.components
 
-import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
+import com.pubnub.api.coroutine.model.PresenceEvent
 import com.pubnub.components.chat.network.mapper.NetworkOccupancyMapper
 import com.pubnub.components.chat.service.channel.DefaultOccupancyService
 import com.pubnub.components.chat.service.error.NoLogger
@@ -122,7 +122,7 @@ class OccupancyServiceUnitTest {
     // region Process Action
     @Test
     fun whenPresenceIsReceived_thenProcessActionIsExecuted() {
-        val event = PNPresenceEventResult()
+        val event = PresenceEvent()
 
         coEvery { service["callHereNow"]() } answers {}
 
@@ -133,8 +133,8 @@ class OccupancyServiceUnitTest {
     }
 
     @Test
-    fun whenPNPresenceEventResultIsReceived_andEventIsJoin_thenUuidIsAddedToList() {
-        val event = PNPresenceEventResult(
+    fun whenPresenceEventIsReceived_andEventIsJoin_thenUuidIsAddedToList() {
+        val event = PresenceEvent(
             channel = "channel",
             event = "join",
             uuid = "test-member",
@@ -160,14 +160,14 @@ class OccupancyServiceUnitTest {
     }
 
     @Test
-    fun whenPNPresenceEventResultIsReceived_andEventIsLeave_thenUuidIsRemovedFromList() {
-        val join = PNPresenceEventResult(
+    fun whenPresenceEventIsReceived_andEventIsLeave_thenUuidIsRemovedFromList() {
+        val join = PresenceEvent(
             channel = "channel",
             event = "join",
             uuid = "test-member",
             occupancy = 1,
         )
-        val event = PNPresenceEventResult(
+        val event = PresenceEvent(
             channel = "channel",
             event = "leave",
             uuid = "test-member",
@@ -195,14 +195,14 @@ class OccupancyServiceUnitTest {
     }
 
     @Test
-    fun whenPNPresenceEventResultIsReceived_andEventIsTimeout_thenUuidIsRemovedFromList() {
-        val join = PNPresenceEventResult(
+    fun whenPresenceEventIsReceived_andEventIsTimeout_thenUuidIsRemovedFromList() {
+        val join = PresenceEvent(
             channel = "channel",
             event = "join",
             uuid = "test-member",
             occupancy = 1,
         )
-        val event = PNPresenceEventResult(
+        val event = PresenceEvent(
             channel = "channel",
             event = "timeout",
             uuid = "test-member",
@@ -230,9 +230,9 @@ class OccupancyServiceUnitTest {
     }
 
     @Test
-    fun whenPNPresenceEventResultIsReceived_andEventIsInterval_thenAllUuidsFromJoinListAreAddedToList() {
+    fun whenPresenceEventIsReceived_andEventIsInterval_thenAllUuidsFromJoinListAreAddedToList() {
         val listOfMembers = listOf("test-member1", "test-member2", "test-member3")
-        val event = PNPresenceEventResult(
+        val event = PresenceEvent(
             channel = "channel",
             event = "interval",
             join = listOfMembers,
@@ -257,15 +257,15 @@ class OccupancyServiceUnitTest {
     }
 
     @Test
-    fun whenPNPresenceEventResultIsReceived_andEventIsInterval_thenAllUuidsFromLeaveListAreRemovedFromList() {
+    fun whenPresenceEventIsReceived_andEventIsInterval_thenAllUuidsFromLeaveListAreRemovedFromList() {
         val listOfMembers = listOf("test-member1", "test-member2")
-        val join = PNPresenceEventResult(
+        val join = PresenceEvent(
             channel = "channel",
             event = "interval",
             join = listOf("test-member1", "test-member2", "test-member3"),
             occupancy = 3,
         )
-        val event = PNPresenceEventResult(
+        val event = PresenceEvent(
             channel = "channel",
             event = "interval",
             leave = listOfMembers,
@@ -293,15 +293,15 @@ class OccupancyServiceUnitTest {
     }
 
     @Test
-    fun whenPNPresenceEventResultIsReceived_andEventIsInterval_thenAllUuidsFromTimeoutListAreRemovedFromList() {
+    fun whenPresenceEventIsReceived_andEventIsInterval_thenAllUuidsFromTimeoutListAreRemovedFromList() {
         val listOfMembers = listOf("test-member1", "test-member2")
-        val join = PNPresenceEventResult(
+        val join = PresenceEvent(
             channel = "channel",
             event = "interval",
             join = listOf("test-member1", "test-member2", "test-member3"),
             occupancy = 3,
         )
-        val event = PNPresenceEventResult(
+        val event = PresenceEvent(
             channel = "channel",
             event = "interval",
             timeout = listOfMembers,

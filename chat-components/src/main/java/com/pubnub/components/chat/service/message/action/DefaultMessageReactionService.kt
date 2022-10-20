@@ -96,12 +96,9 @@ class DefaultMessageReactionService(
         value: String,
     ) {
         logger.i("Remove message action '$type:$value' on channel '$channel'")
-        try {
-            actionService.remove(channel, messageTimetoken, published)
-            removeAction(userId, channel, messageTimetoken, type, value)
-        } catch (e: Exception) {
-            logger.e(e, "Cannot remove message action")
-        }
+        val result = actionService.remove(channel, messageTimetoken, published)
+        if(result.isSuccess) removeAction(userId, channel, messageTimetoken, type, value)
+        else logger.e(result.exceptionOrNull(), "Cannot remove message action")
     }
 
     /**
@@ -121,13 +118,10 @@ class DefaultMessageReactionService(
         value: String,
     ) {
         logger.i("Add message action '$type:$value' on channel '$channel'")
-        try {
-            val result = actionService.add(channel, PNMessageAction(type, value, messageTimetoken))
-                .toResult(channel)
-            addAction(result)
-        } catch (e: Exception) {
-            logger.e(e, "Cannot add message action")
-        }
+
+        val result = actionService.add(channel, PNMessageAction(type, value, messageTimetoken))
+        if(result.isSuccess) addAction(result.getOrNull()!!.toResult(channel))
+        else logger.e(result.exceptionOrNull(), "Cannot add message action")
     }
 
     /**

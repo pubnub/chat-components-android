@@ -181,7 +181,6 @@ fun WithServices(
             messageRepository,
             messageActionRepository,
             NetworkMessageMapper(mapper),
-            NetworkMessageHistoryMapper(mapper),
             NetworkMessageActionHistoryMapper(),
             logger,
         )

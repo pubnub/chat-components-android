@@ -35,7 +35,6 @@ class ActionService(
 ) {
 
     private val newPubNub: com.pubnub.api.coroutine.PubNub = com.pubnub.api.coroutine.PubNub(pubNub.configuration)
-    private val newSubscribe: com.pubnub.api.coroutine.Subscribe = com.pubnub.api.coroutine.Subscribe(pubNub)
 
     private val _actions: MutableSharedFlow<PNMessageActionResult> =
         MutableSharedFlow(replay = 1)
@@ -56,12 +55,12 @@ class ActionService(
     suspend fun add(
         channelId: ChannelId,
         messageAction: PNMessageAction,
-    ): PNAddMessageActionResult {
+    ): Result<PNAddMessageActionResult> {
         logger.i("Send message action to channel '$channelId': ${messageAction.toJson(pubNub.mapper)}")
-        return pubNub.addMessageAction(
+        return newPubNub.addMessageAction(
             channel = channelId,
             messageAction = messageAction,
-        ).single()
+        )
     }
 
     /**
@@ -75,13 +74,13 @@ class ActionService(
         channelId: ChannelId,
         messageTimetoken: Long,
         actionTimetoken: Long,
-    ): PNRemoveMessageActionResult {
+    ): Result<PNRemoveMessageActionResult> {
         logger.i("Remove message action from channel '$channelId', messageTimetoken '$messageTimetoken', actionTimetoken '$actionTimetoken'")
-        return pubNub.removeMessageAction(
+        return newPubNub.removeMessageAction(
             channel = channelId,
             messageTimetoken = messageTimetoken,
             actionTimetoken = actionTimetoken
-        ).single()
+        )
     }
 
     /**
@@ -98,16 +97,16 @@ class ActionService(
         start: Long?,
         end: Long?,
         limit: Int? = null,
-    ): PNGetMessageActionsResult {
+    ): Result<PNGetMessageActionsResult> {
         logger.i("Get message action from channel '$channelId', time [$end : $start)")
-        return pubNub.getMessageActions(
+        return newPubNub.getMessageActions(
             channel = channelId,
             page = PNBoundedPage(
                 start = start,
                 end = end,
                 limit = limit
             )
-        ).single()
+        )
     }
 
 
@@ -137,27 +136,33 @@ class ActionService(
     ): List<PNMessageAction> {
 
         val result = fetch(channelId, start, end, limit)
-        val newActions = result.actions
-        results.addAll(newActions)
 
-        logger.i("Sync successful. Received new actions: ${newActions.size}")
-        return when {
-            result.page != null -> {
-                logger.d("Page received: ${result.page}")
-                val newestActionTimestamp = result.page!!.start
+        if(result.isSuccess) {
+            val newActions = result.getOrNull()!!.actions
+            results.addAll(newActions)
 
-                logger.i("Trying to sync with end '$newestActionTimestamp'")
-                getAll(channelId, newestActionTimestamp, end, limit, results)
+            logger.i("Sync successful. Received new actions: ${newActions.size}")
+            return when {
+                result.getOrNull()!!.page != null -> {
+                    logger.d("Page received: ${result.getOrNull()!!.page}")
+                    val newestActionTimestamp = result.getOrNull()!!.page!!.start
+
+                    logger.i("Trying to sync with end '$newestActionTimestamp'")
+                    getAll(channelId, newestActionTimestamp, end, limit, results)
+                }
+                newActions.isNotEmpty() -> {
+                    val newestActionTimestamp = newActions.minOf { it.actionTimetoken!! }
+                    logger.e("Trying to sync with end '$newestActionTimestamp'")
+                    getAll(channelId, newestActionTimestamp, end, limit, results)
+                }
+                else -> {
+                    logger.i("Sync successful. No more actions. Result size: ${results.size}")
+                    results
+                }
             }
-            newActions.isNotEmpty() -> {
-                val newestActionTimestamp = newActions.minOf { it.actionTimetoken!! }
-                logger.e("Trying to sync with end '$newestActionTimestamp'")
-                getAll(channelId, newestActionTimestamp, end, limit, results)
-            }
-            else -> {
-                logger.i("Sync successful. No more actions. Result size: ${results.size}")
-                results
-            }
+        } else {
+            logger.e(result.exceptionOrNull(), "Cannot get message actions")
+            return emptyList()
         }
     }
 
@@ -185,7 +190,7 @@ class ActionService(
      */
     private fun listenForActions(vararg channels: String) {
         coroutineScope.launch(dispatcher) {
-            actionJob = newSubscribe.messageActionFlow(channels.toList())
+            actionJob = newPubNub.messageActionFlow(*channels)
                 .onEach { it.processAction() }
                 .launchIn(this)
         }

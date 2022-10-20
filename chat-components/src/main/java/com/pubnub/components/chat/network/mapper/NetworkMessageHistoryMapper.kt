@@ -27,7 +27,7 @@ class NetworkMessageHistoryMapper(private val mapper: MapperManager) :
             content = messagePayload.content,
             createdAt = messagePayload.createdAt,
             custom = messagePayload.custom,
-            publisher = input.uuid!!,
+            publisher = input.publisher!!,
             channel = id,
             isSent = true,
             exception = null,

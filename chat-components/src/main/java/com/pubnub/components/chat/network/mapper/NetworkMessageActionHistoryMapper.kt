@@ -8,20 +8,17 @@ import com.pubnub.framework.mapper.MapperWithId
 class NetworkMessageActionHistoryMapper :
     MapperWithId<NetworkHistoryMessage, Array<DBMessageAction>> {
     override fun map(id: ChannelId, input: NetworkHistoryMessage): Array<DBMessageAction> {
-        return input.actions?.flatMap { (type, list) ->
-            list.flatMap { (action, users) ->
-                users.map { user ->
+        return input.messageActions.map { event ->
                     DBMessageAction(
                         channel = id,
-                        user = user.uuid,
-                        messageTimestamp = input.timetoken,
-                        published = user.actionTimetoken.toLong(),
-                        type = type,
-                        value = action,
+                        user = event.uuid!!,
+                        messageTimestamp = event.messageTimetoken,
+                        published = event.actionTimetoken!!.toLong(),
+                        type = event.type,
+                        value = event.value,
                     )
-                }
-            }
-        }?.toTypedArray() ?: emptyArray()
+
+        }.toTypedArray()
     }
 
 }
