@@ -68,7 +68,7 @@ class OccupancyServiceUnitTest {
     // region Binding
     @Test
     fun whenBindIsCalled_thenHereNowIsExecuted() {
-        every { service["listenForPresence"]() } answers {}
+        every { service["listenForPresence"](anyVararg<String>()) } answers {}
         coEvery { service["callHereNow"]() } answers {}
 
         service.bind()
@@ -78,24 +78,24 @@ class OccupancyServiceUnitTest {
 
     @Test
     fun whenBindIsCalled_thenListenForPresenceIsExecuted() {
-        every { service["listenForPresence"]() } answers {}
+        every { service["listenForPresence"](anyVararg<String>()) } answers {}
 
         service.bind()
 
-        verify(exactly = 1) { service["listenForPresence"]() }
+        verify(exactly = 1) { service["listenForPresence"](anyVararg<String>()) }
     }
     // endregion
 
     // region Occupancy
     @Test
     fun whenCallHereNowIsCalled_thenGetOccupancyIsExecuted() {
-        every { service["listenForPresence"]() } answers {}
+        every { service["listenForPresence"](anyVararg<String>()) } answers {}
 
         service.bind()
 
         coVerifySequence {
             service.bind()
-            service["listenForPresence"]()
+            service["listenForPresence"](anyVararg<String>())
             service["callHereNow"]()
             service["getOccupancy"]()
         }
@@ -104,14 +104,14 @@ class OccupancyServiceUnitTest {
     @Test
     fun whenGetOccupancyIsCalled_thenSetOccupancyIsExecuted() {
         val occupancy: OccupancyMap = mockk(relaxed = true, relaxUnitFun = true)
-        every { service["listenForPresence"]() } answers {}
+        every { service["listenForPresence"](anyVararg<String>()) } answers {}
         every { service["getOccupancy"]() } returns occupancy
 
         service.bind()
 
         coVerifySequence {
             service.bind()
-            service["listenForPresence"]()
+            service["listenForPresence"](anyVararg<String>())
             service["callHereNow"]()
             service["getOccupancy"]()
             service["setOccupancy"](eq(occupancy))

@@ -8,7 +8,7 @@ import com.pubnub.framework.data.UserId
 import kotlinx.coroutines.flow.Flow
 
 interface OccupancyService {
-    fun bind()
+    fun bind(vararg channels: String)
     fun unbind()
     fun getOccupancy(channel: ChannelId): Flow<Occupancy>
     suspend fun getPresence(presence: Presence = Presence()): Presence

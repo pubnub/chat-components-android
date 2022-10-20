@@ -13,10 +13,7 @@ import com.pubnub.framework.mapper.OccupancyMapper
 import com.pubnub.framework.service.error.Logger
 import com.pubnub.framework.util.flow.coroutine
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 
 /**
  * Occupancy Service responsible for notifying about channels occupation changes
@@ -31,7 +28,10 @@ class DefaultOccupancyService(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : OccupancyService {
 
+    private lateinit var presenceJob: Job
+
     private val newPubNub: com.pubnub.api.coroutine.PubNub = com.pubnub.api.coroutine.PubNub(pubNub.configuration)
+    private val newSubscribe: com.pubnub.api.coroutine.Subscribe = com.pubnub.api.coroutine.Subscribe(pubNub)
 
     private val _occupancy: MutableSharedFlow<OccupancyMap> = MutableSharedFlow(replay = 1)
     val occupancy: Flow<OccupancyMap>
@@ -47,18 +47,6 @@ class DefaultOccupancyService(
             // workaround - add current member as online
             val currentUserId = userId
             this[currentUserId] = true
-        }
-    }
-
-    private val _listener = object : SubscribeCallback() {
-        override fun status(pubnub: PubNub, pnStatus: PNStatus) {
-            // empty
-        }
-
-        override fun presence(pubnub: PubNub, pnPresenceEventResult: PNPresenceEventResult) {
-            super.presence(pubnub, pnPresenceEventResult)
-
-            coroutineScope.launch(dispatcher) { processAction(pnPresenceEventResult) }
         }
     }
 
@@ -100,9 +88,9 @@ class DefaultOccupancyService(
         online.map { it[user] ?: false }
 
     // region Binding
-    override fun bind() {
+    override fun bind(vararg channels: String) {
         logger.d("Start listening for presence")
-        listenForPresence()
+        listenForPresence(*channels)
         // Get lobby occupancy
         coroutineScope.launch(dispatcher) {
             callHereNow()
@@ -128,15 +116,19 @@ class DefaultOccupancyService(
     /**
      * Listen for incoming presence and process it
      */
-    private fun listenForPresence() {
-        pubNub.addListener(_listener)
+    private fun listenForPresence(vararg channels: String) {
+        coroutineScope.launch(dispatcher) {
+            presenceJob = newSubscribe.presenceFlow(channels.toList())
+                .onEach { it.processAction() }
+                .launchIn(this)
+        }
     }
 
     /**
      * Cancel incoming presence listener
      */
     private fun stopListenForPresence() {
-        pubNub.removeListener(_listener)
+        presenceJob.cancel()
     }
 
     /**
@@ -157,15 +149,15 @@ class DefaultOccupancyService(
         _occupancy.emit(occupancy)
     }
 
-    private suspend fun processAction(action: PNPresenceEventResult) {
-        logger.d("Process action: '$action'")
+    private suspend fun PNPresenceEventResult.processAction() {
+        logger.d("Process action: '$this'")
         val occupancyMap = _occupancy.replayCache.lastOrNull() ?: OccupancyMap()
-        val previousOccupants = occupancyMap[action.channel]
-        val occupants = action.getOccupants(previousOccupants)
-        val newOccupancy = Occupancy.from(action, occupants) ?: return
+        val previousOccupants = occupancyMap[this.channel]
+        val occupants = this.getOccupants(previousOccupants)
+        val newOccupancy = Occupancy.from(this, occupants) ?: return
 
         val map = occupancyMap.apply {
-            put(action.channel!!, newOccupancy)
+            put(this@processAction.channel!!, newOccupancy)
         }
         setOccupancy(map)
     }

@@ -7,7 +7,7 @@ import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.util.Timetoken
 
 interface MessageService<Data : Message> {
-    fun bind()
+    fun bind(vararg channels: String)
     fun unbind()
 
     @Suppress("NAME_SHADOWING")

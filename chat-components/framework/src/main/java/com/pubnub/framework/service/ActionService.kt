@@ -34,6 +34,9 @@ class ActionService(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
 
+    private val newPubNub: com.pubnub.api.coroutine.PubNub = com.pubnub.api.coroutine.PubNub(pubNub.configuration)
+    private val newSubscribe: com.pubnub.api.coroutine.Subscribe = com.pubnub.api.coroutine.Subscribe(pubNub)
+
     private val _actions: MutableSharedFlow<PNMessageActionResult> =
         MutableSharedFlow(replay = 1)
     val actions: Flow<PNMessageActionResult> get() = _actions.asSharedFlow()
@@ -161,9 +164,9 @@ class ActionService(
     /**
      * Start listening for Actions
      */
-    fun bind() {
+    fun bind(vararg channels: String) {
         logger.d("Start listening for message actions at $this")
-        listenForActions()
+        listenForActions(*channels)
     }
 
     /**
@@ -180,9 +183,9 @@ class ActionService(
      * Listen for incoming Actions and process it
      * @see processAction
      */
-    private fun listenForActions() {
+    private fun listenForActions(vararg channels: String) {
         coroutineScope.launch(dispatcher) {
-            actionJob = messageActionFlow()
+            actionJob = newSubscribe.messageActionFlow(channels.toList())
                 .onEach { it.processAction() }
                 .launchIn(this)
         }
@@ -194,23 +197,6 @@ class ActionService(
     private fun stopListenForActions() {
         actionJob.cancel()
     }
-
-    private fun messageActionFlow(): Flow<PNMessageActionResult> =
-        callbackFlow {
-            val callback: SubscribeCallback = object : SubscribeCallback() {
-                override fun status(pubnub: PubNub, pnStatus: PNStatus) {}
-
-                override fun messageAction(
-                    pubnub: PubNub,
-                    pnMessageActionResult: PNMessageActionResult,
-                ) {
-                    trySendBlocking(pnMessageActionResult)
-                }
-            }
-            pubNub.addListener(callback)
-
-            awaitClose { pubNub.removeListener(callback) }
-        }
 
     /**
      * Process Actions

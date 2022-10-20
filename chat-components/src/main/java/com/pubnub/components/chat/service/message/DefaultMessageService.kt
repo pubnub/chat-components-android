@@ -47,13 +47,14 @@ class DefaultMessageService(
     private lateinit var messageJob: Job
 
     private val newPubNub: com.pubnub.api.coroutine.PubNub = com.pubnub.api.coroutine.PubNub(pubNub.configuration)
+    private val newSubscribe: com.pubnub.api.coroutine.Subscribe = com.pubnub.api.coroutine.Subscribe(pubNub)
 
     /**
      * Start listening for messages
      */
-    override fun bind() {
+    override fun bind(vararg channels: String) {
         logger.d("Start listening for incoming messages")
-        listenForMessages()
+        listenForMessages(*channels)
     }
 
     /**
@@ -201,7 +202,6 @@ class DefaultMessageService(
                     }
                 }
         else {
-
                 logger.e(result.exceptionOrNull(), "Cannot pull history")
             }
     }
@@ -213,9 +213,9 @@ class DefaultMessageService(
     }
 
     // region Inner binding
-    private fun listenForMessages() {
+    private fun listenForMessages(vararg channels: String) {
         coroutineScope.launch(dispatcher) {
-            messageJob = messageFlow()
+            messageJob = newSubscribe.messageFlow(channels.toList())
                 .onEach { it.processMessage() }
                 .launchIn(this)
         }
@@ -225,20 +225,6 @@ class DefaultMessageService(
         messageJob.cancel()
     }
     // endregion
-
-    private fun messageFlow(): Flow<NetworkMessage> =
-        callbackFlow {
-            val callback: SubscribeCallback = object : SubscribeCallback() {
-                override fun status(pubnub: PubNub, pnStatus: PNStatus) {}
-
-                override fun message(pubnub: PubNub, pnMessageResult: NetworkMessage) {
-                    trySendBlocking(pnMessageResult)
-                }
-            }
-            pubNub.addListener(callback)
-
-            awaitClose { pubNub.removeListener(callback) }
-        }
 
     /**
      * Processing [NetworkMessage] and silently catch exceptions
