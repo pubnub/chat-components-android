@@ -8,7 +8,9 @@ sealed class MemberUi {
         val name: String?,
         val profileUrl: String? = null,
         val description: String? = null,
-    ) : MemberUi()
+        val custom: Any? = null,
+        val type: String = "default"
+        ) : MemberUi()
 
     data class Separator(val text: String) : MemberUi()
 }

@@ -11,6 +11,8 @@ class DBMemberMapper : Mapper<DBMemberWithChannels, MemberUi.Data> {
             input.id,
             input.name,
             input.profileUrl,
-            input.member.custom.asMap()?.get("description") as? String?
+            input.member.custom.asMap()?.get("description") as? String?,
+            input.custom,
+            input.type
         )
 }
