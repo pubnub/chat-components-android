@@ -17,13 +17,8 @@ import java.util.regex.Pattern
  * `createBackup` and `restoreBackup` tasks are created. They can be called manually when needed:
  * `./gradlew restoreBackup`
  */
-def buildFiles = [
-        "chat-components/database/build.gradle",
-        "chat-components/framework/build.gradle",
-        "chat-components/ui/build.gradle",
-        "chat-components/build.gradle"
-]
-def backupFiles = buildFiles + "gradle.properties"
+def dependencyFile = "buildSrc/src/main/java/com/pubnub/components/buildsrc/Dependencies.kt"
+def backupFiles = ["gradle.properties", dependencyFile]
 
 task createBackup {
     group 'Release'
@@ -75,8 +70,7 @@ task setVersion {
 
                 releaseSigningEnabled("gradle.properties", false)
                 releasePropertiesVersionName("gradle.properties", version)
-                buildFiles.each { fileName -> releaseVersionName(fileName, version) }
-
+                releaseVersionName(dependencyFile, version)
             } else {
                 def error = "Missing version parameter. Please pass '-Pv' with expected release version."
                 logger.error(error)

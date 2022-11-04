@@ -35,7 +35,7 @@ allprojects {
             // Treat all Kotlin warnings as errors
             allWarningsAsErrors = true
 
-            jvmTarget = "1.8"
+            jvmTarget = Libs.Build.Kotlin.jvmTarget
 
             // Use experimental APIs
             freeCompilerArgs += '-opt-in=kotlin.RequiresOptIn'
