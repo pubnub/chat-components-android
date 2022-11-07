@@ -1,0 +1,17 @@
+{
+  "**/*": {
+    "users": [
+      "Salet",
+      "piotr-suwala",
+      "CraigLn",
+      "maciej-adamczyk",
+      "jguz-pubnub",
+      "anton-pub"
+    ]
+  },
+  "**/*.md": {
+    "users": [
+      "kazydek"
+    ]
+  }
+}
