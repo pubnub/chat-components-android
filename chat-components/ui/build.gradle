@@ -6,6 +6,7 @@ plugins {
 }
 
 android {
+    namespace 'com.pubnub.components.chat.ui'
     compileSdk = Libs.Build.Android.compileSdk
     buildToolsVersion = Libs.Build.Android.buildToolsVersion
 
