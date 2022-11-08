@@ -6,14 +6,14 @@ plugins {
 }
 
 android {
-    compileSdk = 32
-    buildToolsVersion = "30.0.3"
+    compileSdk = Libs.Build.Android.compileSdk
+    buildToolsVersion = Libs.Build.Android.buildToolsVersion
 
     defaultConfig {
-        minSdk = 21
-        targetSdk = 32
-        versionCode = 1
-        versionName = "0.5.1"
+        minSdk = Libs.Build.Android.minSdk
+        targetSdk = Libs.Build.Android.targetSdk
+        versionCode = Libs.Build.Android.versionCode
+        versionName = Libs.Build.Android.versionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -30,18 +30,13 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = Libs.Build.Kotlin.jvmTarget
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion Libs.AndroidX.Compose.version
-    }
-    packagingOptions {
-        // for JNA and JNA-platform
-        exclude "META-INF/AL2.0"
-        exclude "META-INF/LGPL2.1"
+        kotlinCompilerExtensionVersion Libs.AndroidX.Compose.compilerVersion
     }
 }
 
@@ -52,6 +47,8 @@ dependencies {
     implementation Libs.Coil.coil
     implementation Libs.AndroidX.Activity.activityCompose
     implementation Libs.AndroidX.appcompat
+
+    implementation platform(Libs.AndroidX.Compose.bom)
     implementation Libs.AndroidX.Compose.runtime
     implementation Libs.AndroidX.Compose.runtimeLivedata
     implementation Libs.AndroidX.Compose.foundation
@@ -69,6 +66,7 @@ dependencies {
     implementation Libs.PubNub.kotlin
     implementation Libs.PubNub.memberships
 
+    androidTestImplementation platform(Libs.AndroidX.Compose.bom)
     androidTestImplementation Libs.JUnit.junit
     androidTestImplementation Libs.AndroidX.Test.runner
     androidTestImplementation Libs.AndroidX.Test.espressoCore

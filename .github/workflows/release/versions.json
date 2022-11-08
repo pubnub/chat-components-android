@@ -1,23 +1,5 @@
 {
-  "chat-components/build.gradle": [
-    {
-      "pattern": "^\\s{2,}versionName\\s=\\s\"(v?(\\d+\\.?){2,}([a-zA-Z0-9-]+(\\.?\\d+)?)?)\"$",
-      "clearedSuffix": false
-    }
-  ],
-  "chat-components/database/build.gradle": [
-    {
-      "pattern": "^\\s{2,}versionName\\s=\\s\"(v?(\\d+\\.?){2,}([a-zA-Z0-9-]+(\\.?\\d+)?)?)\"$",
-      "clearedSuffix": false
-    }
-  ],
-  "chat-components/ui/build.gradle": [
-    {
-      "pattern": "^\\s{2,}versionName\\s=\\s\"(v?(\\d+\\.?){2,}([a-zA-Z0-9-]+(\\.?\\d+)?)?)\"$",
-      "clearedSuffix": false
-    }
-  ],
-  "chat-components/framework/build.gradle": [
+  "buildSrc/src/main/java/com/pubnub/components/buildsrc/Dependencies.kt": [
     {
       "pattern": "^\\s{2,}versionName\\s=\\s\"(v?(\\d+\\.?){2,}([a-zA-Z0-9-]+(\\.?\\d+)?)?)\"$",
       "clearedSuffix": false
