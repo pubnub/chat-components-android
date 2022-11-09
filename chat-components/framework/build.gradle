@@ -6,6 +6,7 @@ plugins {
 }
 
 android {
+    namespace 'com.pubnub.framework'
     compileSdk = Libs.Build.Android.compileSdk
     buildToolsVersion = Libs.Build.Android.buildToolsVersion
 

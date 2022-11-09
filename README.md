@@ -30,13 +30,13 @@ cases.
 
 ## Prerequisites
 
-| Name | Requirement |
-| :--- | :------ |
+| Name                                                           | Requirement          |
+|:---------------------------------------------------------------|:---------------------|
 | [Android Studio](https://developer.android.com/studio/preview) | > = Dolphin 2021.3.1 |
-| Platform | Android |
-| Language | Kotlin |
-| UI Toolkit | Jetpack Compose |
-| [PubNub Kotlin SDK](https://github.com/pubnub/kotlin) | > = 7.3.2 |
+| Platform                                                       | Android              |
+| Language                                                       | Kotlin               |
+| UI Toolkit                                                     | Jetpack Compose      |
+| [PubNub Kotlin SDK](https://github.com/pubnub/kotlin)          | > = 7.3.2            |
 
 ## Usage
 

@@ -5,11 +5,11 @@ object Versions {
 }
 
 object Libs {
-    const val androidGradlePlugin = "com.android.tools.build:gradle:7.2.2"
+    const val androidGradlePlugin = "com.android.tools.build:gradle:7.3.1"
     const val ktLint = "com.pinterest:ktlint:${Versions.ktLint}"
     const val jdkDesugar = "com.android.tools:desugar_jdk_libs:1.1.5"
     const val gradleMavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.22.0"
-    const val gradleVersionsPlugin = "com.github.ben-manes:gradle-versions-plugin:0.42.0"
+    const val gradleVersionsPlugin = "com.github.ben-manes:gradle-versions-plugin:0.43.0"
 
     object Build {
         object Android {
@@ -28,7 +28,7 @@ object Libs {
     }
 
     object Accompanist {
-        private const val version = "0.25.0"
+        private const val version = "0.27.0"
 
         const val swipeRefresh = "com.google.accompanist:accompanist-swiperefresh:$version"
         const val placeholder = "com.google.accompanist:accompanist-placeholder:$version"
@@ -37,7 +37,7 @@ object Libs {
     }
 
     object Coil {
-        private const val version = "2.1.0"
+        private const val version = "2.2.2"
 
         const val coil = "io.coil-kt:coil-compose:$version"
         const val coilGif = "io.coil-kt:coil-gif:$version"
@@ -63,15 +63,15 @@ object Libs {
     }
 
     object Google {
-        const val gson = "com.google.code.gson:gson:2.9.1"
+        const val gson = "com.google.code.gson:gson:2.10"
     }
 
     object AndroidX {
         object Activity {
-            const val activityCompose = "androidx.activity:activity-compose:1.5.1"
+            const val activityCompose = "androidx.activity:activity-compose:1.6.1"
         }
 
-        const val appcompat = "androidx.appcompat:appcompat:1.4.2"
+        const val appcompat = "androidx.appcompat:appcompat:1.5.1"
 
         const val navigation = "androidx.navigation:navigation-compose:2.4.0"
 
@@ -136,7 +136,7 @@ object Libs {
     }
 
     object Hilt {
-        private const val version = "2.43.1"
+        private const val version = "2.44"
 
         const val gradlePlugin = "com.google.dagger:hilt-android-gradle-plugin:$version"
         const val android = "com.google.dagger:hilt-android:$version"
@@ -167,7 +167,7 @@ object Libs {
     }
 
     object MockK {
-        private const val version = "1.12.5"
+        private const val version = "1.13.2"
         const val unit = "io.mockk:mockk:$version"
         const val instrumented = "io.mockk:mockk-android:$version"
     }
