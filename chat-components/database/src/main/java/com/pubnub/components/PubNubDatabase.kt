@@ -12,15 +12,18 @@ import com.pubnub.components.data.message.MessageDao
 import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.data.message.action.DBMessageWithActions
 import com.pubnub.components.data.message.action.MessageActionDao
+import com.pubnub.components.data.sync.DBRemoteTimetoken
+import com.pubnub.components.data.sync.RemoteTimetokenDao
 
-interface PubNubDatabase<Message : MessageDao<*, *>, Action : MessageActionDao<*>, Channel : ChannelDao<*, *>, Member : MemberDao<*, *>, Membership : MembershipDao<*>> {
+interface PubNubDatabase<Message : MessageDao<*, *>, Action : MessageActionDao<*>, Channel : ChannelDao<*, *>, Member : MemberDao<*, *>, Membership : MembershipDao<*>, RemoteKey : RemoteTimetokenDao<*>> {
     fun messageDao(): Message
     fun actionDao(): Action
     fun channelDao(): Channel
     fun memberDao(): Member
     fun membershipDao(): Membership
+    fun remoteKeyDao(): RemoteKey
 }
 
 @Suppress("UNCHECKED_CAST")
 fun DefaultDatabase.asPubNub() =
-    this as PubNubDatabase<MessageDao<DBMessage, DBMessageWithActions>, MessageActionDao<DBMessageAction>, ChannelDao<DBChannel, DBChannelWithMembers>, MemberDao<DBMember, DBMemberWithChannels>, MembershipDao<DBMembership>>
+    this as PubNubDatabase<MessageDao<DBMessage, DBMessageWithActions>, MessageActionDao<DBMessageAction>, ChannelDao<DBChannel, DBChannelWithMembers>, MemberDao<DBMember, DBMemberWithChannels>, MembershipDao<DBMembership>, RemoteTimetokenDao<DBRemoteTimetoken>>
