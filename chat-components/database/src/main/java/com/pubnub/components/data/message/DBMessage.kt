@@ -28,6 +28,8 @@ data class DBMessage(
     val publisher: UserId,
     val channel: ChannelId,
     val timetoken: Timetoken = createdAt.toTimetoken(),
+    @ColumnInfo(defaultValue = "0")
+    val published: Timetoken,
     val isSent: Boolean = true,
     var exception: String? = null,
 ) : Message

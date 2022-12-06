@@ -142,7 +142,7 @@ class MessageRemoteMediatorUnitTest {
         val result = mediator.load(LoadType.PREPEND, state)
 
         Assert.assertTrue(result is RemoteMediator.MediatorResult.Success)
-        Assert.assertFalse((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
+        Assert.assertTrue((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
     }
 
     @Test
@@ -201,9 +201,8 @@ class MessageRemoteMediatorUnitTest {
 
         runBlocking { mediator.load(loadType, state) }
 
-//        Assert.assertTrue(pageStart.last()!! in time..(System.currentTimeMillis() * 10_000L))
         Assert.assertNull(pageStart.lastOrNull())
-        Assert.assertEquals(pageEnd.last()!!, end)
+        Assert.assertEquals(end + 1, pageEnd.last()!!)
     }
 
 
@@ -220,7 +219,7 @@ class MessageRemoteMediatorUnitTest {
         )
 
         val message: DBMessageWithActions = mockk(relaxed = true) {
-            every { message.timetoken } returns 1L
+            every { message.published } returns 1L
         }
 
         val data: List<PagingSource.LoadResult.Page<Int, DBMessageWithActions>> =
@@ -249,7 +248,6 @@ class MessageRemoteMediatorUnitTest {
         Assert.assertTrue(result is RemoteMediator.MediatorResult.Success)
         Assert.assertFalse((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
 
-
         Assert.assertEquals(start, pageStart.lastOrNull())
         Assert.assertNull(pageEnd.lastOrNull())
     }
@@ -261,7 +259,7 @@ class MessageRemoteMediatorUnitTest {
         coEvery { remoteTimetokenRepository.get(TABLE_NAME, channelId) } returns null
 
         val message: DBMessageWithActions = mockk(relaxed = true) {
-            every { message.timetoken } returns 1L
+            every { message.published } returns 1L
         }
 
         val data: List<PagingSource.LoadResult.Page<Int, DBMessageWithActions>> =
@@ -290,99 +288,7 @@ class MessageRemoteMediatorUnitTest {
         Assert.assertNull(pageStart.lastOrNull())
         Assert.assertNull(pageEnd.lastOrNull())
     }
-
-//    @Test
-//    fun whenPageIsNotNull_andAppendIsReceived_thenFullTimeWindowIsReturned() = runBlocking {
-//        val start = 99L
-//        val end = 199L
-//
-//        coEvery { remoteTimetokenRepository.getAll(TABLE_NAME, channelId) } returns flowOf(listOf(
-//            DBRemoteTimetoken(TABLE_NAME, channelId, start, end)
-//        ))
-//
-//        val message: DBMessageWithActions = mockk(relaxed = true) {
-//            every { message.timetoken } returns 1L
-//        }
-//
-//        val data: List<PagingSource.LoadResult.Page<Int, DBMessageWithActions>> =
-//            listOf(PagingSource.LoadResult.Page(listOf(message), null, null))
-//        val state: PagingState<Int, DBMessageWithActions> =
-//            PagingState(data, null, PagingConfig(10), 0)
-//        val mediator: MessageRemoteMediator = spyk(messageRemoteMediator, recordPrivateCalls = true)
-//
-//        val pageStart = mutableListOf<Long?>()
-//        val pageEnd = mutableListOf<Long?>()
-//        coEvery {
-//            mediator["loadNewMessages"](
-//                eq(channelId),
-//                captureNullable(pageStart),
-//                captureNullable(pageEnd)
-//            )
-//        } answers {}
-//
-//        mediator.load(LoadType.APPEND, state)
-//
-//        Assert.assertEquals(pageStart.last(), 1L)
-//        Assert.assertNull(pageEnd.lastOrNull())
-//    }
-//
-//    
-//    @Test
-//    fun whenPrependIsReceived_andHasMoreMessagesInDb_thenNullIsReturned() {
-//        coEvery { messageRepository.hasMoreAfter(any(), any()) } returns true
-//
-//        val message: DBMessageWithActions = mockk(relaxed = true) {
-//            every { message.timetoken } returns 1L
-//        }
-//
-//        val data: List<PagingSource.LoadResult.Page<Int, DBMessageWithActions>> =
-//            listOf(PagingSource.LoadResult.Page(listOf(message), null, null))
-//        val state: PagingState<Int, DBMessageWithActions> =
-//            PagingState(data, null, PagingConfig(10), 0)
-//        val mediator: MessageRemoteMediator = spyk(messageRemoteMediator, recordPrivateCalls = true)
-//
-//        val result = runBlocking { mediator.load(LoadType.PREPEND, state) }
-//
-//        coVerify(exactly = 1) { messageRepository.hasMoreAfter(eq(channelId), eq(1L)) }
-//
-//        Assert.assertTrue(result is RemoteMediator.MediatorResult.Success)
-//        Assert.assertFalse((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
-//    }
-//
-//    
-//    @Test
-//    fun whenPrependIsReceived_andHasNoMoreMessagesInDb_thenPageIsReturned() {
-//
-//        coEvery { messageRepository.hasMoreAfter(any(), any()) } returns false
-//        val message: DBMessageWithActions = mockk(relaxed = true) {
-//            every { message.timetoken } returns 1L
-//        }
-//
-//        val data: List<PagingSource.LoadResult.Page<Int, DBMessageWithActions>> =
-//            listOf(PagingSource.LoadResult.Page(listOf(message), null, null))
-//        val state: PagingState<Int, DBMessageWithActions> =
-//            PagingState(data, null, PagingConfig(10), 0)
-//        val mediator: MessageRemoteMediator = spyk(messageRemoteMediator, recordPrivateCalls = true)
-//        val pageStart = mutableListOf<Long?>()
-//        val pageEnd = mutableListOf<Long?>()
-//
-//        coEvery {
-//            mediator["loadNewMessages"](
-//                eq(channelId),
-//                captureNullable(pageStart),
-//                captureNullable(pageEnd)
-//            )
-//        } answers {}
-//
-//        runBlocking { mediator.load(LoadType.PREPEND, state) }
-//
-//        coVerify(exactly = 1) { messageRepository.hasMoreAfter(eq(channelId), eq(1L)) }
-//
-//        Assert.assertNull(pageStart.lastOrNull())
-//        Assert.assertEquals(pageEnd.lastOrNull(), 1 + 1L)
-//    }
-//    // endregion
-
+    // endregion
 
     // region Refresh
 
@@ -417,7 +323,6 @@ class MessageRemoteMediatorUnitTest {
 
         Assert.assertTrue(pageStart.last()!! in time..(System.currentTimeMillis() * 10_000L))
         Assert.assertNull(pageEnd.lastOrNull())
-
     }
 
     @Test
@@ -452,9 +357,8 @@ class MessageRemoteMediatorUnitTest {
 
         coVerify(exactly = 1) { remoteTimetokenRepository.get(eq(TABLE_NAME), eq(channelId)) }
 
-//        Assert.assertTrue(pageStart.last()!! in time..(System.currentTimeMillis() * 10_000L))
         Assert.assertNull(pageStart.lastOrNull())
-        Assert.assertEquals(max, pageEnd.lastOrNull())
+        Assert.assertEquals(max + 1, pageEnd.lastOrNull())
 
     }
     // endregion
@@ -475,7 +379,7 @@ class MessageRemoteMediatorUnitTest {
             val result = mediator.load(LoadType.PREPEND, state)
 
             Assert.assertTrue(result is RemoteMediator.MediatorResult.Success)
-            Assert.assertFalse((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
+            Assert.assertTrue((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
         }
 
         coVerify(exactly = 1) { remoteTimetokenRepository.get(eq(TABLE_NAME), eq(channelId)) }
@@ -491,7 +395,7 @@ class MessageRemoteMediatorUnitTest {
                 DBRemoteTimetoken(TABLE_NAME, channelId, min, max)
 
         val message: DBMessageWithActions = mockk(relaxed = true) {
-            every { message.timetoken } returns 1L
+            every { message.published } returns 1L
         }
 
         val data: List<PagingSource.LoadResult.Page<Int, DBMessageWithActions>> =
@@ -519,10 +423,8 @@ class MessageRemoteMediatorUnitTest {
 
         coVerify(exactly = 1) { remoteTimetokenRepository.get(eq(TABLE_NAME), eq(channelId)) }
 
-//        Assert.assertNull(pageStart.lastOrNull())
         Assert.assertTrue(pageStart.last()!! in time..(System.currentTimeMillis() * 10_000L))
         Assert.assertEquals(max + 1, pageEnd.last())
-
     }
 
     @Test
@@ -535,7 +437,7 @@ class MessageRemoteMediatorUnitTest {
                 DBRemoteTimetoken(TABLE_NAME, channelId, min, max)
 
         val message: DBMessageWithActions = mockk(relaxed = true) {
-            every { message.timetoken } returns 50L
+            every { message.published } returns 50L
         }
 
         val data: List<PagingSource.LoadResult.Page<Int, DBMessageWithActions>> =
@@ -562,10 +464,8 @@ class MessageRemoteMediatorUnitTest {
 
         coVerify(exactly = 1) { remoteTimetokenRepository.get(eq(TABLE_NAME), eq(channelId)) }
 
-//        Assert.assertNull(pageStart.lastOrNull())
         Assert.assertTrue(pageStart.last()!! in time..(System.currentTimeMillis() * 10_000L))
         Assert.assertEquals(max + 1, pageEnd.last())
-
     }
 
     @Test
@@ -578,7 +478,7 @@ class MessageRemoteMediatorUnitTest {
                 DBRemoteTimetoken(TABLE_NAME, channelId, min, max)
 
         val message: DBMessageWithActions = mockk(relaxed = true) {
-            every { message.timetoken } returns 300L
+            every { message.published } returns 300L
         }
 
         val data: List<PagingSource.LoadResult.Page<Int, DBMessageWithActions>> =
@@ -605,11 +505,8 @@ class MessageRemoteMediatorUnitTest {
 
         coVerify(exactly = 1) { remoteTimetokenRepository.get(eq(TABLE_NAME), eq(channelId)) }
 
-
-//        Assert.assertNull(pageStart.lastOrNull())
         Assert.assertTrue(pageStart.last()!! in time..(System.currentTimeMillis() * 10_000L))
         Assert.assertEquals(max + 1, pageEnd.last())
-
     }
     // endregion
 
@@ -629,10 +526,8 @@ class MessageRemoteMediatorUnitTest {
             val result = mediator.load(LoadType.APPEND, state)
 
             Assert.assertTrue(result is RemoteMediator.MediatorResult.Success)
-            Assert.assertFalse((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
+            Assert.assertTrue((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
         }
-
-//        coVerify(exactly = 0) { remoteTimetokenRepository.get(eq(TABLE_NAME), eq(channelId)) }
     }
 
     @Test
@@ -645,7 +540,7 @@ class MessageRemoteMediatorUnitTest {
                 DBRemoteTimetoken(TABLE_NAME, channelId, min, max)
 
         val message: DBMessageWithActions = mockk(relaxed = true) {
-            every { message.timetoken } returns 1L
+            every { message.published } returns 1L
         }
 
         val data: List<PagingSource.LoadResult.Page<Int, DBMessageWithActions>> =
@@ -673,7 +568,6 @@ class MessageRemoteMediatorUnitTest {
 
         Assert.assertEquals(min, pageStart.last())
         Assert.assertNull(pageEnd.lastOrNull())
-
     }
 
     @Test
@@ -686,7 +580,7 @@ class MessageRemoteMediatorUnitTest {
                 DBRemoteTimetoken(TABLE_NAME, channelId, min, max)
 
         val message: DBMessageWithActions = mockk(relaxed = true) {
-            every { message.timetoken } returns 50L
+            every { message.published } returns 50L
         }
 
         val data: List<PagingSource.LoadResult.Page<Int, DBMessageWithActions>> =
@@ -726,7 +620,7 @@ class MessageRemoteMediatorUnitTest {
                 DBRemoteTimetoken(TABLE_NAME, channelId, min, max)
 
         val message: DBMessageWithActions = mockk(relaxed = true) {
-            every { message.timetoken } returns 300L
+            every { message.published } returns 300L
         }
 
         val data: List<PagingSource.LoadResult.Page<Int, DBMessageWithActions>> =

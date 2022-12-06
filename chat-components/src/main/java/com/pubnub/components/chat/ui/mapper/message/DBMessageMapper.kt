@@ -20,6 +20,7 @@ class DBMessageMapper(
             text = input.message.text,
             createdAt = input.createdAt,
             timetoken = input.message.timetoken,
+            published = input.message.published,
             isSending = !input.message.isSent,
             isDelivered = !input.message.isSent,
             reactions = input.actions.toUi(),

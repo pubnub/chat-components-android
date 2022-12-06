@@ -52,51 +52,50 @@ class MessageRemoteMediator constructor(
         state: PagingState<Int, DBMessageWithActions>,
     ): MediatorResult {
 
-        return withContext(dispatcher) {
-            lastState = state
-            val page =
-                when (loadType) {
-                    LoadType.REFRESH -> {
-                        logger.d("Refresh")
-                        getTimeWindowForInitMessage()
+        return try {
+            withContext(dispatcher) {
+                lastState = state
+                val page =
+                    when (loadType) {
+                        LoadType.REFRESH -> {
+                            logger.d("LoadType Refresh ⟳")
+                            getTimeWindowForInitMessage()
+                        }
+                        LoadType.APPEND -> {
+                            logger.d("LoadType Append ↑")
+                            getTimeWindowForFirstMessage(state)
+                        }
+                        LoadType.PREPEND -> {
+                            logger.d("LoadType Prepend ↓")
+                            getTimeWindowForLastMessage(state)
+                        }
                     }
-                    LoadType.PREPEND -> {
-                        logger.d("Prepend")
-                        getTimeWindowForLastMessage(state)
-                    }
-                    LoadType.APPEND -> {
-                        logger.d("Append")
-                        getTimeWindowForFirstMessage(state)
-                    }
-                }
 
 
-            logger.d("Page: $page")
-            try {
+                logger.d("Page: $page")
+
                 if (page == null)
-                    return@withContext MediatorResult.Success(endOfPaginationReached = false)
+                    return@withContext MediatorResult.Success(endOfPaginationReached = true)
 
-                withContext(dispatcher) {
-                    loadNewMessages(channelId, loadType, page.start, page.end)
-                }
+                loadNewMessages(channelId, loadType, page.start, page.end)
 
                 return@withContext MediatorResult.Success(endOfPaginationReached = false)
-            } catch (exception: IOException) {
-                return@withContext MediatorResult.Error(exception)
-            } catch (exception: Exception) {
-                return@withContext MediatorResult.Error(exception)
             }
+        } catch (exception: IOException) {
+            MediatorResult.Error(exception)
+        } catch (exception: Exception) {
+            MediatorResult.Error(exception)
         }
     }
 
     private suspend fun getTimeWindowForInitMessage(): MessageWindow {
         // Get the history // refresh
-        val start: Timetoken? = System.currentTimeMillis() * 10_000L
+        val start: Timetoken = System.currentTimeMillis() * 10_000L
         val end: Timetoken? = null
 
         val window = remoteTimetokenRepository.get(TABLE_NAME, channelId)
         if (window != null) {
-            return MessageWindow(channelId, null, window.end)
+            return MessageWindow(channelId, null, window.end + 1)
         }
 
         return MessageWindow(channelId, start, end)
@@ -108,7 +107,7 @@ class MessageRemoteMediator constructor(
         // last page will contains oldest messages
         val messageTimetoken = state.pages.lastOrNull { it.data.isNotEmpty() }
             ?.data
-            ?.minOfOrNull { it.message.timetoken }
+            ?.minOfOrNull { it.message.published }
 
         // just skip when nothing changed
         if (messageTimetoken == firstMessageTimestamp) return null
@@ -125,7 +124,7 @@ class MessageRemoteMediator constructor(
         // first page will contains the newest messages
         val messageTimetoken = state.pages.firstOrNull { it.data.isNotEmpty() }
             ?.data
-            ?.maxOfOrNull { it.message.timetoken }
+            ?.maxOfOrNull { it.message.published }
 
         // just skip when nothing changed
         if (messageTimetoken == lastMessageTimestamp) return null
@@ -145,33 +144,36 @@ class MessageRemoteMediator constructor(
         start: Timetoken?,
         end: Timetoken?,
         min: Timetoken?,
-        max: Timetoken?
+        max: Timetoken?,
+        current: Timetoken,
     ): DBRemoteTimetoken {
 
-        val minTimetoken: Timetoken = when (type) {
-            LoadType.REFRESH -> {
-                min!!
+        logger.d("Create range for channel $channelId, type: $type, start: $start, end: $end, min: $min, max: $max")
+        val minTimetoken: Timetoken? = when (type) {
+            LoadType.REFRESH, LoadType.APPEND -> {
+                min
             }
             LoadType.PREPEND -> {
-                min!!
-            }
-            LoadType.APPEND -> {
-                end!!
+                end
             }
         }
-        val maxTimetoken: Timetoken = when (type) {
-            LoadType.REFRESH -> {
-                start!!
+        logger.d("Min: $minTimetoken")
+        val maxTimetoken: Timetoken? = when (type) {
+            LoadType.REFRESH, LoadType.APPEND -> {
+                start
             }
             LoadType.PREPEND -> {
-                start!!
-            }
-            LoadType.APPEND -> {
-                max!!
+                max
             }
         }
+        logger.d("Max: $maxTimetoken")
 
-        return DBRemoteTimetoken(TABLE_NAME, channelId, minTimetoken, maxTimetoken)
+        return DBRemoteTimetoken(
+            TABLE_NAME,
+            channelId,
+            minTimetoken ?: 0,
+            maxTimetoken ?: max ?: current
+        )
     }
 
     // workaround for sync all the messages on refresh
@@ -193,11 +195,14 @@ class MessageRemoteMediator constructor(
             withActions = true,
         )
 
-        val fetchMore = loadType == LoadType.REFRESH && // should sync more REFRESH only
+        logger.d("Result: $result")
+        val fetchMore = (loadType == LoadType.PREPEND || // should sync all for prepend - workaround
+                loadType == LoadType.REFRESH && end != null) && // and for refresh when there is a window stored in db
                 result != null && // last result exists
                 (result.page != null || // page exists in response, for default LIMIT parameter or > 25
-                        (messageCount <= 25 && result.messageCount == messageCount) // when the LIMIT is <= 25, the page is not defined in response
+                        (result.messageCount == messageCount) // when the LIMIT is <= 25, the page is not defined in response
                         )
+        logger.d("  -> fetch more: $fetchMore")
         // If there's no more messages, return the result
         if (!fetchMore) return result
 
@@ -208,14 +213,14 @@ class MessageRemoteMediator constructor(
         result = syncAll(
             channelId = channelId,
             loadType = loadType,
-            start = result.page!!.start,
-            end = result.page!!.end,
+            start = result.page?.start ?: min,
+            end = result.page?.end ?: end,
         )
         return NetworkHistorySyncResult(
             nullableMin(min, result?.minTimetoken),
             nullableMax(max, result?.maxTimetoken),
             result?.page,
-            result?.messageCount?:0,
+            result?.messageCount ?: 0,
         )
     }
 
@@ -225,6 +230,7 @@ class MessageRemoteMediator constructor(
         start: Long?,
         end: Long?
     ) {
+        val currentTime = System.currentTimeMillis() * 10_000L
         logger.d("Load new messages $start:$end")
         // Get the history
         val result = syncAll(
@@ -238,7 +244,15 @@ class MessageRemoteMediator constructor(
         // Store updated remote timetoken
         val window = remoteTimetokenRepository.get(TABLE_NAME, channelId)
         val newRemoteTimetoken =
-            createRange(channelId, loadType, start, end, result.minTimetoken, result.maxTimetoken)
+            createRange(
+                channelId,
+                loadType,
+                start,
+                end,
+                result.minTimetoken,
+                result.maxTimetoken,
+                currentTime
+            )
 
         // there's max one window in current implementation
         if (window == null) {

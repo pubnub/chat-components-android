@@ -95,6 +95,7 @@ class DefaultMessageService(
             publisher = userId,
             channel = channelId,
             timetoken = message.createdAt.toTimetoken(),
+            published = message.createdAt.toTimetoken(),
             isSent = false,
             exception = null,
         )
@@ -177,6 +178,45 @@ class DefaultMessageService(
             }
 
             // Store messages
+//            val messages: Array<DBMessage> = result.channels.map { (channel, messages) ->
+//                // Just in case of message mapper issue
+//                messages.sortedByDescending { it.timetoken }
+//                    .mapNotNull {
+//                        try {
+//                            val message = networkHistoryMapper.map(channel, it)
+//                            logger.e("Received: $message")
+//                            message
+//                        } catch (e: Exception) {
+//                            logger.e(
+//                                e,
+//                                "Cannot map message ${it.message.toJson(pubNub.mapper)}"
+//                            )
+//                            null
+//                        }
+//                    }
+//            }.flatten().toTypedArray()
+//
+//            val actions: Array<DBMessageAction> = result.channels.map { (channel, messages) ->
+//                // Just in case of message mapper issue
+//                messages.sortedByDescending { it.timetoken }
+//                    .flatMap {
+//                    try {
+//                        messageActionHistoryMapper.map(id, it).toList()
+//                    } catch (e: Exception) {
+//                        logger.e(
+//                            e,
+//                            "Cannot map message action ${it.toJson(pubNub.mapper)}"
+//                        )
+//                        listOf()
+//                    }
+//                }
+//            }.flatten().toTypedArray()
+//
+//
+//            insertOrUpdate(*messages)
+//            insertMessageAction(*actions)
+
+
             result.channels.forEach { (channel, messages) ->
 
                 // Just in case of message mapper issue
@@ -205,8 +245,8 @@ class DefaultMessageService(
             }
 
             // check if there's more data based on result.page
-            val min = result.channels.minOfOrNull { it.value.minOf { it.timetoken } }
-            val max = result.channels.maxOfOrNull { it.value.maxOf { it.timetoken } }
+            val min = result.channels.values.flatten().minOfOrNull { it.timetoken }
+            val max = result.channels.values.flatten().maxOfOrNull { it.timetoken }
             val messageCount = result.channels.values.sumOf { it.count() }
 
             NetworkHistorySyncResult(min, max, result.page, messageCount)

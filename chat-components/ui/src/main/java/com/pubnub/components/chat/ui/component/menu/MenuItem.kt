@@ -72,6 +72,7 @@ internal fun dummyMessageData() = MessageUi.Data(
     text = "",
     createdAt = "IsoDate",
     timetoken = 0L,
+    published = 0L,
     isSending = false,
     isDelivered = false,
     reactions = emptyList(),
