@@ -81,6 +81,53 @@ fun ChatProvider(
     @Suppress("DEPRECATION")
     pubNub.configuration.addPnsdkSuffix(getComponentsSuffix())
 
+    RepositoryProvider(database) {
+        ThemeProvider {
+            CompositionLocalProvider(
+                LocalPubNub providesDefault pubNub,
+                LocalUser providesDefault pubNub.configuration.userId.value,
+                LocalChannel providesDefault channel,
+            ) {
+                WithServices(synchronize) {
+                    content()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ThemeProvider(
+    content: @Composable() () -> Unit,
+){
+    CompositionLocalProvider(
+        // RTL support by locale
+        LocalLayoutDirection providesDefault
+                if (LocalConfiguration.current.layoutDirection == View.LAYOUT_DIRECTION_RTL)
+                    androidx.compose.ui.unit.LayoutDirection.Rtl
+                else androidx.compose.ui.unit.LayoutDirection.Ltr,
+
+        // Themes
+        LocalMessageInputTheme providesDefault DefaultLocalMessageInputTheme,
+        LocalTypingIndicatorTheme providesDefault DefaultTypingIndicatorTheme,
+        LocalChannelListTheme providesDefault DefaultChannelListTheme,
+        LocalMemberListTheme providesDefault DefaultMemberListTheme,
+        LocalMessageListTheme providesDefault DefaultMessageListTheme,
+        LocalMessageTheme providesDefault DefaultLocalMessageTheme,
+        LocalReactionTheme providesDefault DefaultReactionTheme,
+        LocalIndicatorTheme providesDefault DefaultIndicatorTheme,
+        LocalProfileImageTheme providesDefault DefaultProfileImageTheme,
+        LocalMenuItemTheme providesDefault DefaultMenuItemTheme,
+    ){
+        content()
+    }
+}
+
+@Composable
+fun RepositoryProvider(
+    database: PubNubDatabase<MessageDao<DBMessage, DBMessageWithActions>, MessageActionDao<DBMessageAction>, ChannelDao<DBChannel, DBChannelWithMembers>, MemberDao<DBMember, DBMemberWithChannels>, MembershipDao<DBMembership>> = Database.initialize(LocalContext.current).asPubNub(),
+    content: @Composable() () -> Unit,
+){
     // region Member part
     val unknownMemberTitle = stringResource(id = R.string.member_unknown_title)
     val unknownMemberDescription = stringResource(id = R.string.member_unknown_description)
@@ -115,28 +162,6 @@ fun ChatProvider(
     // endregion
 
     CompositionLocalProvider(
-        LocalPubNub providesDefault pubNub,
-        LocalUser providesDefault pubNub.configuration.userId.value,
-        LocalChannel providesDefault channel,
-
-        // RTL support by locale
-        LocalLayoutDirection providesDefault
-                if (LocalConfiguration.current.layoutDirection == View.LAYOUT_DIRECTION_RTL)
-                    androidx.compose.ui.unit.LayoutDirection.Rtl
-                else androidx.compose.ui.unit.LayoutDirection.Ltr,
-
-        // Themes
-        LocalMessageInputTheme providesDefault DefaultLocalMessageInputTheme,
-        LocalTypingIndicatorTheme providesDefault DefaultTypingIndicatorTheme,
-        LocalChannelListTheme providesDefault DefaultChannelListTheme,
-        LocalMemberListTheme providesDefault DefaultMemberListTheme,
-        LocalMessageListTheme providesDefault DefaultMessageListTheme,
-        LocalMessageTheme providesDefault DefaultLocalMessageTheme,
-        LocalReactionTheme providesDefault DefaultReactionTheme,
-        LocalIndicatorTheme providesDefault DefaultIndicatorTheme,
-        LocalProfileImageTheme providesDefault DefaultProfileImageTheme,
-        LocalMenuItemTheme providesDefault DefaultMenuItemTheme,
-
         // Repositories
         LocalChannelRepository providesDefault channelRepository,
         LocalMessageRepository providesDefault messageRepository,
@@ -147,9 +172,7 @@ fun ChatProvider(
         // Utils
         LocalMemberFormatter providesDefault memberFormatter,
     ) {
-        WithServices(synchronize) {
-            content()
-        }
+        content()
     }
 }
 
