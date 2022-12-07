@@ -17,16 +17,23 @@ class DBChannelMapper : Mapper<DBChannelWithMembers, ChannelUi.Data> {
             type = ChannelUi.Data.typeFromString(input.channel.type),
             profileUrl = input.channel.profileUrl,
             updated = input.updated?.toInstant(),
-            members = input.members.toUi()
+            members = input.members.toUi(),
+            status = input.status,
+            custom = input.custom,
         )
 
     private fun List<DBMember>.toUi(): List<MemberUi.Data> =
         map { input ->
             MemberUi.Data(
-                input.id,
-                input.name,
-                input.profileUrl,
-                input.custom.asMap()?.get("description") as? String?
+                id = input.id,
+                name = input.name,
+                type = input.type,
+                email = input.email,
+                externalId = input.externalId,
+                profileUrl = input.profileUrl,
+                description = input.custom.asMap()?.get("description") as? String?,
+                status = input.status,
+                custom = input.custom,
             )
         }
 }

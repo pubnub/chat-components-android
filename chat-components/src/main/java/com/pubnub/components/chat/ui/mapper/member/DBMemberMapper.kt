@@ -8,9 +8,14 @@ import com.pubnub.framework.mapper.Mapper
 class DBMemberMapper : Mapper<DBMemberWithChannels, MemberUi.Data> {
     override fun map(input: DBMemberWithChannels): MemberUi.Data =
         MemberUi.Data(
-            input.id,
-            input.name,
-            input.profileUrl,
-            input.member.custom.asMap()?.get("description") as? String?
+            id = input.id,
+            name = input.name,
+            type = input.type,
+            email = input.email,
+            externalId = input.externalId,
+            profileUrl = input.profileUrl,
+            description = input.custom.asMap()?.get("description") as? String?,
+            status = input.status,
+            custom = input.custom,
         )
 }
