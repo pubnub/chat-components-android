@@ -4,6 +4,7 @@ import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.SubscribeCallback
 import com.pubnub.api.models.consumer.PNBoundedPage
 import com.pubnub.api.models.consumer.PNStatus
+import com.pubnub.components.chat.network.data.NetworkHistorySyncResult
 import com.pubnub.components.chat.network.data.NetworkMessage
 import com.pubnub.components.chat.network.data.NetworkMessagePayload
 import com.pubnub.components.chat.network.mapper.NetworkMessageActionHistoryMapper
@@ -94,6 +95,7 @@ class DefaultMessageService(
             publisher = userId,
             channel = channelId,
             timetoken = message.createdAt.toTimetoken(),
+            published = message.createdAt.toTimetoken(),
             isSent = false,
             exception = null,
         )
@@ -161,48 +163,97 @@ class DefaultMessageService(
         count: Int,
         withActions: Boolean,
         withUUID: Boolean,
-    ) {
+    ): NetworkHistorySyncResult? {
 
-        pubNub
-            .fetchMessages(
-                channels = listOf(id),
-                page = PNBoundedPage(start = start, end = end, limit = count),
-                includeMessageActions = withActions,
-                includeUUID = withUUID,
-            )
-            .single(
-                onComplete = { result ->
-                    // Store messages
-                    result.channels.forEach { (channel, messages) ->
+        return try {
+            val result = runBlocking {
+                pubNub
+                    .fetchMessages(
+                        channels = listOf(id),
+                        page = PNBoundedPage(start = start, end = end, limit = count),
+                        includeMessageActions = withActions,
+                        includeUUID = withUUID,
+                    )
+                    .single()
+            }
 
-                        // Just in case of message mapper issue
-                        messages.sortedByDescending { it.timetoken }.onEach {
-                            try {
-                                val message = networkHistoryMapper.map(channel, it)
-                                insertOrUpdate(message)
-                            } catch (e: Exception) {
-                                logger.e(
-                                    e,
-                                    "Cannot map message ${it.message.toJson(pubNub.mapper)}"
-                                )
-                            }
-                            try {
-                                val actions = messageActionHistoryMapper.map(id, it)
-                                insertMessageAction(*actions)
+            // Store messages
+//            val messages: Array<DBMessage> = result.channels.map { (channel, messages) ->
+//                // Just in case of message mapper issue
+//                messages.sortedByDescending { it.timetoken }
+//                    .mapNotNull {
+//                        try {
+//                            val message = networkHistoryMapper.map(channel, it)
+//                            logger.e("Received: $message")
+//                            message
+//                        } catch (e: Exception) {
+//                            logger.e(
+//                                e,
+//                                "Cannot map message ${it.message.toJson(pubNub.mapper)}"
+//                            )
+//                            null
+//                        }
+//                    }
+//            }.flatten().toTypedArray()
+//
+//            val actions: Array<DBMessageAction> = result.channels.map { (channel, messages) ->
+//                // Just in case of message mapper issue
+//                messages.sortedByDescending { it.timetoken }
+//                    .flatMap {
+//                    try {
+//                        messageActionHistoryMapper.map(id, it).toList()
+//                    } catch (e: Exception) {
+//                        logger.e(
+//                            e,
+//                            "Cannot map message action ${it.toJson(pubNub.mapper)}"
+//                        )
+//                        listOf()
+//                    }
+//                }
+//            }.flatten().toTypedArray()
+//
+//
+//            insertOrUpdate(*messages)
+//            insertMessageAction(*actions)
 
-                            } catch (e: Exception) {
-                                logger.e(
-                                    e,
-                                    "Cannot map message action ${it.toJson(pubNub.mapper)}"
-                                )
-                            }
-                        }
+
+            result.channels.forEach { (channel, messages) ->
+
+                // Just in case of message mapper issue
+                messages.sortedByDescending { it.timetoken }.onEach {
+                    try {
+                        val message = networkHistoryMapper.map(channel, it)
+                        logger.e("Received: $message")
+                        insertOrUpdate(message)
+                    } catch (e: Exception) {
+                        logger.e(
+                            e,
+                            "Cannot map message ${it.message.toJson(pubNub.mapper)}"
+                        )
                     }
-                },
-                onError = { exception ->
-                    logger.e(exception, "Cannot pull history")
+                    try {
+                        val actions = messageActionHistoryMapper.map(id, it)
+                        insertMessageAction(*actions)
+
+                    } catch (e: Exception) {
+                        logger.e(
+                            e,
+                            "Cannot map message action ${it.toJson(pubNub.mapper)}"
+                        )
+                    }
                 }
-            )
+            }
+
+            // check if there's more data based on result.page
+            val min = result.channels.values.flatten().minOfOrNull { it.timetoken }
+            val max = result.channels.values.flatten().maxOfOrNull { it.timetoken }
+            val messageCount = result.channels.values.sumOf { it.count() }
+
+            NetworkHistorySyncResult(min, max, result.page, messageCount)
+        } catch (e: Exception) {
+            logger.e(e, "Cannot pull history")
+            null
+        }
     }
 
     private fun insertMessageAction(vararg action: DBMessageAction) {

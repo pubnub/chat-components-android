@@ -19,6 +19,7 @@ class DomainMessageMapper : Mapper<MessageUi.Data, DBMessageWithActions> {
                 custom = input.custom,
 
                 publisher = input.publisher.id,
+                published = input.published,
                 channel = input.channel,
                 timetoken = input.timetoken,
                 isSent = !input.isSending && input.isDelivered,

@@ -54,11 +54,14 @@ import com.pubnub.components.data.message.MessageDao
 import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.data.message.action.DBMessageWithActions
 import com.pubnub.components.data.message.action.MessageActionDao
+import com.pubnub.components.data.sync.DBRemoteTimetoken
+import com.pubnub.components.data.sync.RemoteTimetokenDao
 import com.pubnub.components.repository.channel.DefaultChannelRepository
 import com.pubnub.components.repository.member.DefaultMemberRepository
 import com.pubnub.components.repository.membership.DefaultMembershipRepository
 import com.pubnub.components.repository.message.DefaultMessageRepository
 import com.pubnub.components.repository.message.action.DefaultMessageActionRepository
+import com.pubnub.components.repository.sync.DefaultRemoteTimetokenRepository
 import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.UserId
 import com.pubnub.framework.service.ActionService
@@ -70,7 +73,7 @@ import kotlinx.coroutines.runBlocking
 @Composable
 fun ChatProvider(
     pubNub: PubNub,
-    database: PubNubDatabase<MessageDao<DBMessage, DBMessageWithActions>, MessageActionDao<DBMessageAction>, ChannelDao<DBChannel, DBChannelWithMembers>, MemberDao<DBMember, DBMemberWithChannels>, MembershipDao<DBMembership>> = Database.initialize(
+    database: PubNubDatabase<MessageDao<DBMessage, DBMessageWithActions>, MessageActionDao<DBMessageAction>, ChannelDao<DBChannel, DBChannelWithMembers>, MemberDao<DBMember, DBMemberWithChannels>, MembershipDao<DBMembership>, RemoteTimetokenDao<DBRemoteTimetoken>> = Database.initialize(
         LocalContext.current
     ).asPubNub(),
     channel: ChannelId = "channel.lobby",
@@ -161,10 +164,15 @@ fun RepositoryProvider(
     val messageActionRepository = DefaultMessageActionRepository(database.actionDao())
     // endregion
 
+    // region Timetoken
+    val remoteTimetokenRepository = DefaultRemoteTimetokenRepository(database.remoteKeyDao())
+    // endregion
+
     CompositionLocalProvider(
         // Repositories
         LocalChannelRepository providesDefault channelRepository,
         LocalMessageRepository providesDefault messageRepository,
+        LocalRemoteTimetokenRepository providesDefault remoteTimetokenRepository,
         LocalMessageActionRepository providesDefault messageActionRepository,
         LocalMemberRepository providesDefault memberRepository,
         LocalMembershipRepository providesDefault membershipRepository,

@@ -252,7 +252,7 @@ class DefaultMessageRepository(
         val updatedMessage = message.message.copy(
             isSent = isSent,
             exception = exception,
-            timetoken = timestamp ?: message.message.timetoken,
+            published = timestamp ?: message.message.published,
         )
         messageDao.insertOrUpdate(updatedMessage)
     }

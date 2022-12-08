@@ -14,6 +14,7 @@ sealed class MessageUi {
         val text: String,
         val createdAt: String,
         val timetoken: Timetoken,
+        val published: Timetoken,
         val isSending: Boolean,
         val isDelivered: Boolean,
         val reactions: List<ReactionUi>,

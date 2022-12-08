@@ -1,6 +1,7 @@
 package com.pubnub.components.chat.service.message
 
 import androidx.compose.runtime.compositionLocalOf
+import com.pubnub.components.chat.network.data.NetworkHistorySyncResult
 import com.pubnub.components.chat.network.data.NetworkMessagePayload
 import com.pubnub.components.data.message.Message
 import com.pubnub.framework.data.ChannelId
@@ -27,7 +28,7 @@ interface MessageService<Data : Message> {
         count: Int,
         withActions: Boolean = true,
         withUUID: Boolean = false,
-    )
+    ): NetworkHistorySyncResult?
 }
 
 val LocalMessageService =

@@ -21,6 +21,7 @@ class NetworkMessageMapper(private val mapper: MapperManager) : Mapper<NetworkMe
             createdAt = messagePayload.createdAt,
             custom = messagePayload.custom,
             publisher = input.publisher!!,
+            published = input.timetoken!!,
             channel = input.channel,
             isSent = true,
             exception = null,

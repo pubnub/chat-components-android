@@ -9,8 +9,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.*
 import com.pubnub.components.chat.network.paging.MessageRemoteMediator
+import com.pubnub.components.chat.provider.LocalLogger
 import com.pubnub.components.chat.provider.LocalMemberFormatter
 import com.pubnub.components.chat.provider.LocalMessageRepository
+import com.pubnub.components.chat.provider.LocalRemoteTimetokenRepository
 import com.pubnub.components.chat.service.channel.LocalOccupancyService
 import com.pubnub.components.chat.service.channel.OccupancyService
 import com.pubnub.components.chat.service.message.LocalMessageService
@@ -106,11 +108,12 @@ class MessageViewModel constructor(
          */
         @Composable
         fun defaultWithMediator(): MessageViewModel {
-            val repository = LocalMessageRepository.current
+            val repository = LocalRemoteTimetokenRepository.current
 
             val mediator = MessageRemoteMediator(
                 service = LocalMessageService.current,
-                messageRepository = repository,
+                remoteTimetokenRepository = repository,
+                logger = LocalLogger.current,
             )
             return default(mediator = mediator)
         }
