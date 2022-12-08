@@ -6,7 +6,7 @@ import com.pubnub.framework.data.ChannelId
 import com.pubnub.framework.data.MessageId
 import com.pubnub.framework.util.Timetoken
 
-sealed class MessageUi {
+interface MessageUi {
     data class Data(
         val uuid: MessageId,
         val publisher: MemberUi.Data,
@@ -21,9 +21,9 @@ sealed class MessageUi {
         val contentType: String = "default",
         val content: Any? = null,
         val custom: Any? = null,
-    ) : MessageUi()
+    ) : MessageUi
 
-    data class Separator(val text: String) : MessageUi()
+    data class Separator(val text: String) : MessageUi
 }
 
 val List<Attachment>.images

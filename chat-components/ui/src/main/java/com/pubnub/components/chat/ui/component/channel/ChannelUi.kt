@@ -5,9 +5,7 @@ import com.pubnub.components.chat.ui.component.member.MemberUi
 import com.pubnub.framework.data.ChannelId
 import kotlinx.datetime.Instant
 
-
-sealed class ChannelUi {
-
+interface ChannelUi {
     data class Data(
         val id: ChannelId,
         val name: String,
@@ -16,7 +14,9 @@ sealed class ChannelUi {
         val description: String? = null,
         val profileUrl: String? = null,
         val updated: Instant? = null,
-    ) : ChannelUi() {
+        val status: String? = null,
+        val custom: Any? = null,
+    ) : ChannelUi {
         @Retention(AnnotationRetention.SOURCE)
         @StringDef(DEFAULT, DIRECT, GROUP)
         annotation class TypeDef
@@ -35,5 +35,5 @@ sealed class ChannelUi {
         }
     }
 
-    data class Header(val title: String) : ChannelUi()
+    data class Header(val title: String) : ChannelUi
 }

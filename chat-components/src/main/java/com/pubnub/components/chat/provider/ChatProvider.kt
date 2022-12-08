@@ -141,10 +141,9 @@ fun RepositoryProvider(
     val memberFormatter: (UserId) -> MemberUi.Data = { id ->
         runBlocking {
             (memberRepository.get(id)?.let { memberDbMapper.map(it) } ?: MemberUi.Data(
-                id,
-                unknownMemberTitle,
-                null,
-                unknownMemberDescription,
+                id = id,
+                name = unknownMemberTitle,
+                description = unknownMemberDescription,
             ))
         }
     }
