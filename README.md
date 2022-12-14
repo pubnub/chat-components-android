@@ -30,13 +30,13 @@ cases.
 
 ## Prerequisites
 
-| Name                                                           | Requirement          |
-|:---------------------------------------------------------------|:---------------------|
-| [Android Studio](https://developer.android.com/studio/preview) | > = Dolphin 2021.3.1 |
-| Platform                                                       | Android              |
-| Language                                                       | Kotlin               |
-| UI Toolkit                                                     | Jetpack Compose      |
-| [PubNub Kotlin SDK](https://github.com/pubnub/kotlin)          | > = 7.3.2            |
+| Name                                                           | Requirement                  |
+|:---------------------------------------------------------------|:-----------------------------|
+| [Android Studio](https://developer.android.com/studio/preview) | > = Dolphin 2021.3.1 Patch 1 |
+| Platform                                                       | Android                      |
+| Language                                                       | Kotlin                       |
+| UI Toolkit                                                     | Jetpack Compose              |
+| [PubNub Kotlin SDK](https://github.com/pubnub/kotlin)          | > = 7.3.2                    |
 
 ## Usage
 
@@ -47,7 +47,7 @@ cases.
 
     ```kotlin
     implementation "com.pubnub:pubnub-kotlin:7.3.2"
-    implementation "com.pubnub.components:chat-android:0.5.2"
+    implementation "com.pubnub.components:chat-android:0.6.0"
     ```
 
 2. Click **Sync Now** or **Sync Project with Gradle Files** to build dependencies for your Android
