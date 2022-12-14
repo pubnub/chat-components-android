@@ -128,7 +128,7 @@ fun ThemeProvider(
 
 @Composable
 fun RepositoryProvider(
-    database: PubNubDatabase<MessageDao<DBMessage, DBMessageWithActions>, MessageActionDao<DBMessageAction>, ChannelDao<DBChannel, DBChannelWithMembers>, MemberDao<DBMember, DBMemberWithChannels>, MembershipDao<DBMembership>> = Database.initialize(LocalContext.current).asPubNub(),
+    database: PubNubDatabase<MessageDao<DBMessage, DBMessageWithActions>, MessageActionDao<DBMessageAction>, ChannelDao<DBChannel, DBChannelWithMembers>, MemberDao<DBMember, DBMemberWithChannels>, MembershipDao<DBMembership>, RemoteTimetokenDao<DBRemoteTimetoken>> = Database.initialize(LocalContext.current).asPubNub(),
     content: @Composable() () -> Unit,
 ){
     // region Member part
