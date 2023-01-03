@@ -240,7 +240,7 @@ class DefaultMessageService(
     private fun listenForMessages() {
         coroutineScope.launch(dispatcher) {
             messageJob = messageFlow()
-                .chunked(500.milliseconds)
+                .chunked(1_000.milliseconds)
                 .onEach { it.processMessages() }
                 .launchIn(this)
         }
