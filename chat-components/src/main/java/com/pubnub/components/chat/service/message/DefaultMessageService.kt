@@ -218,34 +218,6 @@ class DefaultMessageService(
             insertOrUpdate(*messages)
             insertMessageAction(*actions)
 
-
-//            result.channels.forEach { (channel, messages) ->
-//
-//                // Just in case of message mapper issue
-//                messages.sortedByDescending { it.timetoken }.onEach {
-//                    try {
-//                        val message = networkHistoryMapper.map(channel, it)
-//                        logger.e("Received: $message")
-//                        insertOrUpdate(message)
-//                    } catch (e: Exception) {
-//                        logger.e(
-//                            e,
-//                            "Cannot map message ${it.message.toJson(pubNub.mapper)}"
-//                        )
-//                    }
-//                    try {
-//                        val actions = messageActionHistoryMapper.map(id, it)
-//                        insertMessageAction(*actions)
-//
-//                    } catch (e: Exception) {
-//                        logger.e(
-//                            e,
-//                            "Cannot map message action ${it.toJson(pubNub.mapper)}"
-//                        )
-//                    }
-//                }
-//            }
-
             // check if there's more data based on result.page
             val min = result.channels.values.flatten().minOfOrNull { it.timetoken }
             val max = result.channels.values.flatten().maxOfOrNull { it.timetoken }
