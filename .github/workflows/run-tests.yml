@@ -1,0 +1,46 @@
+name: Test
+
+on:
+  push:
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  JAVA_HOME: $(JAVA_HOME_17_X64)
+  PATH: $(JAVA_HOME_17_X64)/bin:$(PATH)
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  e2e-tests:
+    name: React e2e tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}/android_ios/testing_apps/android
+    strategy:
+      fail-fast: true
+      matrix:
+        app: ["Getting started"]
+    steps:
+      - name: Checkout e2e repository
+        uses: actions/checkout@v3
+        with:
+          repository: pubnub/chat-components-e2e-tests
+          ref: master
+          token: ${{ secrets.GH_TOKEN }}
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          path: android_ios/chat-components-android
+      - name: Build ${{ matrix.app }} application
+        run: echo "::notice title=Demo application::Using pre-build ${{ matrix.app }}. Please think about building it during test run."
+      - name: Install and run Appium
+        run: |
+          npm install -g appium
+          appium &
+      - name: Run e2e tests for ${{ matrix.app }}
+        run: npm run androidlocal
