@@ -45,4 +45,6 @@ interface MessageRepository<in IN : Message, OUT : Message> {
     )
 
     suspend fun getLastTimestamp(id: ChannelId): Timetoken
+
+    fun runInTransaction(body: () -> Unit)
 }

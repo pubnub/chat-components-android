@@ -11,10 +11,12 @@ import com.pubnub.framework.mapper.Mapper
 import com.pubnub.framework.service.ActionService
 import com.pubnub.framework.service.error.Logger
 import com.pubnub.framework.util.Timetoken
+import com.pubnub.framework.util.flow.chunked
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(DelicateCoroutinesApi::class)
 class DefaultMessageReactionService(
@@ -149,12 +151,8 @@ class DefaultMessageReactionService(
         coroutineScope.launch(dispatcher) {
             actionJob = actionService.actions
                 .filter { it.publisher != userId }
-                .onEach { result ->
-                    when (result.event) {
-                        ActionService.EVENT_ADDED -> addAction(result)
-                        ActionService.EVENT_REMOVED -> removeAction(result)
-                    }
-                }
+                .chunked(1_000L.milliseconds)
+                .onEach { it.processActions() }
                 .launchIn(this)
         }
     }
@@ -212,6 +210,19 @@ class DefaultMessageReactionService(
         val action = messageActionRepository.get(user, channel, messageTimetoken, type, value)
         if (action != null)
             messageActionRepository.remove(action)
+    }
+
+    private fun Collection<PNMessageActionResult>.processActions() {
+        messageActionRepository.runInTransaction {
+            coroutineScope.launch(dispatcher) {
+                forEach { result ->
+                    when (result.event) {
+                        ActionService.EVENT_ADDED -> addAction(result)
+                        ActionService.EVENT_REMOVED -> removeAction(result)
+                    }
+                }
+            }
+        }
     }
 }
 

@@ -6,6 +6,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
+import androidx.room.RoomDatabase
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
 import com.pubnub.components.BuildConfig
@@ -69,6 +70,7 @@ import com.pubnub.framework.service.LocalTypingService
 import com.pubnub.framework.service.TypingService
 import com.pubnub.framework.util.TypingIndicator
 import kotlinx.coroutines.runBlocking
+import java.util.WeakHashMap
 
 @Composable
 fun ChatProvider(
@@ -138,13 +140,16 @@ fun RepositoryProvider(
     val memberDbMapper = DBMemberMapper()
     val memberRepository =
         DefaultMemberRepository(database.memberDao())
+    val memberMap = WeakHashMap<UserId, MemberUi.Data>()
     val memberFormatter: (UserId) -> MemberUi.Data = { id ->
-        runBlocking {
-            (memberRepository.get(id)?.let { memberDbMapper.map(it) } ?: MemberUi.Data(
-                id = id,
-                name = unknownMemberTitle,
-                description = unknownMemberDescription,
-            ))
+        memberMap.getOrPut(id) {
+            runBlocking {
+                (memberRepository.get(id)?.let { memberDbMapper.map(it) } ?: MemberUi.Data(
+                    id = id,
+                    name = unknownMemberTitle,
+                    description = unknownMemberDescription,
+                ))
+            }
         }
     }
     // endregion
@@ -159,8 +164,8 @@ fun RepositoryProvider(
 
     // region Message
     val messageRepository =
-        DefaultMessageRepository(database.messageDao())
-    val messageActionRepository = DefaultMessageActionRepository(database.actionDao())
+        DefaultMessageRepository(database as RoomDatabase, database.messageDao())
+    val messageActionRepository = DefaultMessageActionRepository(database as RoomDatabase, database.actionDao())
     // endregion
 
     // region Timetoken
