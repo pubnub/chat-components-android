@@ -7,19 +7,13 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  JAVA_HOME: $(JAVA_HOME_17_X64)
-  PATH: $(JAVA_HOME_17_X64)/bin:$(PATH)
-defaults:
-  run:
-    shell: bash
-
 jobs:
   e2e-tests:
     name: React e2e tests
     runs-on: ubuntu-latest
     defaults:
       run:
+        shell: bash
         working-directory: ${{ github.workspace }}/android_ios/testing_apps/android
     strategy:
       fail-fast: true
@@ -43,4 +37,7 @@ jobs:
           npm install -g appium
           appium &
       - name: Run e2e tests for ${{ matrix.app }}
+        env:
+          JAVA_HOME: $(JAVA_HOME_17_X64)
+          PATH: $(JAVA_HOME_17_X64)/bin:$(PATH)
         run: npm run androidlocal
