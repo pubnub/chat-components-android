@@ -20,6 +20,7 @@ import com.pubnub.framework.data.UserId
 import com.pubnub.framework.service.error.Logger
 import com.pubnub.framework.util.Timetoken
 import com.pubnub.framework.util.data.PNException
+import com.pubnub.framework.util.flow.chunked
 import com.pubnub.framework.util.flow.single
 import com.pubnub.framework.util.toJson
 import com.pubnub.framework.util.toTimetoken
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(DelicateCoroutinesApi::class)
 class DefaultMessageService(
@@ -178,71 +180,43 @@ class DefaultMessageService(
             }
 
             // Store messages
-//            val messages: Array<DBMessage> = result.channels.map { (channel, messages) ->
-//                // Just in case of message mapper issue
-//                messages.sortedByDescending { it.timetoken }
-//                    .mapNotNull {
-//                        try {
-//                            val message = networkHistoryMapper.map(channel, it)
-//                            logger.e("Received: $message")
-//                            message
-//                        } catch (e: Exception) {
-//                            logger.e(
-//                                e,
-//                                "Cannot map message ${it.message.toJson(pubNub.mapper)}"
-//                            )
-//                            null
-//                        }
-//                    }
-//            }.flatten().toTypedArray()
-//
-//            val actions: Array<DBMessageAction> = result.channels.map { (channel, messages) ->
-//                // Just in case of message mapper issue
-//                messages.sortedByDescending { it.timetoken }
-//                    .flatMap {
-//                    try {
-//                        messageActionHistoryMapper.map(id, it).toList()
-//                    } catch (e: Exception) {
-//                        logger.e(
-//                            e,
-//                            "Cannot map message action ${it.toJson(pubNub.mapper)}"
-//                        )
-//                        listOf()
-//                    }
-//                }
-//            }.flatten().toTypedArray()
-//
-//
-//            insertOrUpdate(*messages)
-//            insertMessageAction(*actions)
-
-
-            result.channels.forEach { (channel, messages) ->
-
+            val messages: Array<DBMessage> = result.channels.map { (channel, messages) ->
                 // Just in case of message mapper issue
-                messages.sortedByDescending { it.timetoken }.onEach {
-                    try {
-                        val message = networkHistoryMapper.map(channel, it)
-                        logger.e("Received: $message")
-                        insertOrUpdate(message)
-                    } catch (e: Exception) {
-                        logger.e(
-                            e,
-                            "Cannot map message ${it.message.toJson(pubNub.mapper)}"
-                        )
+                messages.sortedByDescending { it.timetoken }
+                    .mapNotNull {
+                        try {
+                            val message = networkHistoryMapper.map(channel, it)
+                            logger.e("Received: $message")
+                            message
+                        } catch (e: Exception) {
+                            logger.e(
+                                e,
+                                "Cannot map message ${it.message.toJson(pubNub.mapper)}"
+                            )
+                            null
+                        }
                     }
-                    try {
-                        val actions = messageActionHistoryMapper.map(id, it)
-                        insertMessageAction(*actions)
+            }.flatten().toTypedArray()
 
+            val actions: Array<DBMessageAction> = result.channels.map { (_, messages) ->
+                // Just in case of message mapper issue
+                messages.sortedByDescending { it.timetoken }
+                    .flatMap {
+                    try {
+                        messageActionHistoryMapper.map(id, it).toList()
                     } catch (e: Exception) {
                         logger.e(
                             e,
                             "Cannot map message action ${it.toJson(pubNub.mapper)}"
                         )
+                        listOf()
                     }
                 }
-            }
+            }.flatten().toTypedArray()
+
+
+            insertOrUpdate(*messages)
+            insertMessageAction(*actions)
 
             // check if there's more data based on result.page
             val min = result.channels.values.flatten().minOfOrNull { it.timetoken }
@@ -266,7 +240,8 @@ class DefaultMessageService(
     private fun listenForMessages() {
         coroutineScope.launch(dispatcher) {
             messageJob = messageFlow()
-                .onEach { it.processMessage() }
+                .chunked(1_000.milliseconds)
+                .onEach { it.processMessages() }
                 .launchIn(this)
         }
     }
@@ -293,12 +268,12 @@ class DefaultMessageService(
     /**
      * Processing [NetworkMessage] and silently catch exceptions
      *
-     * @see [handleIncomingMessage]
+     * @see [handleIncomingMessages]
      */
-    private fun NetworkMessage.processMessage() {
+    private fun Collection<NetworkMessage>.processMessages() {
         coroutineScope.launch(dispatcher) {
             try {
-                handleIncomingMessage(this@processMessage)
+                handleIncomingMessages(this@processMessages)
             } catch (e: Exception) {
                 logger.e(e, "Cannot map message")
             }
@@ -306,30 +281,30 @@ class DefaultMessageService(
     }
 
     /**
-     * Validates an incoming message, decrypt it and store in database
+     * Validates an incoming messages, decrypt it and store in database
      */
-    private fun handleIncomingMessage(result: NetworkMessage) {
-        with(result) {
-            if (publisher == null) {
+    private fun handleIncomingMessages(result: Collection<NetworkMessage>) {
+        val messages = result.mapNotNull {
+            if (it.publisher == null) {
                 logger.e(RuntimeException("User cannot be null"))
-                return
-            }
-            if (timetoken == null) {
+                null
+            } else if (it.timetoken == null) {
                 logger.e(RuntimeException("Timestamp cannot be null"))
-                return
+                null
+            } else {
+                networkMapper.map(it)
             }
+        }.toTypedArray()
 
-            val messageData: DBMessage = networkMapper.map(result)
-            insertOrUpdate(messageData)
-        }
+        insertOrUpdate(*messages)
     }
 
     /**
-     * Store new or update existing message
+     * Store new or update existing messages
      */
-    private fun insertOrUpdate(message: DBMessage) {
+    private fun insertOrUpdate(vararg message: DBMessage) {
         coroutineScope.launch(dispatcher) {
-            messageRepository.insertOrUpdate(message)
+            messageRepository.insertOrUpdate(*message)
         }
     }
 }
