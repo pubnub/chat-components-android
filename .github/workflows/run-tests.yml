@@ -20,6 +20,10 @@ jobs:
       matrix:
         app: ["Getting started"]
     steps:
+      - name: Setup NodeJS 19.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 19.x
       - name: Checkout e2e repository
         uses: actions/checkout@v3
         with:
@@ -39,11 +43,12 @@ jobs:
           npm install -g appium
           appium &
       - name: Update Java paths
-        run: 
+        run: |
+          echo "JAVA 17 PATH: $JAVA_HOME_17_X64"
           echo "$JAVA_HOME_17_X64" >> $GITHUB_PATH
           echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
-          cat $GITHUB_PATH
-          cat $GITHUB_ENV
+          echo "PATHS: $(cat $GITHUB_PATH)"
+          echo "ENVS: $(cat $GITHUB_ENV)"
       - name: Run e2e tests for ${{ matrix.app }}
         run: |
           echo "JAVA_HOME: $JAVA_HOME"
