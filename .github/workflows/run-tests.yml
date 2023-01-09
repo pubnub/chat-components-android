@@ -38,10 +38,13 @@ jobs:
         run: |
           npm install -g appium
           appium &
+      - name: Update Java paths
+        run: 
+          echo "$JAVA_HOME_17_X64" >> $GITHUB_PATH
+          echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
+          cat $GITHUB_PATH
+          cat $GITHUB_ENV
       - name: Run e2e tests for ${{ matrix.app }}
-        env:
-          JAVA_HOME: $JAVA_HOME_17_X64
-          PATH: $JAVA_HOME_17_X64/bin;$PATH
         run: |
           echo "JAVA_HOME: $JAVA_HOME"
           npm run androidlocal
