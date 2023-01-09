@@ -30,6 +30,8 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: android_ios/chat-components-android
+      - name: Install e2e framework dependencies
+        run: npm ci
       - name: Build ${{ matrix.app }} application
         run: echo "::notice title=Demo application::Using pre-build ${{ matrix.app }}. Please think about building it during test run."
       - name: Install and run Appium
@@ -38,7 +40,8 @@ jobs:
           appium &
       - name: Run e2e tests for ${{ matrix.app }}
         env:
-          JAVA_HOME: $(JAVA_HOME_17_X64)
+          JAVA_HOME: $JAVA_HOME_17_X64
+          PATH: $JAVA_HOME_17_X64/bin;$PATH
         run: |
           echo "JAVA_HOME: $JAVA_HOME"
           npm run androidlocal
