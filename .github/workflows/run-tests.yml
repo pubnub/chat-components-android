@@ -59,7 +59,7 @@ jobs:
           echo "Files in $ANDROID_SDK_ROOT/emulator:"
           ls -la "$ANDROID_SDK_ROOT/emulator"
           echo "Adb devices:"
-          .$ANDROID_SDK_ROOT/platform-tools/adb devices
+          bash $ANDROID_SDK_ROOT/platform-tools/adb devices
           echo "List AVDs:"
           .$ANDROID_SDK_ROOT/emulator/emulator -list-avds
       - name: List Android simulators
