@@ -49,6 +49,8 @@ jobs:
           echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
           echo "PATHS: $(cat $GITHUB_PATH)"
           echo "ENVS: $(cat $GITHUB_ENV)"
+      - name: List Android simulators
+        run: adb devices
       - name: Run e2e tests for ${{ matrix.app }}
         run: |
           echo "JAVA_HOME: $JAVA_HOME"
