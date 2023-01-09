@@ -39,5 +39,6 @@ jobs:
       - name: Run e2e tests for ${{ matrix.app }}
         env:
           JAVA_HOME: $(JAVA_HOME_17_X64)
-          PATH: $(JAVA_HOME_17_X64)/bin:$(PATH)
-        run: npm run androidlocal
+        run: |
+          echo "JAVA_HOME: $JAVA_HOME"
+          npm run androidlocal
