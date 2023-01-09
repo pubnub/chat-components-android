@@ -49,6 +49,12 @@ jobs:
           echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
           echo "PATHS: $(cat $GITHUB_PATH)"
           echo "ENVS: $(cat $GITHUB_ENV)"
+      - name: Android paths
+        run: |
+          echo "ANDROID_HOME: $ANDROID_HOME"
+          echo "ANDROID_SDK_ROOT: $ANDROID_SDK_ROOT"
+          ls -la "$ANDROID_SDK_ROOT"
+          ls -la "$ANDROID_SDK_ROOT/platform_tools"
       - name: List Android simulators
         run: adb devices
       - name: Run e2e tests for ${{ matrix.app }}
