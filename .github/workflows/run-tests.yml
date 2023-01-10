@@ -65,7 +65,8 @@ jobs:
           API_LEVEL=30
           DEVICE="Pixel 2"
           AVD_IMAGE_NAME="$(echo "$DEVICE" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')_API_$API_LEVEL"
-          echo no | $ANDROID_SDK_ROOT/tools/bin/avdmanager create avd --force --name "$AVD_IMAGE_NAME" --abi "$TARGET/$ARCH" --package "system-images;android-$SDK_VERSION;$TARGET;$ARCH" --device "$DEVICE"
+          echo "COMMAND: echo no | $ANDROID_SDK_ROOT/tools/bin/avdmanager create avd --verbose --force --name \"$AVD_IMAGE_NAME\" --abi \"$TARGET/$ARCH\" --package \"system-images;android-$SDK_VERSION;$TARGET;$ARCH\" --device \"$DEVICE\""
+          echo no | $ANDROID_SDK_ROOT/tools/bin/avdmanager create avd --verbose --force --name "$AVD_IMAGE_NAME" --abi "$TARGET/$ARCH" --package "system-images;android-$SDK_VERSION;$TARGET;$ARCH" --device "$DEVICE"
           echo "2 >> Adb devices:"
           $ANDROID_SDK_ROOT/tools/adb devices
       - name: List Android simulators
