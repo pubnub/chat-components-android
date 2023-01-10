@@ -44,10 +44,13 @@ jobs:
           appium &
       - name: Update Java paths
         run: |
-          echo "$JAVA_HOME_8_X64" >> $GITHUB_PATH
-          echo "JAVA_HOME=$JAVA_HOME_8_X64" >> $GITHUB_ENV
+          echo "$JAVA_HOME_17_X64" >> $GITHUB_PATH
+          echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
       - name: Accept Android licenses
-        run: yes | sudo $ANDROID_HOME/tools/bin/sdkmanager --licenses
+        run: |
+          if ! output="$(yes | sudo $ANDROID_HOME/tools/bin/sdkmanager --licenses > /dev/null 2>&1)"; then 
+            echo "Maybe failed to accept: $output"
+          fi
       - name: List existing devices
         run: $ANDROID_HOME/platform-tools/adb devices
       - name: List existing AVDs
