@@ -54,7 +54,7 @@ jobs:
           echo "UPDATED PATH: $PATH"
           ls -la "$ANDROID_HOME/cmdline-tools/latest/bin"
           sudo chown $USER:$USER $ANDROID_HOME -R
-          if ! output=$(yes > 2>&1 /dev/null | sdkmanager --licenses > 2>&1 /dev/null); then
+          if ! output=$(yes > /dev/null 2>&1 | sdkmanager --licenses > /dev/null 2>&1); then
             echo "Some issue: $output"
           fi
       - name: List existing devices
