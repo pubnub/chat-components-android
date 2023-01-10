@@ -47,7 +47,7 @@ jobs:
           echo "$JAVA_HOME_17_X64" >> $GITHUB_PATH
           echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
       - name: Accept Android licenses
-        run: echo y | $ANDROID_HOME/tools/bin/sdkmanager --licenses
+        run: yes | sudo $ANDROID_HOME/tools/bin/sdkmanager --licenses
       - name: List existing devices
         run: $ANDROID_HOME/platform-tools/adb devices
       - name: List existing AVDs
