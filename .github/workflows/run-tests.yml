@@ -57,6 +57,7 @@ jobs:
           target: google_apis
           arch: x86_64
           profile: Pixel 2
+          script: echo Hi
       - name: List existing AVDs
         run: $ANDROID_HOME/emulator/emulator -list-avds
       - name: Launch emulator
