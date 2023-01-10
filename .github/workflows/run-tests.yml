@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        shell: bash
+        shell: sh
         working-directory: ${{ github.workspace }}/android_ios/testing_apps/android
     strategy:
       fail-fast: true
