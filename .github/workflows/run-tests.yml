@@ -47,7 +47,7 @@ jobs:
           echo "$JAVA_HOME_17_X64" >> $GITHUB_PATH
           echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
       - name: Accept Android licenses
-        run: echo yes | $ANDROID_HOME/tools/bin/sdkmanager --licenses
+        run: echo y | $ANDROID_HOME/tools/bin/sdkmanager --licenses
       - name: List existing devices
         run: $ANDROID_HOME/platform-tools/adb devices
       - name: List existing AVDs
@@ -59,7 +59,7 @@ jobs:
           API_LEVEL=30
           DEVICE="Pixel 2"
           AVD_IMAGE_NAME="$(echo "$DEVICE" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')_API_$API_LEVEL"
-          echo no | $ANDROID_HOME/tools/bin/avdmanager --verbose create avd --force --name "$AVD_IMAGE_NAME" --abi "$TARGET/$ARCH" --package "system-images;android-$SDK_VERSION;$TARGET;$ARCH" --device "$DEVICE"
+          echo no | sudo $ANDROID_HOME/tools/bin/avdmanager --verbose create avd --force --name "$AVD_IMAGE_NAME" --abi "$TARGET/$ARCH" --package "system-images;android-$SDK_VERSION;$TARGET;$ARCH" --device "$DEVICE"
           EMULATOR_CONFIG=~/.android/avd/$AVD_IMAGE_NAME.avd/config.ini
           # Set screen dimensions
           echo "hw.lcd.density=420" >> $EMULATOR_CONFIG
