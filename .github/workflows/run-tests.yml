@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        shell: sh
+        shell: bash
         working-directory: ${{ github.workspace }}/android_ios/testing_apps/android
     strategy:
       fail-fast: true
@@ -45,10 +45,11 @@ jobs:
       - name: Update Java paths
         run: |
           echo "$JAVA_HOME_17_X64" >> $GITHUB_PATH
-          echo "$ANDROID_HOME/tools/bin" >> $GITHUB_PATH
+          echo "$ANDROID_HOME/cmdline-tools" >> $GITHUB_PATH
           echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
       - name: Accept Android licenses
         run: |
+          ls -la "$ANDROID_HOME/cmdline-tools"
           sudo chown $USER:$USER $ANDROID_HOME -R
           yes | sdkmanager --licenses > /dev/null
       - name: List existing devices
