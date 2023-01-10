@@ -48,11 +48,14 @@ jobs:
           echo "$JAVA_HOME_17_X64" >> $GITHUB_PATH
           echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
           echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
+          echo "$ANDROID_HOME/emulator" >> $GITHUB_PATH
           echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
       - name: Accept Android licenses
         run: |
           echo "UPDATED PATH: $PATH"
-          ls -la "$ANDROID_HOME/cmdline-tools/latest/bin"
+          ls -la "cmdline-tools: $ANDROID_HOME/cmdline-tools/latest/bin"
+          ls -la "platform-tools: $ANDROID_HOME/platform-tools"
+          ls -la "emulator: $ANDROID_HOME/emulator"
           sudo chown $USER:$USER $ANDROID_HOME -R
           if ! output=$(yes | sdkmanager --licenses); then
             echo "Some issue: $output"
