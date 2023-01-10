@@ -44,11 +44,8 @@ jobs:
           appium &
       - name: Update Java paths
         run: |
-          echo "JAVA 17 PATH: $JAVA_HOME_17_X64"
           echo "$JAVA_HOME_17_X64" >> $GITHUB_PATH
           echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
-          echo "PATHS: $(cat $GITHUB_PATH)"
-          echo "ENVS: $(cat $GITHUB_ENV)"
       - name: Android paths
         run: |
           echo "ANDROID_HOME: $ANDROID_HOME"
@@ -60,8 +57,17 @@ jobs:
           ls -la "$ANDROID_SDK_ROOT/emulator"
           echo "Adb devices:"
           $ANDROID_SDK_ROOT/platform-tools/adb devices
-          echo "List AVDs:"
+          echo "1 >> List AVDs:"
           $ANDROID_SDK_ROOT/emulator/emulator -list-avds
+          echo "Creating avd"
+          [[ $RUNNER_ARCH == X86 ]] && ARCH=x86 || ARCH=x86_64
+          TARGET=google_apis
+          API_LEVEL=30
+          DEVICE="Pixel 2"
+          AVD_IMAGE_NAME="$(echo "$DEVICE" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')_API_$API_LEVEL"
+          echo no | $ANDROID_SDK_ROOT/tools/bin/avdmanager create avd --force --name "$AVD_IMAGE_NAME" --abi "$TARGET/$ARCH" --package "system-images;android-$SDK_VERSION;$TARGET;$ARCH" --device "$DEVICE"
+          echo "2 >> Adb devices:"
+          $ANDROID_SDK_ROOT/tools/adb devices
       - name: List Android simulators
         run: adb devices
       - name: Run e2e tests for ${{ matrix.app }}
