@@ -44,8 +44,8 @@ jobs:
           appium &
       - name: Update Java paths
         run: |
-          echo "$JAVA_HOME_17_X64" >> $GITHUB_PATH
-          echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
+          echo "$JAVA_HOME_8_X64" >> $GITHUB_PATH
+          echo "JAVA_HOME=$JAVA_HOME_8_X64" >> $GITHUB_ENV
       - name: Accept Android licenses
         run: yes | sudo $ANDROID_HOME/tools/bin/sdkmanager --licenses
       - name: List existing devices
