@@ -46,11 +46,11 @@ jobs:
         run: |
           echo "CURRENT PATH: $PATH"
           echo "$JAVA_HOME_17_X64" >> $GITHUB_PATH
-          echo "$ANDROID_HOME/cmdline-tools" >> $GITHUB_PATH
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
           echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
       - name: Accept Android licenses
         run: |
-          ls -la "$ANDROID_HOME/cmdline-tools/latest"
+          ls -la "$ANDROID_HOME/cmdline-tools/latest/bin"
           sudo chown $USER:$USER $ANDROID_HOME -R
           yes | sdkmanager --licenses > /dev/null
       - name: List existing devices
