@@ -52,21 +52,21 @@ jobs:
           $ANDROID_HOME/platform-tools/adb devices
           echo "1 >> List AVDs:"
           $ANDROID_HOME/emulator/emulator -list-avds
-          yes | $ANDROID_HOME/tools/bin/sdkmanager --licenses
+          yes 2>/dev/null | $ANDROID_HOME/tools/bin/sdkmanager --licenses
           echo "Creating avd"
           [[ $RUNNER_ARCH == X86 ]] && ARCH=x86 || ARCH=x86_64
           TARGET=google_apis
           API_LEVEL=30
           DEVICE="Pixel 2"
           AVD_IMAGE_NAME="$(echo "$DEVICE" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')_API_$API_LEVEL"
-          echo "COMMAND: echo no | $ANDROID_HOME/tools/bin/avdmanager --verbose create avd --force --name \"$AVD_IMAGE_NAME\" --abi \"$TARGET/$ARCH\" --package \"system-images;android-$SDK_VERSION;$TARGET;$ARCH\" --device \"$DEVICE\""
           echo no | $ANDROID_HOME/tools/bin/avdmanager --verbose create avd --force --name "$AVD_IMAGE_NAME" --abi "$TARGET/$ARCH" --package "system-images;android-$SDK_VERSION;$TARGET;$ARCH" --device "$DEVICE"
           echo "List avd:"
           $ANDROID_HOME/emulator/emulator -list-avds
+          EMULATOR_CONFIG=~/.android/avd/$AVD_IMAGE_NAME.avd/config.ini
           # Set screen dimensions
-          echo "hw.lcd.density=420" >> ~/.android/avd/$AVD_IMAGE_NAME.avd/config.ini
-          echo "hw.lcd.height=1920" >> ~/.android/avd/$AVD_IMAGE_NAME.avd/config.ini
-          echo "hw.lcd.width=1080" >> ~/.android/avd/$AVD_IMAGE_NAME.avd/config.ini
+          echo "hw.lcd.density=420" >> $EMULATOR_CONFIG
+          echo "hw.lcd.height=1920" >> $EMULATOR_CONFIG
+          echo "hw.lcd.width=1080" >> $EMULATOR_CONFIG
           echo "Starting emulator and waiting for boot to complete..."
           nohup $ANDROID_HOME/emulator/emulator -avd $AVD_IMAGE_NAME -no-snapshot -no-window -no-audio -no-boot-anim -camera-back none -camera-front none -qemu -m 2048 > /dev/null 2>&1 &
           $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
