@@ -67,7 +67,7 @@ jobs:
       - name: Create suitable AVD
         run: |
           [[ $RUNNER_ARCH == X86 ]] && ARCH=x86 || ARCH=x86_64
-          API_LEVEL=30
+          API_LEVEL=33
           TARGET=google_apis
           DEVICE="Pixel"
           sdkmanager --install "'build-tools;$API_LEVEL.0.0'" platform-tools "'platforms;android-$API_LEVEL'" > /dev/null
