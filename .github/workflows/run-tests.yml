@@ -46,34 +46,37 @@ jobs:
         run: |
           echo "$JAVA_HOME_17_X64" >> $GITHUB_PATH
           echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
-      - name: Android paths
+      - name: Accept Android licenses
+        run: echo yes | $ANDROID_HOME/tools/bin/sdkmanager --licenses
+      - name: List existing devices
+        run: $ANDROID_HOME/platform-tools/adb devices
+      - name: List existing AVDs
+        run: $ANDROID_HOME/emulator/emulator -list-avds
+      - name: Create suitable AVD
         run: |
-          echo "Adb devices:"
-          $ANDROID_HOME/platform-tools/adb devices
-          echo "1 >> List AVDs:"
-          $ANDROID_HOME/emulator/emulator -list-avds
-          yes 2>/dev/null | $ANDROID_HOME/tools/bin/sdkmanager --licenses
-          echo "Creating avd"
           [[ $RUNNER_ARCH == X86 ]] && ARCH=x86 || ARCH=x86_64
           TARGET=google_apis
           API_LEVEL=30
           DEVICE="Pixel 2"
           AVD_IMAGE_NAME="$(echo "$DEVICE" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')_API_$API_LEVEL"
           echo no | $ANDROID_HOME/tools/bin/avdmanager --verbose create avd --force --name "$AVD_IMAGE_NAME" --abi "$TARGET/$ARCH" --package "system-images;android-$SDK_VERSION;$TARGET;$ARCH" --device "$DEVICE"
-          echo "List avd:"
-          $ANDROID_HOME/emulator/emulator -list-avds
           EMULATOR_CONFIG=~/.android/avd/$AVD_IMAGE_NAME.avd/config.ini
           # Set screen dimensions
           echo "hw.lcd.density=420" >> $EMULATOR_CONFIG
           echo "hw.lcd.height=1920" >> $EMULATOR_CONFIG
           echo "hw.lcd.width=1080" >> $EMULATOR_CONFIG
+          echo "AVD_IMAGE_NAME=$AVD_IMAGE_NAME" >> $GITHUB_ENV
+      - name: List existing AVDs
+        run: $ANDROID_HOME/emulator/emulator -list-avds
+      - name: Launch emulator
+        run: |
           echo "Starting emulator and waiting for boot to complete..."
           nohup $ANDROID_HOME/emulator/emulator -avd $AVD_IMAGE_NAME -no-snapshot -no-window -no-audio -no-boot-anim -camera-back none -camera-front none -qemu -m 2048 > /dev/null 2>&1 &
           $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
+      - name: List existing devices
+        run: |
           echo "Emulator has finished booting"
           $ANDROID_HOME/platform-tools/adb devices
-      - name: List Android simulators
-        run: adb devices
       - name: Run e2e tests for ${{ matrix.app }}
         run: |
           echo "JAVA_HOME: $JAVA_HOME"
