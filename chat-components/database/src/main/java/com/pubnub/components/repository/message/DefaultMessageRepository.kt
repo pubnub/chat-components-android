@@ -1,6 +1,7 @@
 package com.pubnub.components.repository.message
 
 import androidx.paging.PagingSource
+import androidx.room.RoomDatabase
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.pubnub.components.data.message.DBMessage
 import com.pubnub.components.data.message.MessageDao
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.firstOrNull
  * @param messageDao MessageDao implementation
  */
 class DefaultMessageRepository(
+    private val database: RoomDatabase,
     private val messageDao: MessageDao<DBMessage, DBMessageWithActions>,
 ) : MessageRepository<DBMessage, DBMessageWithActions> {
 
@@ -255,5 +257,9 @@ class DefaultMessageRepository(
             published = timestamp ?: message.message.published,
         )
         messageDao.insertOrUpdate(updatedMessage)
+    }
+
+    override fun runInTransaction(body: ()-> Unit){
+        database.runInTransaction { body() }
     }
 }

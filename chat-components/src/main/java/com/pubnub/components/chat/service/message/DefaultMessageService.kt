@@ -303,8 +303,10 @@ class DefaultMessageService(
      * Store new or update existing messages
      */
     private fun insertOrUpdate(vararg message: DBMessage) {
-        coroutineScope.launch(dispatcher) {
-            messageRepository.insertOrUpdate(*message)
+        messageRepository.runInTransaction {
+            coroutineScope.launch(dispatcher) {
+                messageRepository.insertOrUpdate(*message)
+            }
         }
     }
 }

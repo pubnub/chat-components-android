@@ -18,4 +18,6 @@ interface MessageActionRepository<DB : MessageAction> {
     suspend fun remove(vararg action: DB)
     suspend fun insertOrUpdate(vararg action: DB)
     suspend fun getLastTimetoken(channel: ChannelId): Timetoken
+
+    fun runInTransaction(body: () -> Unit)
 }

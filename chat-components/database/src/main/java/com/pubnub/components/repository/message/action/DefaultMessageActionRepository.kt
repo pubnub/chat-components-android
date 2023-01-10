@@ -1,5 +1,6 @@
 package com.pubnub.components.repository.message.action
 
+import androidx.room.RoomDatabase
 import com.pubnub.components.data.message.action.DBMessageAction
 import com.pubnub.components.data.message.action.MessageActionDao
 import com.pubnub.framework.data.ChannelId
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.firstOrNull
  * @param messageActionDao MessageActionDao implementation
  */
 class DefaultMessageActionRepository(
+    private val database: RoomDatabase,
     private val messageActionDao: MessageActionDao<DBMessageAction>,
 ) : MessageActionRepository<DBMessageAction> {
 
@@ -70,4 +72,8 @@ class DefaultMessageActionRepository(
      */
     override suspend fun getLastTimetoken(channel: ChannelId): Timetoken =
         messageActionDao.getLast(channel).firstOrNull()?.published ?: 0L
+
+    override fun runInTransaction(body: ()-> Unit){
+        database.runInTransaction { body() }
+    }
 }
