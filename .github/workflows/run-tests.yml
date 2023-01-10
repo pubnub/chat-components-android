@@ -54,7 +54,9 @@ jobs:
           echo "UPDATED PATH: $PATH"
           ls -la "$ANDROID_HOME/cmdline-tools/latest/bin"
           sudo chown $USER:$USER $ANDROID_HOME -R
-          sh -c yes | sdkmanager --licenses > /dev/null
+          if ! output=$(yes > 2>&1 /dev/null | sdkmanager --licenses > 2>&1 /dev/null); then
+            echo "Some issue: $output"
+          fi
       - name: List existing devices
         run: adb devices
       - name: List existing AVDs
