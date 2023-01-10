@@ -45,30 +45,38 @@ jobs:
       - name: Update Java paths
         run: |
           echo "$JAVA_HOME_17_X64" >> $GITHUB_PATH
+          echo "$ANDROID_HOME/tools/bin" >> $GITHUB_PATH
           echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
+      - name: Accept Android licenses
+        run: |
+          sudo chown $USER:$USER $ANDROID_HOME -R
+          yes | sdkmanager --licenses > /dev/null
       - name: List existing devices
-        run: $ANDROID_HOME/platform-tools/adb devices
+        run: adb devices
       - name: List existing AVDs
-        run: $ANDROID_HOME/emulator/emulator -list-avds
-      - name: Prepare simulator
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 33
-          target: google_apis
-          arch: x86_64
-          profile: pixel
-          script: echo Hi
+        run: emulator -list-avds
+      - name: Create suitable AVD
+        run: |
+          [[ $RUNNER_ARCH == X86 ]] && ARCH=x86 || ARCH=x86_64
+          API_LEVEL=30
+          TARGET=google_apis
+          DEVICE="Pixel"
+          sdkmanager --install 'build-tools;$API_LEVEL.0.0' platform-tools 'platforms;android-$API_LEVEL' > /dev/null
+          sdkmanager --install emulator --channel=0 > /dev/null
+          sdkmanager --install 'system-images;android-$API_LEVEL;$TARGET;$ARCH' --channel=0 > /dev/null
+          echo no | avdmanager create avd --force -n test --abi "'$TARGET/$API_LEVEL'" --package "'system-images;android-$API_LEVEL;$TARGET;$API_LEVEL'" --device "'$DEVICE'"
+          echo 'hw.cpu.ncore=2' >> /home/runner/.android/avd/test.avd/config.ini
       - name: List existing AVDs
-        run: $ANDROID_HOME/emulator/emulator -list-avds
+        run: emulator -list-avds
       - name: Launch emulator
         run: |
           echo "Starting emulator and waiting for boot to complete..."
-          nohup $ANDROID_HOME/emulator/emulator -avd $AVD_IMAGE_NAME -no-snapshot -no-window -no-audio -no-boot-anim -camera-back none -camera-front none -qemu -m 2048 > /dev/null 2>&1 &
-          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
+          emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -accel off &
+          adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do echo "Not ready" && sleep 1; done; input keyevent 82'
       - name: List existing devices
         run: |
           echo "Emulator has finished booting"
-          $ANDROID_HOME/platform-tools/adb devices
+          adb devices
       - name: Run e2e tests for ${{ matrix.app }}
         run: |
           echo "JAVA_HOME: $JAVA_HOME"
