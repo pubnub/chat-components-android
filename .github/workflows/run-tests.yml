@@ -56,7 +56,7 @@ jobs:
           api-level: 33
           target: google_apis
           arch: x86_64
-          profile: Pixel 2
+          profile: pixel
           script: echo Hi
       - name: List existing AVDs
         run: $ANDROID_HOME/emulator/emulator -list-avds
