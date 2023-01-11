@@ -70,10 +70,9 @@ jobs:
           echo "platform-tools: $(ls -la "$ANDROID_HOME/platform-tools")"
           echo "emulator: $(ls -la "$ANDROID_HOME/emulator")"
           sudo chown $USER:$USER $ANDROID_HOME -R
-          echo yes | sdkmanager --licenses --sdk_root=$ANDROID_HOME
-          # if ! output=$(yes | sdkmanager --licenses); then
-          #   echo "Some issue: $output"
-          # fi
+          if ! output=$(yes | sdkmanager --licenses); then
+            echo "Some issue: $output"
+          fi
       - name: List known devices
         run: avdmanager list device
       - name: Create suitable AVD
@@ -93,10 +92,19 @@ jobs:
       - name: Launch emulator
         run: |
           echo "Starting emulator..."
-          emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -accel off &
+          emulator -verbose -avd test -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -accel off &
+          echo "Check simulator process #1:"
+          ps -ax | grep emulator
+          sleep 10
+          echo "Check simulator process #2:"
+          ps -ax | grep emulator
+          sleep 10
           echo "Waiting for boot to complete"
-          while : ; do
-            adb shell getprop sys.boot_completed
+          booted=0
+          while [ "$booted" != "1" ]
+          do
+            echo "Waiting for emulator..."
+            booted=`adb shell getprop dev.bootcomplete`
             sleep 1
           done
           # adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do echo "Not ready" && sleep 1; done; input keyevent 82'
