@@ -51,7 +51,7 @@ jobs:
           echo "$ANDROID_HOME/emulator" >> $GITHUB_PATH
           echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
           
-          [[ $RUNNER_ARCH == X86 ]] && ARCH=x86 || ARCH=x64
+          [[ $RUNNER_ARCH == X86 ]] && ARCH=x86 || ARCH=x86_64
           echo "ANDROID_IMAGE_ARCH=$ARCH" >> $GITHUB_ENV
       - name: Accept Android licenses
         run: |
