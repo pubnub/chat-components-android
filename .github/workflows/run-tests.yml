@@ -70,7 +70,7 @@ jobs:
           echo "platform-tools: $(ls -la "$ANDROID_HOME/platform-tools")"
           echo "emulator: $(ls -la "$ANDROID_HOME/emulator")"
           sudo chown $USER:$USER $ANDROID_HOME -R
-          echo y | sdkmanager --licenses --sdk_root=$ANDROID_HOME
+          echo yes | sdkmanager --licenses --sdk_root=$ANDROID_HOME
           # if ! output=$(yes | sdkmanager --licenses); then
           #   echo "Some issue: $output"
           # fi
