@@ -50,6 +50,9 @@ jobs:
           echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
           echo "$ANDROID_HOME/emulator" >> $GITHUB_PATH
           echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
+          
+          [[ $RUNNER_ARCH == X86 ]] && ARCH=x86 || ARCH=x86_64
+          echo "ANDROID_IMAGE_ARCH=$ARCH" >> $GITHUB_ENV
       - name: Accept Android licenses
         run: |
           echo "UPDATED PATH: $PATH"
@@ -64,16 +67,21 @@ jobs:
         run: adb devices
       - name: List existing AVDs
         run: emulator -list-avds
+      - name: Install system images
+        run: |
+          TARGET=google_apis
+          API_LEVEL=33
+          echo "sdkmanager --verbose --install \"system-images;android-$API_LEVEL;$TARGET;$ANDROID_IMAGE_ARCH\" --channel=0 > /dev/null"
+          sdkmanager --verbose --install "system-images;android-$API_LEVEL;$TARGET;$ANDROID_IMAGE_ARCH" --channel=0
+      - name: List known devices
+        run: avdmanager list device
       - name: Create suitable AVD
         run: |
-          [[ $RUNNER_ARCH == X86 ]] && ARCH=x86 || ARCH=x86_64
           TARGET=google_apis
-          DEVICE="Pixel"
+          DEVICE="pixel"
           API_LEVEL=33
-          echo "sdkmanager --verbose --install \"system-images;android-$API_LEVEL;$TARGET;$ARCH\" --channel=0 > /dev/null"
-          sdkmanager --verbose --install "system-images;android-$API_LEVEL;$TARGET;$ARCH" --channel=0
-          echo "echo no | avdmanager --verbose create avd --force -n test --abi \"$TARGET/$ARCH\" --package \"system-images;android-$API_LEVEL;$TARGET;$ARCH\" --device \"$DEVICE\""
-          echo no | avdmanager --verbose create avd --force -n test --abi "$TARGET/$ARCH" --package "system-images;android-$API_LEVEL;$TARGET;$ARCH" --device "$DEVICE"
+          echo "echo no | avdmanager --verbose create avd --force -n test --abi \"$TARGET/$ANDROID_IMAGE_ARCH\" --package \"system-images;android-$API_LEVEL;$TARGET;$ANDROID_IMAGE_ARCH\" --device \"$DEVICE\""
+          echo no | avdmanager --verbose create avd --force -n test --abi "$TARGET/$ANDROID_IMAGE_ARCH" --package "system-images;android-$API_LEVEL;$TARGET;$ANDROID_IMAGE_ARCH" --device "$DEVICE"
           echo 'hw.cpu.ncore=2' >> /home/runner/.android/avd/test.avd/config.ini
       - name: List existing AVDs
         run: emulator -list-avds
