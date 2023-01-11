@@ -70,6 +70,8 @@ jobs:
           TARGET=google_apis
           DEVICE="Pixel"
           API_LEVEL=33
+          echo "sdkmanager --verbose --install \"system-images;android-$API_LEVEL;$TARGET;$ARCH\" --channel=0 > /dev/null"
+          sdkmanager --verbose --install "system-images;android-$API_LEVEL;$TARGET;$ARCH" --channel=0
           echo "echo no | avdmanager --verbose create avd --force -n test --abi \"$TARGET/$ARCH\" --package \"system-images;android-$API_LEVEL;$TARGET;$ARCH\" --device \"$DEVICE\""
           echo no | avdmanager --verbose create avd --force -n test --abi "$TARGET/$ARCH" --package "system-images;android-$API_LEVEL;$TARGET;$ARCH" --device "$DEVICE"
           echo 'hw.cpu.ncore=2' >> /home/runner/.android/avd/test.avd/config.ini
