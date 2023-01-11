@@ -85,20 +85,20 @@ jobs:
           echo 'hw.cpu.ncore=2' >> /home/runner/.android/avd/test.avd/config.ini
       - name: List existing AVDs
         run: emulator -list-avds
+      - name: List existing devices
+        run: |
+          echo "Emulator has finished booting"
+          adb devices
       - name: Launch emulator
         run: |
-          echo "Starting emulator and waiting for boot to complete..."
+          echo "Starting emulator..."
           emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -accel off &
-
+          echo "Waiting for boot to complete"
           while : ; do
             adb shell getprop sys.boot_completed
             sleep 1
           done
           # adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do echo "Not ready" && sleep 1; done; input keyevent 82'
-      - name: List existing devices
-        run: |
-          echo "Emulator has finished booting"
-          adb devices
       - name: Run e2e tests for ${{ matrix.app }}
         run: |
           echo "JAVA_HOME: $JAVA_HOME"
