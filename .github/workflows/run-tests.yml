@@ -87,9 +87,6 @@ jobs:
         run: emulator -list-avds
       - name: Launch emulator
         run: |
-          adb shell settings put global window_animation_scale 0.0
-          adb shell settings put global transition_animation_scale 0.0
-          adb shell settings put global animator_duration_scale 0.0
           echo "Starting emulator and waiting for boot to complete..."
           emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -accel off &
 
