@@ -51,7 +51,7 @@ jobs:
           echo "$ANDROID_HOME/emulator" >> $GITHUB_PATH
           echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
           
-          [[ $RUNNER_ARCH == X86 ]] && ARCH=x86 || ARCH=x86_64
+          [[ $RUNNER_ARCH == X86 ]] && ARCH=x86 || ARCH=x64
           echo "ANDROID_IMAGE_ARCH=$ARCH" >> $GITHUB_ENV
       - name: Accept Android licenses
         run: |
@@ -87,9 +87,17 @@ jobs:
         run: emulator -list-avds
       - name: Launch emulator
         run: |
+          adb shell settings put global window_animation_scale 0.0
+          adb shell settings put global transition_animation_scale 0.0
+          adb shell settings put global animator_duration_scale 0.0
           echo "Starting emulator and waiting for boot to complete..."
           emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -accel off &
-          adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do echo "Not ready" && sleep 1; done; input keyevent 82'
+
+          while : ; do
+            adb shell getprop sys.boot_completed
+            sleep 1
+          done
+          # adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do echo "Not ready" && sleep 1; done; input keyevent 82'
       - name: List existing devices
         run: |
           echo "Emulator has finished booting"
