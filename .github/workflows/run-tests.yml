@@ -106,6 +106,7 @@ jobs:
             echo "Waiting for emulator..."
             booted=`adb shell getprop dev.bootcomplete`
             sleep 1
+            echo "BOOTED VALUE: $booted"
           done
           # adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do echo "Not ready" && sleep 1; done; input keyevent 82'
       - name: Run e2e tests for ${{ matrix.app }}
