@@ -70,6 +70,7 @@ jobs:
           API_LEVEL=33
           TARGET=google_apis
           DEVICE="Pixel"
+          sdkmanager --install "system-images;android-$API_LEVEL;$TARGET;$ARCH"
           echo no | avdmanager create avd --force -n test --abi "$TARGET/$API_LEVEL" --package "system-images;android-$API_LEVEL;$TARGET;$ARCH" --device "$DEVICE"
           echo 'hw.cpu.ncore=2' >> /home/runner/.android/avd/test.avd/config.ini
       - name: List existing AVDs
