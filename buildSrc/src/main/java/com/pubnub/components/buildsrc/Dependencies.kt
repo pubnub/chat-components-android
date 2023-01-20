@@ -5,11 +5,11 @@ object Versions {
 }
 
 object Libs {
-    const val androidGradlePlugin = "com.android.tools.build:gradle:7.3.1"
+    const val androidGradlePlugin = "com.android.tools.build:gradle:7.4.0"
     const val ktLint = "com.pinterest:ktlint:${Versions.ktLint}"
-    const val jdkDesugar = "com.android.tools:desugar_jdk_libs:1.1.5"
-    const val gradleMavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.22.0"
-    const val gradleVersionsPlugin = "com.github.ben-manes:gradle-versions-plugin:0.43.0"
+    const val jdkDesugar = "com.android.tools:desugar_jdk_libs:2.0.0"
+    const val gradleMavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.23.2"
+    const val gradleVersionsPlugin = "com.github.ben-manes:gradle-versions-plugin:0.44.0"
 
     object Build {
         object Android {
@@ -19,7 +19,7 @@ object Libs {
 
             const val buildToolsVersion = "30.0.3"
             const val versionCode = 1
-            const val versionName = "0.5.1"
+            const val versionName = "0.6.2"
         }
 
         object Kotlin {
@@ -28,7 +28,7 @@ object Libs {
     }
 
     object Accompanist {
-        private const val version = "0.27.0"
+        private const val version = "0.28.0"
 
         const val swipeRefresh = "com.google.accompanist:accompanist-swiperefresh:$version"
         const val placeholder = "com.google.accompanist:accompanist-placeholder:$version"
@@ -46,7 +46,7 @@ object Libs {
     }
 
     object Kotlin {
-        private const val version = "1.7.20"
+        private const val version = "1.8.0"
 
         const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$version"
         const val reflect = "org.jetbrains.kotlin:kotlin-reflect:$version"
@@ -63,7 +63,7 @@ object Libs {
     }
 
     object Google {
-        const val gson = "com.google.code.gson:gson:2.10"
+        const val gson = "com.google.code.gson:gson:2.10.1"
     }
 
     object AndroidX {
@@ -71,7 +71,7 @@ object Libs {
             const val activityCompose = "androidx.activity:activity-compose:1.6.1"
         }
 
-        const val appcompat = "androidx.appcompat:appcompat:1.5.1"
+        const val appcompat = "androidx.appcompat:appcompat:1.6.0"
 
         const val navigation = "androidx.navigation:navigation-compose:2.4.0"
 
@@ -81,9 +81,9 @@ object Libs {
 
         object Compose {
             const val snapshot = ""
-            const val compilerVersion = "1.3.2"
+            const val compilerVersion = "1.4.0"
 
-            const val bom = "androidx.compose:compose-bom:2022.10.00"
+            const val bom = "androidx.compose:compose-bom:2023.01.00"
             const val runtime = "androidx.compose.runtime:runtime"
             const val runtimeLivedata = "androidx.compose.runtime:runtime-livedata"
             const val material = "androidx.compose.material:material"
@@ -110,7 +110,7 @@ object Libs {
         }
 
         object Room {
-            private const val version = "2.4.3"
+            private const val version = "2.5.0"
             const val runtime = "androidx.room:room-runtime:$version"
             const val compiler = "androidx.room:room-compiler:$version"
             const val paging = "androidx.room:room-paging:$version"
@@ -122,21 +122,21 @@ object Libs {
         }
 
         object Test {
-            private const val version = "1.4.0"
+            private const val version = "1.5.0"
             const val runner = "androidx.test:runner:$version"
             const val rules = "androidx.test:rules:$version"
             const val core = "androidx.test:core-ktx:$version"
 
             object Ext {
-                const val junit = "androidx.test.ext:junit-ktx:1.1.3"
+                const val junit = "androidx.test.ext:junit-ktx:1.1.5"
             }
 
-            const val espressoCore = "androidx.test.espresso:espresso-core:3.4.0"
+            const val espressoCore = "androidx.test.espresso:espresso-core:3.5.1"
         }
     }
 
     object Hilt {
-        private const val version = "2.44"
+        private const val version = "2.44.2"
 
         const val gradlePlugin = "com.google.dagger:hilt-android-gradle-plugin:$version"
         const val android = "com.google.dagger:hilt-android:$version"
@@ -167,7 +167,7 @@ object Libs {
     }
 
     object MockK {
-        private const val version = "1.13.2"
+        private const val version = "1.13.3"
         const val unit = "io.mockk:mockk:$version"
         const val instrumented = "io.mockk:mockk-android:$version"
     }
