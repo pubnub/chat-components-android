@@ -39,6 +39,11 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion Libs.AndroidX.Compose.compilerVersion
     }
+    packagingOptions {
+        // for Junit Jupiter
+        exclude "META-INF/LICENSE.md"
+        exclude "META-INF/LICENSE-notice.md"
+    }
 }
 
 dependencies {

@@ -19,7 +19,7 @@ object Libs {
 
             const val buildToolsVersion = "30.0.3"
             const val versionCode = 1
-            const val versionName = "0.6.2"
+            const val versionName = "0.6.2-rc12"
         }
 
         object Kotlin {
