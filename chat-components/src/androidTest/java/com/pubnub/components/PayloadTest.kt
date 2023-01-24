@@ -12,6 +12,8 @@ import com.pubnub.components.chat.network.mapper.NetworkChannelMapper
 import com.pubnub.components.chat.network.mapper.NetworkMemberMapper
 import com.pubnub.components.chat.network.mapper.NetworkMessageMapper
 import com.pubnub.components.data.channel.CustomDataMap
+import com.pubnub.components.data.message.asMap
+import com.pubnub.components.data.message.mapTo
 import com.pubnub.framework.util.asObject
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -46,10 +48,7 @@ class PayloadTest {
         // Given
         val networkMemberMapper = NetworkMemberMapper(pubNub.mapper)
         val response: NetworkMember = pubNub.mapper.fromJson(userJson, NetworkMember::class.java)
-        val responseCustom = pubNub.mapper.fromJson(
-            pubNub.mapper.toJson(response.custom),
-            BaseTest.CustomData::class.java
-        )
+        val responseCustom = response.custom.asMap()
 
         // When
         val dbObject = networkMemberMapper.map(response)
@@ -74,10 +73,7 @@ class PayloadTest {
             val networkMemberMapper = NetworkMemberMapper(pubNub.mapper)
             val response: NetworkMember =
                 pubNub.mapper.fromJson(userJsonNoName, NetworkMember::class.java)
-            val responseCustom = pubNub.mapper.fromJson(
-                pubNub.mapper.toJson(response.custom),
-                BaseTest.CustomData::class.java
-            )
+            val responseCustom = response.custom.asMap()
 
             // When
             val dbObject = networkMemberMapper.map(response)
@@ -102,10 +98,7 @@ class PayloadTest {
             val networkMemberMapper = NetworkMemberMapper(pubNub.mapper)
             val response: NetworkMember =
                 pubNub.mapper.fromJson(userJsonNoType, NetworkMember::class.java)
-            val responseCustom = pubNub.mapper.fromJson(
-                pubNub.mapper.toJson(response.custom),
-                BaseTest.CustomData::class.java
-            )
+            val responseCustom = response.custom.asMap()
 
             // When
             val dbObject = networkMemberMapper.map(response)
@@ -255,7 +248,7 @@ class PayloadTest {
             // Then
             Assert.assertEquals(responsePayload.id, dbObject.id)
             Assert.assertEquals(responsePayload.text, dbObject.text)
-            Assert.assertEquals(responsePayload.contentType, dbObject.contentType)
+            Assert.assertEquals(responsePayload.contentType ?: "default", dbObject.contentType)
             Assert.assertEquals(responsePayload.content, dbObject.content)
             Assert.assertEquals(responsePayload.createdAt, dbObject.createdAt)
             Assert.assertEquals(responsePayload.custom, dbObject.custom)

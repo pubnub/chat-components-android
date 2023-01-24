@@ -197,8 +197,8 @@ class MemberListTest : BaseTest() {
     // endregion
 
     private val FAKE_MEMBERS = listOf(
-        MemberUi.Data("user1", "User Nr 1", null, "Fake Account 1"),
-        MemberUi.Data("user2", "User Nr 2", null, "Fake Account 2"),
-        MemberUi.Data("user3", "User Nr 3", null, "Fake Account 3"),
+        MemberUi.Data(id = "user1", name = "User Nr 1", description = "Fake Account 1"),
+        MemberUi.Data(id = "user2", name = "User Nr 2", description = "Fake Account 2"),
+        MemberUi.Data(id = "user3", name = "User Nr 3", description = "Fake Account 3"),
     )
 }

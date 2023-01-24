@@ -20,11 +20,21 @@ import java.util.regex.Pattern
 def dependencyFile = "buildSrc/src/main/java/com/pubnub/components/buildsrc/Dependencies.kt"
 def backupFiles = ["gradle.properties", dependencyFile]
 
+task cleanBuild {
+    group 'Release'
+    description 'Clean and build'
+
+    doFirst {
+        println 'Clean & build'
+    }
+}
+
 task createBackup {
     group 'Release'
     description 'Create backup of gradle files'
 
     doFirst {
+        println 'Create backup'
         createBackupFiles(backupFiles)
     }
 }
@@ -34,6 +44,7 @@ task restoreBackup {
     description 'Restore backup of gradle files'
 
     doLast {
+        println 'Restore backup'
         restoreBackupFiles(backupFiles)
     }
 }
@@ -57,6 +68,16 @@ task localPublish {
     doFirst {
         println 'Publishing package'
     }
+}
+
+task publishAllToMavenLocal {
+    group 'Release'
+    description 'Publish all packages to local maven'
+
+    dependsOn 'framework:publishToMavenLocal'
+    dependsOn 'database:publishToMavenLocal'
+    dependsOn 'ui:publishToMavenLocal'
+    dependsOn 'publishToMavenLocal'
 }
 
 task setVersion {
@@ -83,22 +104,43 @@ task setVersion {
 task localRelease {
     group 'Release'
     description 'Modify gradle.properties, set new library version and publish to local maven'
-
-    def tasks = [clean, build, tests, localPublish, restoreBackup]
-    placeTasksInOrder([localRelease] + tasks)
 }
 
 afterEvaluate {
     setVersion.configure {
         dependsOn createBackup
     }
-
+    cleanBuild.configure {
+        finalizedBy clean
+        finalizedBy build
+    }
+    build.configure {
+        mustRunAfter clean
+    }
     localPublish.configure {
+        dependsOn cleanBuild
+        dependsOn tests
+
+        finalizedBy publishAllToMavenLocal
+        finalizedBy restoreBackup
+    }
+    publishAllToMavenLocal.configure {
         mustRunAfter tests
-        dependsOn 'framework:publishToMavenLocal'
-        dependsOn 'database:publishToMavenLocal'
-        dependsOn 'ui:publishToMavenLocal'
-        dependsOn 'publishToMavenLocal'
+    }
+    restoreBackup.configure {
+        mustRunAfter publishAllToMavenLocal
+    }
+    tests.configure {
+        if(!project.hasProperty('skipTests')) {
+            finalizedBy 'framework:test'
+            finalizedBy 'framework:connectedAndroidTest'
+            finalizedBy 'database:test'
+            finalizedBy 'database:connectedAndroidTest'
+            finalizedBy 'ui:test'
+            finalizedBy 'ui:connectedAndroidTest'
+            finalizedBy 'test'
+            finalizedBy 'connectedAndroidTest'
+        }
     }
 }
 
@@ -143,30 +185,6 @@ static def restoreBackupFiles(files) {
             println 'Restore backup of \'' + fileName + '\''
             dest.write(src.text)
             src.delete()
-        }
-    }
-}
-
-static def placeTasksInOrder(tasks) {
-    for (int i = 0; i < tasks.size() - 1; i++) {
-        def earlierTask = tasks.get(i)
-        def laterTask = tasks.get(i + 1)
-        earlierTask.finalizedBy laterTask
-        laterTask.mustRunAfter(earlierTask)
-    }
-}
-
-gradle.taskGraph.whenReady { taskGraph ->
-    if (!project.hasProperty("skipTests")) {
-        tests.configure {
-            dependsOn 'test'
-            dependsOn 'database:test'
-            dependsOn 'framework:test'
-            dependsOn 'ui:test'
-            dependsOn 'connectedAndroidTest'
-            dependsOn 'database:connectedAndroidTest'
-            dependsOn 'framework:connectedAndroidTest'
-            dependsOn 'ui:connectedAndroidTest'
         }
     }
 }
