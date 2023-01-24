@@ -23,7 +23,7 @@ interface ChannelDao<IN : Channel, OUT : Channel> {
     @Query("SELECT * FROM `channel` WHERE channelId IN (SELECT channelId FROM `membership` WHERE memberId LIKE :id)")
     fun getList(id: UserId): List<OUT>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun insertOrUpdate(vararg data: IN)
 
     @Delete
