@@ -69,10 +69,10 @@ jobs:
           echo "cmdline-tools: $(ls -la "$ANDROID_HOME/cmdline-tools/latest/bin")"
           echo "platform-tools: $(ls -la "$ANDROID_HOME/platform-tools")"
           echo "emulator: $(ls -la "$ANDROID_HOME/emulator")"
-          sudo chown $USER:$USER $ANDROID_HOME -R
-          if ! output=$(yes | sdkmanager --licenses); then
+          if ! output=$(yes | sdkmanager --licenses 2>&1); then
             echo "Some issue: $output"
           fi
+          #sudo chown $USER:$USER $ANDROID_HOME -R
       - name: List known devices
         run: avdmanager list device
       - name: Create suitable AVD
