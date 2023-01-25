@@ -55,7 +55,7 @@ interface MessageDao<IN : Message, OUT : Message> {
     @Query("SELECT * FROM message WHERE channel LIKE :id ORDER BY timetoken DESC LIMIT :count")
     fun getLastByChannel(id: ChannelId, count: Long): Flow<List<OUT>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun insertOrUpdate(vararg message: IN)
 
     @Delete

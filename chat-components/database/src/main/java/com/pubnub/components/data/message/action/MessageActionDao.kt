@@ -30,7 +30,7 @@ interface MessageActionDao<Data : MessageAction> {
     @Query("SELECT * FROM message_action WHERE channel LIKE :channel ORDER BY published DESC LIMIT 1")
     fun getLast(channel: String): Flow<Data?>
 
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Upsert
     suspend fun insertOrUpdate(vararg action: Data)
 
     @Delete

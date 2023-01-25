@@ -9,7 +9,7 @@ interface RemoteTimetokenDao<Data : RemoteTimetoken> {
     @Query("SELECT * FROM `remote_timetoken` WHERE `table` LIKE :table and channelId LIKE :channelId LIMIT 1")
     fun get(table: String, channelId: ChannelId): Data?
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun insertOrUpdate(vararg data: Data)
 
     @Delete
