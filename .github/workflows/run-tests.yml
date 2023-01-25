@@ -66,6 +66,7 @@ jobs:
       - name: Accept Android licenses
         run: |
           echo "UPDATED PATH: $PATH"
+          echo "HOME: $HOME"
           echo "cmdline-tools: $(ls -la "$ANDROID_HOME/cmdline-tools/latest/bin")"
           echo "platform-tools: $(ls -la "$ANDROID_HOME/platform-tools")"
           echo "emulator: $(ls -la "$ANDROID_HOME/emulator")"
@@ -82,7 +83,10 @@ jobs:
           API_LEVEL=33
           echo "echo no | avdmanager --verbose create avd --force -n test --abi \"$TARGET/$ANDROID_IMAGE_ARCH\" --package \"system-images;android-$API_LEVEL;$TARGET;$ANDROID_IMAGE_ARCH\" --device \"$DEVICE\""
           echo no | avdmanager --verbose create avd --force -n test --abi "$TARGET/$ANDROID_IMAGE_ARCH" --package "system-images;android-$API_LEVEL;$TARGET;$ANDROID_IMAGE_ARCH" --device "$DEVICE"
-          echo 'hw.cpu.ncore=2' >> /home/runner/.android/avd/test.avd/config.ini
+          ls -la $HOME
+          ls -la $HOME/.android/
+          ls -la $HOME/.android/avd
+          echo 'hw.cpu.ncore=2' >> $HOME/.android/avd/test.avd/config.ini
       - name: List existing AVDs
         run: emulator -list-avds
       - name: List existing devices
