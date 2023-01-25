@@ -104,7 +104,7 @@ jobs:
           while [ "$booted" != "1" ]
           do
             echo "Waiting for emulator..."
-            if !booted=$(adb shell getprop dev.bootcomplete); then
+            if ! booted=$(adb shell getprop dev.bootcomplete); then
               echo "ADB NOT READY: $booted"
             fi
             sleep 1
