@@ -299,12 +299,10 @@ fun Synchronize() {
     // One instance of disposable!
     DisposableEffect(true) {
         messageService.bind()
-        occupancyService.bind()
         actionService.bind()
 
         onDispose {
             messageService.unbind()
-            occupancyService.unbind()
             actionService.unbind()
         }
     }
@@ -314,14 +312,15 @@ fun Synchronize() {
     val channels by membershipRepository.getAll(currentUser).collectAsState(initial = emptyList())
     val errorHandler = LocalLogger.current
     DisposableEffect(channels) {
-        val channelArray = channels.map { it.channelId }.toTypedArray()
-        errorHandler.d("Bind for channels ${channelArray.joinToString()}")
+        val channelList = channels.map { it.channelId }
+        errorHandler.d("Bind for channels ${channelList.joinToString()}")
         // Get current member channels
-        channelService.bind(*channelArray)
-
+        channelService.bind(channels = channelList)
+        occupancyService.bind(channels = channelList)
         onDispose {
             errorHandler.d("Unbind channels")
             channelService.unbind()
+            occupancyService.unbind()
         }
     }
 }

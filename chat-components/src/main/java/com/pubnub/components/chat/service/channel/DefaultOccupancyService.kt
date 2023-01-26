@@ -5,10 +5,7 @@ import com.pubnub.api.callbacks.SubscribeCallback
 import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
 import com.pubnub.components.chat.ui.component.presence.Presence
-import com.pubnub.framework.data.ChannelId
-import com.pubnub.framework.data.Occupancy
-import com.pubnub.framework.data.OccupancyMap
-import com.pubnub.framework.data.UserId
+import com.pubnub.framework.data.*
 import com.pubnub.framework.mapper.OccupancyMapper
 import com.pubnub.framework.service.error.Logger
 import com.pubnub.framework.util.flow.coroutine
@@ -30,6 +27,9 @@ class DefaultOccupancyService(
     private val coroutineScope: CoroutineScope = GlobalScope,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : OccupancyService {
+
+    private var subscribedChannels: List<ChannelId> = listOf()
+    private var subscribedChannelGroups: List<ChannelGroupId> = listOf()
 
     private val _occupancy: MutableSharedFlow<OccupancyMap> = MutableSharedFlow(replay = 1)
     val occupancy: Flow<OccupancyMap>
@@ -98,12 +98,14 @@ class DefaultOccupancyService(
         online.map { it[user] ?: false }
 
     // region Binding
-    override fun bind() {
+    override fun bind(channels: List<ChannelId>, channelGroups: List<ChannelGroupId>) {
         logger.d("Start listening for presence")
+        subscribedChannels = channels
+        subscribedChannelGroups = channelGroups
         listenForPresence()
         // Get lobby occupancy
         coroutineScope.launch(dispatcher) {
-            callHereNow()
+            callHereNow(subscribedChannels, subscribedChannelGroups)
         }
     }
 
@@ -115,9 +117,9 @@ class DefaultOccupancyService(
     }
     // endregion
 
-    private suspend fun callHereNow() {
+    private suspend fun callHereNow(channels: List<ChannelId>, channelGroups: List<ChannelGroupId>) {
         try {
-            getOccupancy()?.let { setOccupancy(it) }
+            getOccupancy(channels, channelGroups)?.let { setOccupancy(it) }
         } catch (e: Exception) {
             logger.w(e, "Cannot set occupancy")
         }
@@ -138,11 +140,13 @@ class DefaultOccupancyService(
     }
 
     /**
-     * Global Here Now
+     * Here Now
      */
-    private suspend fun getOccupancy(): OccupancyMap? =
+    private suspend fun getOccupancy(channels: List<ChannelId>, channelGroups: List<ChannelGroupId>): OccupancyMap? =
         pubNub.hereNow(
-            includeUUIDs = true
+            includeUUIDs = true,
+            channels = channels,
+            channelGroups = channelGroups,
         )
             .coroutine()
             .let { result ->
@@ -156,6 +160,12 @@ class DefaultOccupancyService(
 
     private suspend fun processAction(action: PNPresenceEventResult) {
         logger.d("Process action: '$action'")
+
+        if(action.hereNowRefresh == true){
+            callHereNow(subscribedChannels, subscribedChannelGroups)
+            return
+        }
+
         val occupancyMap = _occupancy.replayCache.lastOrNull() ?: OccupancyMap()
         val previousOccupants = occupancyMap[action.channel]
         val occupants = action.getOccupants(previousOccupants)

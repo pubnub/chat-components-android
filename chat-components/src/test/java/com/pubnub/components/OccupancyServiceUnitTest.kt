@@ -67,11 +67,11 @@ class OccupancyServiceUnitTest {
     @Test
     fun whenBindIsCalled_thenHereNowIsExecuted() {
         every { service["listenForPresence"]() } answers {}
-        coEvery { service["callHereNow"]() } answers {}
+        coEvery { service["callHereNow"](any<List<String>>(), any<List<String>>()) } answers {}
 
         service.bind()
 
-        verify(exactly = 1, timeout = 10_000L) { service["callHereNow"]() }
+        verify(exactly = 1, timeout = 10_000L) { service["callHereNow"](any<List<String>>(), any<List<String>>()) }
     }
 
     @Test
@@ -94,8 +94,8 @@ class OccupancyServiceUnitTest {
         coVerifySequence {
             service.bind()
             service["listenForPresence"]()
-            service["callHereNow"]()
-            service["getOccupancy"]()
+            service["callHereNow"](any<List<String>>(), any<List<String>>())
+            service["getOccupancy"](any<List<String>>(), any<List<String>>())
         }
     }
 
@@ -103,15 +103,15 @@ class OccupancyServiceUnitTest {
     fun whenGetOccupancyIsCalled_thenSetOccupancyIsExecuted() {
         val occupancy: OccupancyMap = mockk(relaxed = true, relaxUnitFun = true)
         every { service["listenForPresence"]() } answers {}
-        every { service["getOccupancy"]() } returns occupancy
+        every { service["getOccupancy"](any<List<String>>(), any<List<String>>()) } returns occupancy
 
         service.bind()
 
         coVerifySequence {
             service.bind()
             service["listenForPresence"]()
-            service["callHereNow"]()
-            service["getOccupancy"]()
+            service["callHereNow"](any<List<String>>(), any<List<String>>())
+            service["getOccupancy"](any<List<String>>(), any<List<String>>())
             service["setOccupancy"](eq(occupancy))
         }
     }
@@ -122,7 +122,7 @@ class OccupancyServiceUnitTest {
     fun whenPresenceIsReceived_thenProcessActionIsExecuted() {
         val event = PNPresenceEventResult()
 
-        coEvery { service["callHereNow"]() } answers {}
+        coEvery { service["callHereNow"](any<List<String>>(), any<List<String>>()) } answers {}
 
         service.bind()
 
@@ -141,7 +141,7 @@ class OccupancyServiceUnitTest {
         val occupancyMap: CapturingSlot<OccupancyMap> = CapturingSlot()
 
 
-        coEvery { service["callHereNow"]() } answers {}
+        coEvery { service["callHereNow"](any<List<String>>(), any<List<String>>()) } answers {}
 
         service.bind()
         service.callPrivateSuspend("processAction", event)
@@ -173,7 +173,7 @@ class OccupancyServiceUnitTest {
         )
         val occupancyMap: MutableList<OccupancyMap> = mutableListOf()
 
-        coEvery { service["callHereNow"]() } answers {}
+        coEvery { service["callHereNow"](any<List<String>>(), any<List<String>>()) } answers {}
 
         service.bind()
 
@@ -208,7 +208,7 @@ class OccupancyServiceUnitTest {
         )
         val occupancyMap: MutableList<OccupancyMap> = mutableListOf()
 
-        coEvery { service["callHereNow"]() } answers {}
+        coEvery { service["callHereNow"](any<List<String>>(), any<List<String>>()) } answers {}
 
         service.bind()
 
@@ -238,7 +238,7 @@ class OccupancyServiceUnitTest {
         )
         val occupancyMap: CapturingSlot<OccupancyMap> = CapturingSlot()
 
-        coEvery { service["callHereNow"]() } answers {}
+        coEvery { service["callHereNow"](any<List<String>>(), any<List<String>>()) } answers {}
 
         service.bind()
         service.callPrivateSuspend("processAction", event)
@@ -271,7 +271,7 @@ class OccupancyServiceUnitTest {
         )
         val occupancyMap: MutableList<OccupancyMap> = mutableListOf()
 
-        coEvery { service["callHereNow"]() } answers {}
+        coEvery { service["callHereNow"](any<List<String>>(), any<List<String>>()) } answers {}
 
         service.bind()
 
@@ -307,7 +307,7 @@ class OccupancyServiceUnitTest {
         )
         val occupancyMap: MutableList<OccupancyMap> = mutableListOf()
 
-        coEvery { service["callHereNow"]() } answers {}
+        coEvery { service["callHereNow"](any<List<String>>(), any<List<String>>()) } answers {}
 
         service.bind()
 
@@ -324,6 +324,20 @@ class OccupancyServiceUnitTest {
             assertEquals(1, this["channel"]!!.occupancy)
             assertEquals(listOf("test-member3"), this["channel"]!!.list)
         }
+    }
+    @Test
+    fun whenPNPresenceEventResultIsReceived_andHereNowRefreshFlagIsSetToTrue_thenHereNowIsCalled() {
+        val event = PNPresenceEventResult(
+            hereNowRefresh = true,
+        )
+
+        coEvery { service["callHereNow"](any<List<String>>(), any<List<String>>()) } answers {}
+
+        service.bind()
+        service.callPrivateSuspend("processAction", event)
+
+        coVerify(exactly = 1, timeout = 10_000L) { service["processAction"](eq(event)) }
+        coVerify(exactly = 2) { service["callHereNow"](any<List<String>>(), any<List<String>>()) }
     }
     // endregion
 
