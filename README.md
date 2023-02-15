@@ -1,5 +1,7 @@
 # PubNub Chat Components for Android
 
+> WARNING: PubNub no longer supports this software library, but you are welcome to contribute.
+
 Chat components provide easy-to-use building blocks to create Android chat applications, for use
 cases like live event messaging, telemedicine, and service desk support.
 
@@ -23,10 +25,10 @@ cases.
 
 ## Available components
 
-* [ChannelList](https://www.pubnub.com/docs/chat/components/android/ui-components#channellist)
-* [MemberList](https://www.pubnub.com/docs/chat/components/android/ui-components#memberlist)
-* [MessageList](https://www.pubnub.com/docs/chat/components/android/ui-components#messagelist)
-* [MessageInput](https://www.pubnub.com/docs/chat/components/android/ui-components#messageinput)
+* [ChannelList](https://www.pubnub.com/docs/chat/community-supported/android/ui-components#channellist)
+* [MemberList](https://www.pubnub.com/docs/chat/community-supported/android/ui-components#memberlist)
+* [MessageList](https://www.pubnub.com/docs/chat/community-supported/android/ui-components#messagelist)
+* [MessageInput](https://www.pubnub.com/docs/chat/community-supported/android/ui-components#messageinput)
 
 ## Prerequisites
 
@@ -59,12 +61,12 @@ Explore [sample apps](https://github.com/pubnub/chat-components-android-examples
 that are built using chat components.
 
 Follow the steps in
-the [Getting Started guide](https://www.pubnub.com/docs/chat/components/android)
+the [Getting Started guide](https://www.pubnub.com/docs/chat/community-supported/android)
 to set up a sample chat app and send your first message.
 
 ## Related documentation
 
-* [PubNub Chat Components for Android Documentation](https://www.pubnub.com/docs/chat/components/android)
+* [PubNub Chat Components for Android Documentation](https://www.pubnub.com/docs/chat/community-supported/android)
 * [Kotlin SDK Documentation](https://www.pubnub.com/docs/sdks/kotlin)
 * [Jetpack Compose Tutorial](https://developer.android.com/jetpack/compose/tutorial)
 * [Android Room Tutorial](https://developer.android.com/training/data-storage/room)
