@@ -2,19 +2,20 @@ name: Pull request handler
 
 on:
   pull_request:
-    branches: [ master ]
-    types: [ opened ]
-
+    branches: [master]
+    types: [opened]
 
 jobs:
   process-new-pr:
     name: Handle new pull request
-    runs-on: ubuntu-latest
+    runs-on:
+      group: Default Larger Runners
+      labels: ubuntu-latest-m
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Checkout actions
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: pubnub/client-engineering-deployment-tools
           ref: v1
