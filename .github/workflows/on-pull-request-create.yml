@@ -9,8 +9,7 @@ jobs:
   process-new-pr:
     name: Handle new pull request
     runs-on:
-      group: Default Larger Runners
-      labels: ubuntu-latest-m
+      group: Default
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
